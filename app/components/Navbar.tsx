@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Flame } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const links = ["Services", "About", "Projects", "Team", "Blog", "Contact"];
 
@@ -9,6 +10,8 @@ export default function Navbar() {
   const [open, setOpen]       = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive]     = useState("");
+  const pathname = usePathname();
+  const isShopActive = pathname === "/shop";
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -41,9 +44,9 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-500
-      ${scrolled
+      ${scrolled || open
         ? "bg-stone-charcoal/95 backdrop-blur-xl border-b border-stone-sandstone/20 py-3 shadow-2xl"
-        : "bg-stone-charcoal py-5"
+        : "bg-transparent py-5"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
@@ -62,9 +65,9 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-7">
           {links.map(l => {
-            const isActive = active === l.toLowerCase();
+            const isActive = active === l.toLowerCase() && !isShopActive;
             return (
-              <a key={l} href={`#${l.toLowerCase()}`}
+              <a key={l} href={`/#${l.toLowerCase()}`}
                 className={`text-[13px] font-medium tracking-wide transition-all duration-200 
                   ${isActive 
                     ? "text-[#ff9d00] underline decoration-[#ff9d00] underline-offset-8" 
@@ -75,13 +78,16 @@ export default function Navbar() {
             );
           })}
           <Link href="/shop"
-            className="text-[13px] font-semibold text-stone-amber border border-stone-amber/40 rounded-full px-4 py-1.5 hover:bg-stone-amber hover:text-white transition-all duration-300">
+            className={`text-[13px] font-semibold border rounded-full px-4 py-1.5 transition-all duration-300
+              ${isShopActive
+                ? "text-[#ff9d00] border-[#ff9d00]"
+                : "text-stone-amber border-stone-amber/40 hover:bg-stone-amber hover:text-white"}`}
+          >
             Shop
           </Link>
-          <a href="#contact"
-            className="btn-primary text-[13px] px-5! py-2.5!">
+          <Link href="/#contact" className="btn-primary text-[13px] px-5! py-2.5!">
             Get a Quote
-          </a>
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -94,7 +100,7 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-stone-charcoal border-t border-stone-sandstone/20 px-6 pb-6 pt-3">
           {links.map(l => {
-            const isActive = active === l.toLowerCase();
+            const isActive = active === l.toLowerCase() && !isShopActive;
             return (
               <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
                 className={`block py-3.5 text-[15px] font-medium border-b border-stone-sandstone/15 transition-colors 

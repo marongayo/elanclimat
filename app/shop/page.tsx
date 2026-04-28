@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, Search, X, Plus, Minus, Flame, ArrowRight } from "lucide-react";
 import type { Product } from "@/app/lib/products-store";
@@ -32,13 +32,17 @@ export default function ShopPage() {
   const [toast, setToast]       = useState<string | null>(null);
   const [loading, setLoading]   = useState(true);
 
-  const fetchProducts = useCallback(async () => {
+useEffect(() => {
+  const fetchProducts = async () => {
     const res = await fetch("/api/products");
-    setProducts(await res.json());
-    setLoading(false);
-  }, []);
+    const data = await res.json();
 
-  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+    setProducts(data);
+    setLoading(false);
+  };
+
+  fetchProducts();
+}, []);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2400); };
 
@@ -75,37 +79,6 @@ export default function ShopPage() {
   return (
     <div className="min-h-screen bg-stone-titanium font-sans">
 
-      {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-stone-charcoal shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-stone-amber rounded-full flex items-center justify-center">
-              <Flame size={15} className="text-white" />
-            </div>
-            <div>
-              <div className="font-serif font-bold text-stone-titanium text-[15px] leading-tight">Élan Shop</div>
-              <div className="text-[8px] text-stone-amber tracking-[.18em] font-semibold">CLIMAT & ÉNERGIE</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-stone-sand-lt/60 text-[13px] font-medium px-4 py-1.5 rounded-full border border-stone-sandstone/20 hover:border-stone-sandstone/50 hover:text-stone-sand-lt transition-all">
-              ← Main Site
-            </Link>
-            <Link href="/shop/admin" className="text-stone-sand-lt/60 text-[13px] font-medium px-4 py-1.5 rounded-full border border-stone-sandstone/20 hover:border-stone-sandstone/50 hover:text-stone-sand-lt transition-all">
-              ⚙ Admin
-            </Link>
-            <button onClick={() => setCartOpen(true)}
-              className="flex items-center gap-2.5 bg-stone-amber hover:bg-stone-amber-dk text-white text-[13px] font-semibold px-4 py-2 rounded-full transition-all duration-200">
-              <ShoppingCart size={15} />
-              Cart
-              <span className="bg-stone-charcoal text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            </button>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-10">
 
@@ -164,7 +137,7 @@ export default function ShopPage() {
                 {/* Image */}
                 <div className={`${CAT_BG[p.cat] ?? "bg-stone-sand-bg"} h-40 flex items-center justify-center text-5xl relative`}>
                   {p.badge && (
-                    <span className={`absolute top-3 left-3 ${BADGE[p.badge]} text-[9px] font-bold tracking-[.1em] rounded-full px-2.5 py-0.5`}>
+                    <span className={`absolute top-3 left-3 ${BADGE[p.badge]} text-[9px] font-bold tracking-widest rounded-full px-2.5 py-0.5`}>
                       {p.badge.toUpperCase()}
                     </span>
                   )}
@@ -172,7 +145,7 @@ export default function ShopPage() {
                 </div>
 
                 <div className="p-5">
-                  <div className="text-[10px] font-bold text-stone-amber tracking-[.1em] mb-1">{p.cat.toUpperCase()}</div>
+                  <div className="text-[10px] font-bold text-stone-amber tracking-widest mb-1">{p.cat.toUpperCase()}</div>
                   <h3 className="font-serif font-semibold text-stone-charcoal text-[16px] leading-snug mb-2">{p.name}</h3>
                   <p className="text-stone-char-xlt text-[12px] font-light leading-relaxed mb-4">{p.desc}</p>
                   <div className="flex items-center justify-between">
@@ -195,7 +168,7 @@ export default function ShopPage() {
       {/* CART DRAWER */}
       {cartOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
-          <div className="bg-white w-[380px] max-w-[95vw] h-full flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="bg-white w-95 max-w-[95vw] h-full flex flex-col" onClick={e => e.stopPropagation()}>
 
             <div className="bg-stone-charcoal px-6 py-5 flex items-center justify-between">
               <h3 className="font-serif text-stone-titanium text-xl">Your Cart</h3>
@@ -212,7 +185,7 @@ export default function ShopPage() {
                 </div>
               ) : cart.map(item => (
                 <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border border-stone-sandstone/20 mb-3 bg-stone-titanium">
-                  <div className="w-10 h-10 bg-stone-sand-bg rounded-lg flex items-center justify-center text-2xl flex-shrink-0">{item.icon}</div>
+                  <div className="w-10 h-10 bg-stone-sand-bg rounded-lg flex items-center justify-center text-2xl shrink-0">{item.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[13px] font-semibold text-stone-charcoal truncate">{item.name}</div>
                     <div className="text-[12px] text-stone-amber font-medium">€{(item.price * item.qty).toLocaleString()}</div>
@@ -239,7 +212,7 @@ export default function ShopPage() {
                 <div className="flex justify-between text-sm text-stone-char-xlt mb-4"><span>VAT (20%)</span><span>€{Math.round(vat).toLocaleString()}</span></div>
                 <div className="flex justify-between font-serif text-stone-charcoal text-xl font-bold mb-5"><span>Total</span><span>€{Math.round(subtotal + vat).toLocaleString()}</span></div>
                 <button onClick={() => { setCart([]); setCartOpen(false); showToast("Order placed! Thank you."); }}
-                  className="w-full btn-primary justify-center !rounded-xl !py-3.5">
+                  className="w-full btn-primary justify-center rounded-xl! py-3.5!">
                   Proceed to Checkout <ArrowRight size={15} />
                 </button>
               </div>
@@ -248,6 +221,17 @@ export default function ShopPage() {
         </div>
       )}
 
+{/* Floating CART */}
+{!cartOpen && (
+  <button onClick={() => setCartOpen(true)} className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-[#ff9d00] hover:animate-bounce">
+  <ShoppingCart size={20} />
+  
+  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center cursor-pointer">
+    {cartCount}
+  </span>
+</button>
+
+)}
       {/* TOAST */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-stone-charcoal text-stone-titanium px-5 py-3 rounded-xl text-[13px] font-medium shadow-2xl z-50 animate-fade-up flex items-center gap-2">
@@ -255,5 +239,7 @@ export default function ShopPage() {
         </div>
       )}
     </div>
+
+    
   );
 }
