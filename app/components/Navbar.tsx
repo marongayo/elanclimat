@@ -102,7 +102,7 @@ export default function Navbar() {
           {links.map(l => {
             const isActive = active === l.toLowerCase() && !isShopActive;
             return (
-              <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
+              <a key={l} href={`/#${l.toLowerCase()}`} onClick={() => setOpen(false)}
                 className={`block py-3.5 text-[15px] font-medium border-b border-stone-sandstone/15 transition-colors 
                   ${isActive 
                     ? "text-[#ff9d00] underline decoration-[#ff9d00] underline-offset-8" 
