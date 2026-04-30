@@ -129,10 +129,11 @@ useEffect(() => {
                 className="bg-white rounded-2xl border border-stone-sandstone/20 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-stone-sandstone/25 group relative">
 
                 {/* Remove btn */}
-                <button onClick={() => removeProduct(p.id)}
+                {/* <button onClick={() => removeProduct(p.id)}
                   className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-red-100 text-red-500 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-500 hover:text-white z-10 text-xs">
                   ✕
                 </button>
+                 */}
 
                 {/* Image */}
                 <div className={`${CAT_BG[p.cat] ?? "bg-stone-sand-bg"} h-40 flex items-center justify-center text-5xl relative`}>
@@ -150,12 +151,15 @@ useEffect(() => {
                   <p className="text-stone-char-xlt text-[12px] font-light leading-relaxed mb-4">{p.desc}</p>
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-serif text-stone-charcoal text-[19px] font-bold">€{p.price.toLocaleString()}</span>
+                      <span className="font-serif text-stone-charcoal text-[19px] font-bold">
+                        <span className="text-[13px] mr-1">KES</span>
+                        {p.price.toLocaleString()}
+                      </span>
                       <span className="text-[10px] text-stone-char-xlt/50 ml-1">excl. VAT</span>
                     </div>
                     <button onClick={() => addToCart(p)}
-                      className="bg-stone-amber hover:bg-stone-amber-dk text-white text-[12px] font-semibold px-4 py-1.5 rounded-full transition-all duration-200">
-                      + Add
+                      className="btn-primary bg-stone-amber hover:bg-stone-amber-dk text-white text-[12px] font-semibold px-4 py-1.5 rounded-full transition-all duration-200">
+                      Add
                     </button>
                   </div>
                 </div>
@@ -167,12 +171,12 @@ useEffect(() => {
 
       {/* CART DRAWER */}
       {cartOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex justify-end" onClick={() => setCartOpen(false)}>
-          <div className="bg-white w-95 max-w-[95vw] h-full flex flex-col" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setCartOpen(false)}>
+          <div className="fixed top-20 right-6 bg-white w-80 max-w-sm h-auto max-h-[80vh] flex flex-col rounded-xl shadow-lg" onClick={e => e.stopPropagation()}>
 
-            <div className="bg-stone-charcoal px-6 py-5 flex items-center justify-between">
-              <h3 className="font-serif text-stone-titanium text-xl">Your Cart</h3>
-              <button onClick={() => setCartOpen(false)} className="text-stone-sand-lt/60 hover:text-stone-titanium transition-colors">
+            <div className="px-6 py-5 flex items-center justify-between border-b border-stone-sandstone/15">
+              <h3 className="font-serif text-stone-charcoal text-xl">Your Cart</h3>
+              <button onClick={() => setCartOpen(false)} className="text-stone-char-xlt/60 hover:text-stone-charcoal transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -180,7 +184,7 @@ useEffect(() => {
             <div className="flex-1 overflow-y-auto p-4">
               {cart.length === 0 ? (
                 <div className="text-center py-16 text-stone-char-xlt/40">
-                  <ShoppingCart size={44} className="mx-auto mb-3 opacity-40" />
+                  <ShoppingCart size={44} className="mx-auto mb-3 text-stone-char-xlt/40" />
                   <p className="text-sm">Your cart is empty.</p>
                 </div>
               ) : cart.map(item => (
@@ -207,9 +211,9 @@ useEffect(() => {
             </div>
 
             {cart.length > 0 && (
-              <div className="p-5 border-t border-stone-sandstone/20">
-                <div className="flex justify-between text-sm text-stone-char-xlt mb-1.5"><span>Subtotal</span><span>€{subtotal.toLocaleString()}</span></div>
-                <div className="flex justify-between text-sm text-stone-char-xlt mb-4"><span>VAT (20%)</span><span>€{Math.round(vat).toLocaleString()}</span></div>
+              <div className="p-5 border-t border-stone-sandstone/20 text-stone-char-xlt">
+                <div className="flex justify-between text-sm mb-1.5"><span>Subtotal</span><span>€{subtotal.toLocaleString()}</span></div>
+                <div className="flex justify-between text-sm mb-4"><span>VAT (20%)</span><span>€{Math.round(vat).toLocaleString()}</span></div>
                 <div className="flex justify-between font-serif text-stone-charcoal text-xl font-bold mb-5"><span>Total</span><span>€{Math.round(subtotal + vat).toLocaleString()}</span></div>
                 <button onClick={() => { setCart([]); setCartOpen(false); showToast("Order placed! Thank you."); }}
                   className="w-full btn-primary justify-center rounded-xl! py-3.5!">
@@ -221,12 +225,12 @@ useEffect(() => {
         </div>
       )}
 
-{/* Floating CART */}
+{/* FLOATING CART BUTTON */}
 {!cartOpen && (
-  <button onClick={() => setCartOpen(true)} className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-[#ff9d00] hover:animate-bounce">
+  <button onClick={() => setCartOpen(true)} className="fixed bottom-5 right-5 z-50 w-14 h-14 rounded-full  bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-[#ff9d00] hover:animate-bounce">
   <ShoppingCart size={20} />
   
-  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center cursor-pointer">
+  <span className="absolute -top-1 -right-1 bg-red-400 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center cursor-pointer">
     {cartCount}
   </span>
 </button>

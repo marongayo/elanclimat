@@ -78,7 +78,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-stone-titanium font-sans">
 
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-stone-charcoal shadow-2xl">
+      {/* <nav className="sticky top-0 z-50 bg-stone-charcoal shadow-2xl">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-stone-amber rounded-full flex items-center justify-center">
@@ -98,12 +98,12 @@ export default function AdminPage() {
             </Link>
           </div>
         </div>
-      </nav>
+      </nav> */}
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-6 py-25">
 
         {/* PAGE HEADER + STATS */}
-        <div className="flex flex-wrap items-start justify-between gap-6 mb-10">
+        <div className="flex flex-wrap items-start justify-between gap-6 mb-1">
           <div>
             <h1 className="font-serif font-bold text-stone-charcoal leading-tight mb-1" style={{ fontSize: "clamp(24px,3.5vw,38px)" }}>
               Product <em className="text-stone-amber not-italic">Management</em>
@@ -114,11 +114,11 @@ export default function AdminPage() {
             {[
               { num: products.length,                        lbl: "PRODUCTS" },
               { num: new Set(products.map(p => p.cat)).size, lbl: "CATEGORIES" },
-              { num: `€${products.reduce((s,p)=>s+p.price,0).toLocaleString()}`, lbl: "VALUE" },
+              { num: <><span className="text-[12px] mr-1">KES</span>{products.reduce((s,p)=>s+p.price,0).toLocaleString()}</>, lbl: "VALUE" },
             ].map(s => (
               <div key={s.lbl} className="bg-white border border-stone-sandstone/25 rounded-xl px-5 py-3 text-center min-w-[90px]">
                 <div className="font-serif text-stone-charcoal text-xl font-bold">{s.num}</div>
-                <div className="text-[9px] text-stone-amber font-bold tracking-[.1em] mt-0.5">{s.lbl}</div>
+                <div className="text-[9px] text-stone-amber font-bold tracking-widest mt-0.5">{s.lbl}</div>
               </div>
             ))}
           </div>
@@ -139,7 +139,7 @@ export default function AdminPage() {
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
             )}
-            {f("PRICE (€ excl. VAT)",
+            {f("PRICE (KES excl. VAT)",
               <input className={inputCls} type="number" min="0" placeholder="0"
                 value={form.price} onChange={e => setForm(x => ({ ...x, price: e.target.value }))} />
             )}
@@ -158,7 +158,7 @@ export default function AdminPage() {
             )}
           </div>
           {f("DESCRIPTION",
-            <textarea className={`${inputCls} resize-none min-h-[72px]`}
+            <textarea className={`${inputCls} resize-none min-h-18`}
               placeholder="Short product description…"
               value={form.desc} onChange={e => setForm(x => ({ ...x, desc: e.target.value }))} />
           )}
@@ -183,7 +183,7 @@ export default function AdminPage() {
                 <thead>
                   <tr className="bg-stone-sand-bg/50">
                     {["Product","Category","Price","Badge","Action"].map(h => (
-                      <th key={h} className="px-5 py-3 text-left text-[10px] font-bold text-stone-amber tracking-[.1em] border-b border-stone-sandstone/15">
+                      <th key={h} className="px-5 py-3 text-left text-[10px] font-bold text-stone-amber tracking-widest border-b border-stone-sandstone/15">
                         {h.toUpperCase()}
                       </th>
                     ))}
@@ -194,7 +194,7 @@ export default function AdminPage() {
                     <tr key={p.id} className="border-b border-stone-sandstone/10 hover:bg-stone-sand-bg/30 transition-colors group">
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-stone-sand-bg rounded-lg flex items-center justify-center text-xl flex-shrink-0">{p.icon}</div>
+                          <div className="w-9 h-9 bg-stone-sand-bg rounded-lg flex items-center justify-center text-xl shrink-0">{p.icon}</div>
                           <div>
                             <div className="font-semibold text-stone-charcoal text-[13px]">{p.name}</div>
                             <div className="text-stone-char-xlt/50 text-[11px] font-light">
@@ -209,7 +209,8 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 font-serif font-bold text-stone-charcoal text-[15px]">
-                        €{p.price.toLocaleString()}
+                        <span className="text-[10px] mr-1">KES</span>
+                        {p.price.toLocaleString()}
                       </td>
                       <td className="px-5 py-3.5">
                         {p.badge
