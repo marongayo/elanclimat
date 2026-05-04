@@ -293,7 +293,7 @@ export default async function HomePage() {
       <section id="contact" style={{ padding: '100px 0', background: 'var(--charcoal)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'rgba(143,175,159,0.07)', pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 80 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
                 <div style={{ width: 36, height: 1, background: 'var(--sage)' }} />
@@ -333,6 +333,9 @@ export default async function HomePage() {
 
       <style>{`
         @media (max-width: 768px) {
+          #contact > div > div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
           section > div > div[style*="grid-template-columns: 1fr 1fr"] {
             grid-template-columns: 1fr !important;
           }

@@ -11,7 +11,7 @@ export default function WhyUs() {
   return (
     <section className="bg-stone-charcoal py-28 relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.035] bg-noise pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
+      <div className="absolute top-0 right-0 w-125 h-125 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(212,146,42,0.1) 0%, transparent 65%)" }} />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -30,7 +30,7 @@ export default function WhyUs() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {stats.map(s => (
             <div key={s.label}
-              className="border border-stone-sandstone/15 rounded-2xl p-8 bg-white/[0.03] hover:bg-stone-amber/8 hover:border-stone-amber/30 transition-all duration-300 group cursor-default">
+              className="border border-stone-sandstone/15 rounded-2xl p-8 bg-white/3 hover:bg-stone-amber/8 hover:border-stone-amber/30 transition-all duration-300 group cursor-default">
               <div className="font-serif font-bold text-stone-amber mb-3 leading-none group-hover:scale-105 transition-transform" style={{ fontSize: "clamp(44px,5vw,60px)" }}>
                 {s.num}
               </div>

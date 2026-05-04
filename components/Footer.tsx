@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Quick links */}
           <div>
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Company</h4>
-            {[{ l: 'About Us', h: '/#about' }, { l: 'Blog & News', h: '/blog' }, { l: 'Shop', h: '/shop' }, { l: 'Contact', h: '/#contact' }].map(item => (
+            {[{ l: 'About Us', h: '/#about' }, { l: 'Blog & News', h: '/blog' }, { l: 'Shop', h: '/shop' }, { l: 'Contact', h: '/#contact' }, { l: 'Admin', h: '/admin' }].map(item => (
               <a key={item.l} href={item.h} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
@@ -49,9 +49,9 @@ export default function Footer() {
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Contact</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
-                { icon: <Phone size={14} />, text: '+1 (555) 234-5678' },
+                { icon: <Phone size={14} />, text: '+254 796 952 717' },
                 { icon: <Mail size={14} />, text: 'hello@elan-energie.com' },
-                { icon: <MapPin size={14} />, text: '14 Rue des Énergies, Montreal' },
+                { icon: <MapPin size={14} />, text: 'Ananas Business Park, Off Garrissa Road, Thika' },
               ].map(item => (
                 <div key={item.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)' }}>
                   <span style={{ color: 'var(--sage)', marginTop: 1 }}>{item.icon}</span>
@@ -66,7 +66,7 @@ export default function Footer() {
       {/* Bottom */}
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <p style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)' }}>
-          © {new Date().getFullYear()} Élan Climat &amp; Énergie. All rights reserved.
+          © 2019 - {`${new Date().getFullYear()} `} Élan Climat &amp; Énergie. All rights reserved.
         </p>
         <div style={{ display: 'flex', gap: 24 }}>
           {['Privacy Policy', 'Terms of Service'].map(l => (
