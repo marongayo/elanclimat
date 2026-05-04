@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "title": "The Future of Home Comfort: Heat Pumps Explained",
+    "slug": "future-home-comfort-heat-pumps",
+    "excerpt": "Modern heat pump technology is revolutionizing how we think about heating and cooling — efficient, quiet, and remarkably sustainable.",
+    "content": "<h2>What Is a Heat Pump?</h2><p>A heat pump is a versatile climate system that moves thermal energy rather than generating it. In winter, it extracts warmth from outdoor air (even in cold temperatures) and transfers it inside. In summer, the process reverses, acting as an air conditioner.</p><h2>Why Choose a Heat Pump?</h2><p>Heat pumps are 2–4× more efficient than conventional heating systems. For every unit of electricity consumed, they deliver multiple units of heating or cooling energy. This means dramatically lower energy bills and a reduced carbon footprint.</p><h3>Key Benefits</h3><ul><li>Up to 60% reduction in heating costs</li><li>Year-round operation — heating and cooling in one unit</li><li>No combustion, no carbon monoxide risk</li><li>Compatible with solar panel systems</li></ul><p>At Élan Climat & Énergie, we size and install heat pump systems precisely matched to your building's thermal envelope, ensuring maximum efficiency and comfort.</p>",
+    "category": "HVAC",
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    "author": "Élan Editorial",
+    "date": "2025-04-18",
+    "readTime": "5 min"
+  },
+  {
+    "id": "2",
+    "title": "Solar + Battery: Why Storage Changes Everything",
+    "slug": "solar-battery-storage-guide",
+    "excerpt": "Pairing solar panels with battery storage transforms intermittent generation into reliable, on-demand clean energy — day and night.",
+    "content": "<h2>Beyond Daytime Solar</h2><p>Solar panels generate electricity only when the sun shines. Without storage, excess midday power is exported to the grid — often at low rates — while you import expensive electricity at night. Battery storage solves this fundamental mismatch.</p><h2>How a Solar-Battery System Works</h2><p>A battery system stores surplus solar energy and releases it when panels aren't producing — evenings, cloudy days, or grid outages. Modern lithium-ion battery packs like the systems we install offer 10+ year lifespans with degradation below 20%.</p><h3>Financial Benefits</h3><ul><li>Maximize self-consumption of solar energy</li><li>Reduce grid import costs by up to 80%</li><li>Earn from grid services (where applicable)</li><li>Protection against electricity price inflation</li></ul><p>We design integrated solar-storage systems, ensuring inverter compatibility, optimal battery sizing, and smart energy management — all under one roof.</p>",
+    "category": "Solar",
+    "image": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80",
+    "author": "Élan Editorial",
+    "date": "2025-03-29",
+    "readTime": "6 min"
+  },
+  {
+    "id": "3",
+    "title": "Indoor Air Quality: The Invisible Comfort Factor",
+    "slug": "indoor-air-quality-guide",
+    "excerpt": "We spend 90% of our time indoors, yet air quality is often overlooked. Here's how advanced ventilation transforms your living environment.",
+    "content": "<h2>Why Indoor Air Quality Matters</h2><p>Indoor air can be 2–5× more polluted than outdoor air. Poor IAQ contributes to fatigue, respiratory issues, and reduced cognitive performance. HVAC systems play a critical role in managing air quality, not just temperature.</p><h2>Modern Ventilation Solutions</h2><p>Heat Recovery Ventilators (HRVs) and Energy Recovery Ventilators (ERVs) bring fresh outdoor air into a building while capturing most of the energy from exhaust air. The result: fresh air without the energy penalty.</p><h3>Features of Quality IAQ Systems</h3><ul><li>HEPA-grade filtration removing 99.97% of particles</li><li>UV-C germicidal treatment</li><li>CO₂ monitoring and demand-controlled ventilation</li><li>Humidity balancing for seasonal comfort</li></ul><p>Our IAQ assessments identify problem areas in your home or business, and we design targeted solutions that integrate seamlessly with your existing HVAC system.</p>",
+    "category": "HVAC",
+    "image": "https://images.unsplash.com/photo-1416339306562-f3d12fefd36f?w=800&q=80",
+    "author": "Élan Editorial",
+    "date": "2025-03-10",
+    "readTime": "4 min"
+  }
+]

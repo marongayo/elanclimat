@@ -3,7 +3,7 @@
 const stats = [
   { num: "40%",  label: "Average energy bill reduction",   desc: "Our integrated solar + storage systems consistently cut costs." },
   { num: "72h",  label: "Average project turnaround",      desc: "Fast, professional installations with minimal disruption." },
-  { num: "0€",   label: "Hidden fees — ever",              desc: "Transparent pricing from first quote to final invoice." },
+  { num: "0/=",   label: "Hidden fees — ever",              desc: "Transparent pricing from first quote to final invoice." },
   { num: "A++",  label: "Energy ratings achieved",         desc: "We push every system to its highest possible efficiency." },
 ];
 

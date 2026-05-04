@@ -1,34 +1,20 @@
-import { NextResponse } from "next/server";
-import { getAll, create } from "@/app/lib/products-store";
-import type { Product } from "@/app/lib/products-store";
+import { NextRequest, NextResponse } from 'next/server';
+import { getProducts, saveProduct, deleteProduct } from '@/lib/data';
+import { randomUUID } from 'crypto';
 
 export async function GET() {
-  return NextResponse.json(getAll());
+  return NextResponse.json(getProducts());
 }
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { name, cat, price, desc, badge, icon } = body;
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const product = { ...body, id: body.id || randomUUID() };
+  saveProduct(product);
+  return NextResponse.json(product, { status: 201 });
+}
 
-    if (!name?.trim() || !cat || !price || !desc?.trim()) {
-      return NextResponse.json(
-        { error: "name, cat, price and desc are required" },
-        { status: 400 }
-      );
-    }
-
-    const product = create({
-      name: name.trim(),
-      cat,
-      price: Number(price),
-      desc: desc.trim(),
-      badge: badge ?? "",
-      icon: icon ?? "📦",
-    } as Omit<Product, "id">);
-
-    return NextResponse.json(product, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
+export async function DELETE(req: NextRequest) {
+  const { id } = await req.json();
+  deleteProduct(id);
+  return NextResponse.json({ ok: true });
 }

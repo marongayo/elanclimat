@@ -1,46 +1,36 @@
-# Élan Climat & Énergie — Website
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A professional Next.js website for an HVAC, Solar & Battery company.
+## Getting Started
 
-## Stack
-- **Next.js 16** (App Router)
-- **TypeScript**
-- **Tailwind CSS v4**
-- **Lucide React** (icons)
-- **Google Fonts** — Playfair Display + DM Sans
-
-## Sections
-1. Navbar — sticky, scroll-aware, mobile-responsive hamburger menu
-2. Hero — full-screen dark green with parallax orb, floating icons, animated stats
-3. Services — 6-card grid (HVAC, Ventilation, Solar, Battery, Smart Energy, Maintenance)
-4. About — story, values, floating stat cards
-5. Why Us — dark section with key metrics
-6. Projects — filterable gallery by category
-7. Testimonials — animated carousel
-8. Team — profile cards with specialties
-9. FAQ — animated accordion
-10. Blog — article cards with tags
-11. Contact — contact info + fully functional form
-12. Footer — links, social icons, brand
-
-## Get Started
+First, run the development server:
 
 ```bash
-npm install
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Build for Production
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-npm run build
-npm start
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Customisation
-- **Colors** — edit CSS variables in `app/globals.css`
-- **Content** — update text/data arrays in each component file
-- **Fonts** — change Google Fonts import in `app/layout.tsx`
-- **Logo** — replace the `<Leaf>` icon in `Navbar.tsx` and `Footer.tsx` with your own SVG/image
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
