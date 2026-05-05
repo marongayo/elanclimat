@@ -8,9 +8,9 @@ export default function Hero() {
       <div className="absolute inset-0 opacity-[0.04] bg-noise pointer-events-none" />
 
       {/* Amber glow orbs */}
-      <div className="absolute top-0 right-0 w-150 h-150 rounded-full pointer-events-none"
+      <div className="hidden lg:block absolute top-0 right-0 w-150 h-150 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(212,146,42,0.12) 0%, transparent 65%)" }} />
-      <div className="absolute bottom-0 left-0 w-100 h-100 rounded-full pointer-events-none"
+      <div className="hidden lg:block absolute bottom-0 left-0 w-100 h-100 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(196,173,143,0.08) 0%, transparent 65%)" }} />
 
       {/* Diagonal accent line */}
@@ -38,31 +38,32 @@ export default function Hero() {
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-4 mb-16 animate-fade-up" style={{ animationDelay: ".36s" }}>
-            <a href="#services" className="btn-primary">
+          <div className="animate-fade-up mb-16" style={{ animationDelay: ".36s", display: "flex", gap: "1rem", width: "100%", maxWidth: "540px" }}>
+            <a href="#services" className="btn-primary justify-center text-[11px] xs:text-xs sm:text-base px-2 sm:px-4" style={{ flex: "1 1 auto" }}>
               Explore Services 
             </a>
-            <a href="#contact" className="btn-outline text-stone-titanium! border-stone-titanium/30! hover:bg-stone-titanium! hover:text-stone-charcoal!">
+            <a href="#contact" className="btn-outline justify-center text-[11px] xs:text-xs sm:text-base px-2 sm:px-4 text-stone-titanium! border-stone-titanium/30! hover:bg-stone-titanium! hover:text-stone-charcoal!" style={{ flex: "1 1 auto" }}>
               Free Consultation
             </a>
           </div>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-10 animate-fade-up" style={{ animationDelay: ".48s" }}>
-            {[
-              { num: "800+", label: "Installations" },
-              { num: "98%",    label: "Client Satisfaction" },
-              { num: "5 yrs", label: "of Excellence" },
-              { num: "40%",    label: "Energy Savings" },
-            ].map(s => (
-              <div key={s.label}>
-                <div className="font-serif text-stone-amber font-bold" style={{ fontSize: "clamp(28px,3.5vw,40px)" }}>
-                  {s.num}
-                </div>
-                <div className="text-[12px] text-stone-sand-lt/55 tracking-wide mt-0.5">{s.label}</div>
+        </div>
+
+        {/* Stats */}
+        <div className="w-full animate-fade-up mt-16" style={{ animationDelay: ".48s", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.5rem", width: "100%" }}>
+          {[
+            { num: "800+", label: "Installations" },
+            { num: "98%",    label: "Client Satisfaction" },
+            { num: "5 yrs", label: "of Excellence" },
+            { num: "40%",    label: "Energy Savings" },
+          ].map((s, idx) => (
+            <div key={s.label} className="text-center" style={{ gridColumn: window?.innerWidth > 1024 && idx >= 2 ? "auto" : "auto" }}>
+              <div className="font-serif text-stone-amber font-bold" style={{ fontSize: "clamp(24px,5vw,40px)" }}>
+                {s.num}
               </div>
-            ))}
-          </div>
+              <div className="text-[12px] text-stone-sand-lt/55 tracking-wide mt-0.5">{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

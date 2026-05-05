@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Product } from '@/lib/data';
 import { ShoppingBag, Heart, Search, SlidersHorizontal, X } from 'lucide-react';
 
@@ -87,8 +88,8 @@ export default function ShopClient({ products }: { products: Product[] }) {
                     <span style={{ fontFamily: 'DM Sans', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Out of Stock</span>
                   </div>
                 )}
-                <div style={{ overflow: 'hidden', aspectRatio: '1/1', background: 'var(--off-white)' }}>
-                  <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ overflow: 'hidden', aspectRatio: '1/1', background: 'var(--off-white)', position: 'relative' }}>
+                  <Image src={p.image} alt={p.name} fill style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ padding: '20px 20px 24px' }}>
                   <div style={{ fontFamily: 'DM Sans', fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--sage-dark)', marginBottom: 6 }}>{p.category}</div>
@@ -134,7 +135,9 @@ export default function ShopClient({ products }: { products: Product[] }) {
                 <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)', fontFamily: 'DM Sans' }}>Your cart is empty.</div>
               ) : cartItems.map(item => (
                 <div key={item.id} style={{ display: 'flex', gap: 14, marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid var(--off-white)' }}>
-                  <img src={item.image} alt={item.name} style={{ width: 64, height: 64, objectFit: 'cover', flexShrink: 0 }} />
+                  <div style={{ position: 'relative', width: 64, height: 64, flexShrink: 0 }}>
+                    <Image src={item.image} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                  </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--charcoal)', marginBottom: 4 }}>{item.name}</div>
                     <div style={{ fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'var(--sage-dark)', marginBottom: 8 }}>${item.price.toLocaleString()}</div>

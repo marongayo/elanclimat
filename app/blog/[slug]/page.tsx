@@ -2,6 +2,7 @@ import { getBlogPosts, getBlogPost } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
@@ -19,7 +20,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <main style={{ paddingTop: 80, background: 'var(--warm-white)', minHeight: '100vh' }}>
         {/* Hero */}
         <div style={{ position: 'relative', height: 420, overflow: 'hidden' }}>
-          <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Image src={post.image} alt={post.title} fill style={{ objectFit: 'cover' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(30,35,32,0.3), rgba(30,35,32,0.75))' }} />
           <div style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 760, padding: '0 32px' }}>
             <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'DM Sans', fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', marginBottom: 16 }}>
@@ -57,8 +58,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
                 {related.map(p => (
                   <Link key={p.id} href={`/blog/${p.slug}`} style={{ textDecoration: 'none' }} className="blog-card">
-                    <div style={{ overflow: 'hidden', aspectRatio: '16/9', marginBottom: 16 }}>
-                      <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ overflow: 'hidden', aspectRatio: '16/9', marginBottom: 16, position: 'relative' }}>
+                      <Image src={p.image} alt={p.title} fill style={{ objectFit: 'cover' }} />
                     </div>
                     <span style={{ fontFamily: 'DM Sans', fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--sage-dark)', background: 'var(--sage-pale)', padding: '3px 10px', marginBottom: 10, display: 'inline-block' }}>{p.category}</span>
                     <h4 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.25rem', fontWeight: 600, color: 'var(--charcoal)', lineHeight: 1.3 }}>{p.title}</h4>

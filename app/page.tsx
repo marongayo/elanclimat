@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
+import Image from 'next/image';
 import { getBlogPosts } from '@/lib/data';
 import { Wind, Sun, Battery, Shield, Zap, CheckCircle, ArrowRight, Phone, Mail, MapPin, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -86,9 +87,9 @@ export default async function HomePage() {
                 <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--sage-dark)' }}>Climate · Solar · Energy</span>
               </div>
               <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(3rem, 5vw, 5.2rem)', fontWeight: 600, lineHeight: 1.05, color: 'var(--charcoal)', marginBottom: 28 }}>
-                Comfort<br /><em style={{ fontStyle: 'italic', color: 'var(--sage-dark)' }}>&amp; Energy</em><br />Redefined
+                Comfort <em style={{ fontStyle: 'italic', color: 'var(--sage-dark)' }}>&amp; Energy</em><br />Redefined
               </h1>
-              <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--text-muted)', maxWidth: 440, marginBottom: 40 }}>
+              <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--text-muted)', maxWidth: 600, marginBottom: 40 }}>
                 Premium HVAC, solar power, and battery storage — seamlessly integrated for homes and businesses that demand the best.
               </p>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
@@ -102,7 +103,7 @@ export default async function HomePage() {
             </div>
 
             {/* Visual orbit block */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div className="hidden lg:flex" style={{ justifyContent: 'center', alignItems: 'center' }}>
               <div style={{ position: 'relative', width: 380, height: 380 }}>
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 170, height: 170, borderRadius: '50%', background: 'var(--sage-pale)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, border: '1px solid rgba(143,175,159,0.4)', zIndex: 2 }}>
                   <Zap size={30} style={{ color: 'var(--sage-dark)' }} />
@@ -115,10 +116,10 @@ export default async function HomePage() {
                   { icon: <Battery size={20} />, label: 'Battery', pos: { bottom: '2%', left: '50%', transform: 'translateX(-50%)' } },
                   { icon: <Shield size={20} />, label: 'Certified', pos: { top: '50%', left: '-4%', transform: 'translateY(-50%)' } },
                 ].map((item, i) => (
-                  <div key={i} style={{
+                  <div key={i} className="hidden lg:flex" style={{
                     position: 'absolute', ...item.pos,
                     width: 72, height: 72, borderRadius: '50%', background: 'white',
-                    border: '1px solid var(--off-white)', display: 'flex', flexDirection: 'column',
+                    border: '1px solid var(--off-white)', flexDirection: 'column',
                     alignItems: 'center', justifyContent: 'center', gap: 4,
                     boxShadow: '0 4px 20px rgba(0,0,0,0.07)', zIndex: 2,
                     animation: `float ${5 + i}s ease-in-out ${i * 0.6}s infinite`,
@@ -183,8 +184,8 @@ export default async function HomePage() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
             <div style={{ position: 'relative' }}>
-              <div style={{ aspectRatio: '4/5', overflow: 'hidden' }}>
-                <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=700&q=80" alt="HVAC technician at work" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ aspectRatio: '4/5', overflow: 'hidden', position: 'relative' }}>
+                <Image src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=700&q=80" alt="HVAC technician at work" fill style={{ objectFit: 'cover' }} />
               </div>
               <div style={{ position: 'absolute', bottom: -24, right: -24, background: 'white', padding: '24px 28px', boxShadow: '0 8px 40px rgba(0,0,0,0.1)', minWidth: 180 }}>
                 <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '2.4rem', fontWeight: 600, color: 'var(--charcoal)', lineHeight: 1 }}>18</div>
@@ -274,8 +275,8 @@ export default async function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
             {posts.map(post => (
               <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: 'none', display: 'block' }} className="blog-card">
-                <div style={{ overflow: 'hidden', marginBottom: 20, aspectRatio: '16/9' }}>
-                  <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ overflow: 'hidden', marginBottom: 20, aspectRatio: '16/9', position: 'relative' }}>
+                  <Image src={post.image} alt={post.title} fill style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
                   <span style={{ fontFamily: 'DM Sans', fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--sage-dark)', background: 'var(--sage-pale)', padding: '3px 10px' }}>{post.category}</span>

@@ -2,6 +2,7 @@ import { getBlogPosts } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -35,8 +36,8 @@ export default function BlogPage() {
           {/* Featured post */}
           {featured && (
             <Link href={`/blog/${featured.slug}`} style={{ textDecoration: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, background: 'white', marginBottom: 48, overflow: 'hidden' }} className="blog-card">
-              <div style={{ overflow: 'hidden', aspectRatio: '1/1' }}>
-                <img src={featured.image} alt={featured.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ overflow: 'hidden', aspectRatio: '1/1', position: 'relative' }}>
+                <Image src={featured.image} alt={featured.title} fill style={{ objectFit: 'cover' }} />
               </div>
               <div style={{ padding: '48px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <span style={{ fontFamily: 'DM Sans', fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage-dark)', background: 'var(--sage-pale)', padding: '4px 12px', display: 'inline-block', marginBottom: 20, width: 'fit-content' }}>{featured.category}</span>
@@ -61,8 +62,8 @@ export default function BlogPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 28 }}>
             {rest.map(post => (
               <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: 'none', background: 'white', display: 'block', overflow: 'hidden' }} className="blog-card">
-                <div style={{ overflow: 'hidden', aspectRatio: '16/9' }}>
-                  <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ overflow: 'hidden', aspectRatio: '16/9', position: 'relative' }}>
+                  <Image src={post.image} alt={post.title} fill style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ padding: '28px 28px' }}>
                   <div style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'center' }}>

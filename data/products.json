@@ -79,4 +79,15 @@
     "inStock": true,
     "badge": "Popular"
   }
+  ,
+  {
+    "id": "9",
+    "name": "BatteryGuard 5kWh Storage",
+    "price": 3500,
+    "category": "Batteries",
+    "image": "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&q=80",
+    "description": "Compact lithium-ion battery, 5000 cycles, scalable up to 20kWh. Perfect for home energy storage.",
+    "inStock": true,
+    "badge": ""
+  }
 ]

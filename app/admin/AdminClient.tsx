@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { BlogPost, Product } from '@/lib/data';
 import { Plus, Trash2, Edit3, X, Save, LogIn, LayoutDashboard, FileText, Package, Eye, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -259,7 +260,7 @@ export default function AdminClient({ initialPosts, initialProducts }: { initial
                         {uploadingBlog && <span style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', color: 'var(--sage-dark)' }}>Uploading...</span>}
                       </div>
                       <input value={blogForm.image} onChange={e => setBlogForm({ ...blogForm, image: e.target.value })} style={{ ...inp, marginTop: 8 }} placeholder="Or paste image URL" />
-                      {blogForm.image && <img src={blogForm.image} alt="preview" style={{ marginTop: 10, height: 120, objectFit: 'cover', width: '100%' }} />}
+                      {blogForm.image && <div style={{ marginTop: 10, height: 120, width: '100%', position: 'relative' }}><Image src={blogForm.image} alt="preview" fill style={{ objectFit: 'cover' }} /></div>}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                       <div>
@@ -351,7 +352,7 @@ export default function AdminClient({ initialPosts, initialProducts }: { initial
                         {uploadingProduct && <span style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', color: 'var(--sage-dark)' }}>Uploading...</span>}
                       </div>
                       <input value={productForm.image} onChange={e => setProductForm({ ...productForm, image: e.target.value })} style={{ ...inp, marginTop: 8 }} placeholder="Or paste image URL" />
-                      {productForm.image && <img src={productForm.image} alt="preview" style={{ marginTop: 10, height: 100, objectFit: 'cover', width: '100%' }} />}
+                      {productForm.image && <div style={{ marginTop: 10, height: 100, width: '100%', position: 'relative' }}><Image src={productForm.image} alt="preview" fill style={{ objectFit: 'cover' }} /></div>}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                       <div>
@@ -379,7 +380,7 @@ export default function AdminClient({ initialPosts, initialProducts }: { initial
               {products.map(p => (
                 <div key={p.id} style={{ background: 'white', overflow: 'hidden' }}>
                   <div style={{ aspectRatio: '1/1', overflow: 'hidden', background: 'var(--off-white)' }}>
-                    {p.image ? <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}><Package size={32} /></div>}
+                    {p.image ? <div style={{ width: '100%', height: '100%', position: 'relative' }}><Image src={p.image} alt={p.name} fill style={{ objectFit: 'cover' }} /></div> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}><Package size={32} /></div>}
                   </div>
                   <div style={{ padding: '14px 14px' }}>
                     <div style={{ fontFamily: 'DM Sans', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage-dark)', marginBottom: 4 }}>{p.category}</div>
