@@ -220,8 +220,7 @@ export default async function HomePage() {
                 Premium HVAC, solar power, and battery storage, seamlessly
                 integrated for homes and businesses that demand the best.
               </p>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}
-              >
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 
                 
                 <Link

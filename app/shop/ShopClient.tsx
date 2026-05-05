@@ -96,7 +96,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
                   <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.1rem', fontWeight: 600, color: 'var(--charcoal)', marginBottom: 6, lineHeight: 1.25 }}>{p.name}</div>
                   <p style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: 16 }}>{p.description}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.35rem', fontWeight: 600, color: 'var(--charcoal)' }}>${p.price.toLocaleString()}</span>
+                    <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.35rem', fontWeight: 600, color: 'var(--charcoal)' }}> <span className='text-[0.8rem]'> KES </span>{p.price.toLocaleString()}</span>
                     <button
                       onClick={() => p.inStock && (cart.includes(p.id) ? removeFromCart(p.id) : addToCart(p.id))}
                       disabled={!p.inStock}
@@ -140,7 +140,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--charcoal)', marginBottom: 4 }}>{item.name}</div>
-                    <div style={{ fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'var(--sage-dark)', marginBottom: 8 }}>${item.price.toLocaleString()}</div>
+                    <div style={{ fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'var(--sage-dark)', marginBottom: 8 }}><span className='text-[0.8rem]'>KES</span> {item.price.toLocaleString()}</div>
                     <button onClick={() => removeFromCart(item.id)} style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Remove</button>
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
             <div style={{ padding: '20px 24px', borderTop: '1px solid var(--off-white)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
                 <span style={{ fontFamily: 'DM Sans', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Total (excl. tax)</span>
-                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.3rem', fontWeight: 600, color: 'var(--charcoal)' }}>${total.toLocaleString()}</span>
+                <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.3rem', fontWeight: 600, color: 'var(--charcoal)' }}>KES {total.toLocaleString()}</span>
               </div>
               <button onClick={() => alert('Checkout coming soon! Please contact us for purchase orders.')} style={{ width: '100%', padding: '14px', background: 'var(--charcoal)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans', fontSize: '0.88rem', fontWeight: 600 }}>
                 Proceed to Checkout →
