@@ -62,7 +62,8 @@ export default function Navbar() {
             <ShoppingBag size={16} />
             <span>Shop</span>
           </Link>
-          <a href="/#contact" style={{
+          
+          <Link href="/#contact" style={{
             display: 'inline-block', padding: '9px 22px',
             background: 'var(--charcoal)', color: 'white',
             fontFamily: 'DM Sans', fontSize: '0.8rem', fontWeight: 500,
@@ -73,7 +74,7 @@ export default function Navbar() {
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-dark)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'var(--charcoal)')}>
             Get a Quote
-          </a>
+          </Link>
           <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--charcoal)', display: 'none' }} className="show-mobile">
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -84,19 +85,19 @@ export default function Navbar() {
       {open && (
         <div style={{ background: 'var(--warm-white)', borderTop: '1px solid var(--off-white)', padding: '24px 32px 32px' }}>
           {NAV_LINKS.map(l => (
-            <a key={l.label} href={l.href} onClick={() => setOpen(false)}
+            <Link key={l.label} href={l.href} onClick={() => setOpen(false)}
               style={{ display: 'block', padding: '12px 0', fontFamily: 'DM Sans', fontSize: '1rem', color: 'var(--charcoal)', textDecoration: 'none', borderBottom: '1px solid var(--off-white)' }}>
               {l.label}
-            </a>
+            </Link>
           ))}
           <Link href="/shop" onClick={() => setOpen(false)}
             style={{ display: 'block', padding: '12px 0', fontFamily: 'DM Sans', fontSize: '1rem', color: 'var(--charcoal)', textDecoration: 'none', borderBottom: '1px solid var(--off-white)' }}>
             Shop
           </Link>
-          <a href="/#contact" onClick={() => setOpen(false)}
+          <Link href="/#contact" onClick={() => setOpen(false)}
             style={{ display: 'inline-block', marginTop: 20, padding: '10px 24px', background: 'var(--charcoal)', color: 'white', fontFamily: 'DM Sans', fontSize: '0.85rem', textDecoration: 'none' }}>
             Get a Quote
-          </a>
+          </Link>
         </div>
       )}
 

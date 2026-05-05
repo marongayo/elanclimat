@@ -24,11 +24,13 @@ export default function Footer() {
           <div>
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Services</h4>
             {['HVAC Installation', 'Solar Power Systems', 'Battery Storage', 'Maintenance & Repair', 'Energy Audits'].map(s => (
-              <a key={s} href="/#services" style={{ display: 'block', fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
+              
+              <Link key={s} href="/#services" style={{ display: 'block', fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
                 {s}
-              </a>
+              </Link>
+              
             ))}
           </div>
 
@@ -50,7 +52,7 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { icon: <Phone size={14} />, text: '+254 796 952 717' },
-                { icon: <Mail size={14} />, text: 'hello@elan-energie.com' },
+                { icon: <Mail size={14} />, text: 'hello@elanclimat.co.ke' },
                 { icon: <MapPin size={14} />, text: 'Ananas Business Park, Off Garrissa Road, Thika' },
               ].map(item => (
                 <div key={item.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)' }}>
