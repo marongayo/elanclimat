@@ -14,7 +14,7 @@ export default function Blog() {
 
         <div className="flex items-end justify-between flex-wrap gap-6 mb-12">
           <div>
-            <div className="section-badge mb-5">Insights & News</div>
+            <div className="section-badge mb-5">Insights &amp News</div>
             <h2 className="font-serif font-bold text-stone-charcoal leading-tight" style={{ fontSize: "clamp(30px,4vw,50px)" }}>
               From Our <em className="text-stone-amber not-italic">Blog</em>
             </h2>
