@@ -9,7 +9,7 @@ type ModalProps = {
   maxWidth?: number;
 };
 
-export default function Modal(props:ModalProps) {
+export default function Modal({... }:ModalProps) {
   if (!open) return null;
 
   return (
