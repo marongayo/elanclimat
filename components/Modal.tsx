@@ -11,7 +11,14 @@ type ModalProps = {
   maxWidth?: number;
 };
 
-export default function Modal({... }:ModalProps) {
+
+export default function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  maxWidth = 720,
+}: ModalProps)  {
   if (!open) return null;
 
   return (
