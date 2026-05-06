@@ -1,6 +1,8 @@
 "use client";
 
 import { X } from "lucide-react";
+import { ReactNode } from "react";
+
 type ModalProps = {
   open: boolean;
   onClose: () => void;
