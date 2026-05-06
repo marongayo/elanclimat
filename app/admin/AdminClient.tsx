@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { BlogPost, Product } from '@/lib/data';
 import { Plus, Trash2, Edit3, X, Save, LogIn, LayoutDashboard, FileText, Package, Eye, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Modal from '@/components/Modal';
 
 const ADMIN_PASSWORD = 'elan2024';
 
@@ -222,65 +223,54 @@ export default function AdminClient({ initialPosts, initialProducts }: { initial
 
             {/* Blog form modal */}
             {blogForm && (
-              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, overflow: 'auto', padding: '40px 20px' }}>
-                <div style={{ background: 'white', maxWidth: 720, margin: '0 auto', padding: '40px', boxShadow: '0 20px 80px rgba(0,0,0,0.2)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-                    <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.7rem', color: 'var(--charcoal)' }}>{blogForm.id ? 'Edit' : 'New'} Blog Post</h2>
-                    <button onClick={() => setBlogForm(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <Modal
+                open={!!blogForm}
+                onClose={() => setBlogForm(null)}
+                title={blogForm.id ? 'Edit Blog Post' : 'New Blog Post'}
+                maxWidth={800}
+              >
+                <div style={{ display: 'grid', gap: 18 }}>
+                  <div>
+                    <label style={label}>Title *</label>
+                    <input value={blogForm.title} onChange={e => setBlogForm({ ...blogForm, title: e.target.value })} style={inp} placeholder="How Heat Pumps Work: A Beginner's Guide" />
                   </div>
-                  <div style={{ display: 'grid', gap: 18 }}>
+                  <div>
+                    <label style={label}>Excerpt</label>
+                    <textarea value={blogForm.excerpt} onChange={e => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...inp, resize: 'vertical' }} placeholder="A brief summary of the article for preview purposes." />
+                  </div>
+                  <div>
+                    <label style={label}>Content (Markdown)</label>
+                    <textarea value={blogForm.content} onChange={e => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...inp, resize: 'vertical', fontFamily: 'DM Mono, monospace' }} placeholder="Write the full article content here using Markdown syntax." />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <div>
-                      <label style={label}>Title *</label>
-                      <input value={blogForm.title} onChange={e => setBlogForm({ ...blogForm, title: e.target.value, slug: e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') })} style={inp} placeholder="Article title" />
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                      <div>
-                        <label style={label}>Category</label>
-                        <select value={blogForm.category} onChange={e => setBlogForm({ ...blogForm, category: e.target.value })} style={inp}>
-                          <option>HVAC</option><option>Solar</option><option>Batteries</option><option>General</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label style={label}>Read Time</label>
-                        <input value={blogForm.readTime} onChange={e => setBlogForm({ ...blogForm, readTime: e.target.value })} style={inp} placeholder="5 min" />
-                      </div>
+                      <label style={label}>Category</label>
+                      <select value={blogForm.category} onChange={e => setBlogForm({ ...blogForm, category: e.target.value })} style={inp}>
+                        <option>HVAC</option><option>Solar</option><option>Batteries</option><option>Guides</option><option>News</option>
+                      </select>
                     </div>
                     <div>
-                      <label style={label}>Excerpt</label>
-                      <textarea value={blogForm.excerpt} onChange={e => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...inp, resize: 'vertical' }} placeholder="Short summary..." />
+                      <label style={label}>Author</label>
+                      <input value={blogForm.author} onChange={e => setBlogForm({ ...blogForm, author: e.target.value })} style={inp} placeholder="Élan Editorial" />
                     </div>
-                    <div>
-                      <label style={label}>Content (HTML supported)</label>
-                      <textarea value={blogForm.content} onChange={e => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...inp, resize: 'vertical', fontFamily: 'monospace', fontSize: '0.82rem' }} placeholder="<h2>Section Title</h2><p>Body text...</p>" />
+                  </div>
+                  <div>
+                    <label style={label}>Cover Image</label>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) uploadImage(f, url => setBlogForm(bf => bf ? { ...bf, image: url } : bf), setUploadingBlog); }} style={{ flex: 1 }} />
+                      {uploadingBlog && <span style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', color: 'var(--sage-dark)' }}>Uploading...</span>}
                     </div>
-                    <div>
-                      <label style={label}>Cover Image</label>
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <input type="file" accept="image/*" onChange={e => { const f = e.target.files?.[0]; if (f) uploadImage(f, url => setBlogForm(bf => bf ? { ...bf, image: url } : bf), setUploadingBlog); }} style={{ flex: 1 }} />
-                        {uploadingBlog && <span style={{ fontFamily: 'DM Sans', fontSize: '0.78rem', color: 'var(--sage-dark)' }}>Uploading...</span>}
-                      </div>
-                      <input value={blogForm.image} onChange={e => setBlogForm({ ...blogForm, image: e.target.value })} style={{ ...inp, marginTop: 8 }} placeholder="Or paste image URL" />
-                      {blogForm.image && <div style={{ marginTop: 10, height: 120, width: '100%', position: 'relative' }}><Image src={blogForm.image} alt="preview" fill style={{ objectFit: 'cover' }} /></div>}
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                      <div>
-                        <label style={label}>Author</label>
-                        <input value={blogForm.author} onChange={e => setBlogForm({ ...blogForm, author: e.target.value })} style={inp} />
-                      </div>
-                      <div>
-                        <label style={label}>Date</label>
-                        <input type="date" value={blogForm.date} onChange={e => setBlogForm({ ...blogForm, date: e.target.value })} style={inp} />
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 8 }}>
-                      <button onClick={() => setBlogForm(null)} style={{ padding: '10px 20px', background: 'none', border: '1px solid var(--off-white)', cursor: 'pointer', fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cancel</button>
-                      <button onClick={saveBlog} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: 'var(--charcoal)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans', fontSize: '0.85rem' }}>
-                        <Save size={15} /> {saving ? 'Saving...' : 'Save Post'}
-                      </button>
-                    </div>
+                    <input value={blogForm.image} onChange={e => setBlogForm({ ...blogForm, image: e.target.value })} style={{ ...inp, marginTop: 8 }} placeholder="Or paste image URL" />
+                    {blogForm.image && <div style={{ marginTop: 10, height: 120, width: '100%', position: 'relative' }}><Image src={blogForm.image} alt="preview" fill style={{ objectFit: 'cover' }} /></div>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 8 }}>
+                    <button onClick={() => setBlogForm(null)} style={{ padding: '10px 20px', background: 'none', border: '1px solid var(--off-white)', cursor: 'pointer', fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cancel</button>
+                    <button onClick={saveBlog} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: 'var(--charcoal)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'DM Sans', fontSize: '0.85rem' }}>
+                      <Save size={15} /> {saving ? 'Saving...' : 'Save Post'}
+                    </button>
                   </div>
                 </div>
-              </div>
+              </Modal>
             )}
 
             {/* Blog list */}

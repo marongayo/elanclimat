@@ -5,6 +5,7 @@ import { Product } from "@/lib/data";
 import { ShoppingBag, Heart, Search, SlidersHorizontal, X } from "lucide-react";
 import { motion } from "framer-motion";
 
+
 const CATEGORIES = ["All", "HVAC", "Solar", "Batteries"];
 
 export default function ShopClient({ products }: { products: Product[] }) {
@@ -168,7 +169,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
       </div>
 
       {/* Products grid */}
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "48px 32px" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "48px 32px", minHeight: "60vh" }}>
         <div
           style={{
             marginBottom: 20,
@@ -205,7 +206,10 @@ export default function ShopClient({ products }: { products: Product[] }) {
                 style={{
                   background: "white",
                   position: "relative",
-                  cursor: "default",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                 }}
               >
                 {p.badge && (
@@ -380,7 +384,9 @@ export default function ShopClient({ products }: { products: Product[] }) {
       </div>
 
       {/* Shop Cart Button */}
-      <motion.div
+{
+        cart.length > 0 && (
+                <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -453,6 +459,8 @@ export default function ShopClient({ products }: { products: Product[] }) {
             </button>
       </motion.div>
 
+        )
+}
       {/* Cart Drawer */}
       {cartOpen && (
         <>
