@@ -1,6 +1,16 @@
 "use client";
 
 import { X } from "lucide-react";
+import { ReactNode } from "react";
+
+type ModalProps = {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  maxWidth?: number;
+};
+
 
 export default function Modal({
   open,
@@ -8,7 +18,7 @@ export default function Modal({
   title,
   children,
   maxWidth = 720,
-}) {
+}: ModalProps)  {
   if (!open) return null;
 
   return (
