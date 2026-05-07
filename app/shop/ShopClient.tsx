@@ -274,6 +274,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
                     src={p.image}
                     alt={p.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     style={{ objectFit: "cover" }}
                   />
                 </div>
@@ -383,10 +384,10 @@ export default function ShopClient({ products }: { products: Product[] }) {
         )}
       </div>
 
-      {/* Shop Cart Button */}
-{
+      {/* Cart Button */}
+      {
         cart.length > 0 && (
-                <motion.div
+        <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -415,8 +416,6 @@ export default function ShopClient({ products }: { products: Product[] }) {
         shadow-2xl
       "
       >
-        
-            {/* Cart button */}
             <button
               onClick={() => setCartOpen(true)}
               style={{
@@ -553,6 +552,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
                         src={item.image}
                         alt={item.name}
                         fill
+                        sizes="64px"
                         style={{ objectFit: "cover" }}
                       />
                     </div>
