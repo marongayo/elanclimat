@@ -92,6 +92,7 @@ const TESTIMONIALS = [
     stars: 5,
   },
 ];
+
 export default async function HomePage() {
   const posts = getBlogPosts().slice(0, 3);
 
@@ -220,22 +221,25 @@ export default async function HomePage() {
                 Premium HVAC, solar power, and battery storage, seamlessly
                 integrated for homes and businesses that demand the best.
               </p>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                
-                
+              <div style={{ display: "flex", gap: 12, flexWrap: "nowrap" }}>
                 <Link
                   href="/#services"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
+                    justifyContent: "center",
                     gap: 8,
-                    padding: "13px 28px",
+                    padding: "13px 20px",
                     background: "var(--charcoal)",
                     color: "white",
                     fontFamily: "DM Sans",
-                    fontSize: "0.88rem",
+                    fontSize: "clamp(0.75rem, 2.5vw, 0.88rem)",
                     fontWeight: 500,
                     textDecoration: "none",
+                    flex: "1 1 0",
+                    minWidth: 0,
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Explore Services <ArrowRight size={15} />
@@ -245,14 +249,19 @@ export default async function HomePage() {
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
+                    justifyContent: "center",
                     gap: 8,
-                    padding: "13px 28px",
+                    padding: "13px 20px",
                     background: "transparent",
                     border: "1px solid var(--charcoal)",
                     color: "var(--charcoal)",
                     fontFamily: "DM Sans",
-                    fontSize: "0.88rem",
+                    fontSize: "clamp(0.75rem, 2.5vw, 0.88rem)",
                     textDecoration: "none",
+                    flex: "1 1 0",
+                    minWidth: 0,
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Free Consultation
@@ -398,6 +407,7 @@ export default async function HomePage() {
 
           {/* Stats */}
           <div
+            className="stats-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(4, 1fr)",
@@ -411,17 +421,18 @@ export default async function HomePage() {
                 key={i}
                 style={{
                   background: "var(--warm-white)",
-                  padding: "28px 24px",
+                  padding: "28px 16px",
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
                     fontFamily: "Cormorant Garamond, serif",
-                    fontSize: "2.4rem",
+                    fontSize: "clamp(1.4rem, 2.5vw, 2.4rem)",
                     fontWeight: 600,
                     color: "var(--charcoal)",
                     lineHeight: 1,
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {s.value}
@@ -429,7 +440,7 @@ export default async function HomePage() {
                 <div
                   style={{
                     fontFamily: "DM Sans",
-                    fontSize: "0.78rem",
+                    fontSize: "clamp(0.62rem, 1.2vw, 0.78rem)",
                     color: "var(--text-muted)",
                     marginTop: 6,
                   }}
@@ -1215,15 +1226,18 @@ export default async function HomePage() {
       <Footer />
 
       <style>{`
+        @media (max-width: 640px) {
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            margin-top: 40px !important;
+          }
+        }
         @media (max-width: 768px) {
           #contact > div > div[style*="grid-template-columns: 1fr 1fr"] {
             grid-template-columns: 1fr !important;
           }
           section > div > div[style*="grid-template-columns: 1fr 1fr"] {
             grid-template-columns: 1fr !important;
-          }
-          section > div > div[style*="grid-template-columns: repeat(4"] {
-            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>
