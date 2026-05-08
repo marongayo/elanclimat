@@ -67,3 +67,35 @@ export function deleteProduct(id: string): void {
   const products = getProducts().filter(p => p.id !== id);
   fs.writeFileSync(productsPath, JSON.stringify(products, null, 2));
 }
+
+export interface Message {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  service?: string;
+  message?: string;
+  date: string;
+  read: boolean;
+}
+
+const messagesPath = path.join(process.cwd(), 'data', 'messages.json');
+
+export function getMessages(): Message[] {
+  if (!fs.existsSync(messagesPath)) return [];
+  const raw = fs.readFileSync(messagesPath, 'utf-8');
+  return JSON.parse(raw);
+}
+
+export function saveMessage(msg: Message): void {
+  const messages = getMessages();
+  const idx = messages.findIndex(m => m.id === msg.id);
+  if (idx >= 0) messages[idx] = msg;
+  else messages.unshift(msg);
+  fs.writeFileSync(messagesPath, JSON.stringify(messages, null, 2));
+}
+
+export function deleteMessage(id: string): void {
+  const messages = getMessages().filter(m => m.id !== id);
+  fs.writeFileSync(messagesPath, JSON.stringify(messages, null, 2));
+}
