@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { BlogPost, Product } from "@/lib/data";
 import {
@@ -44,7 +44,7 @@ interface ProductForm {
   name: string;
   price: string;
   category: string;
-  image: string;
+  images: string[];
   description: string;
   inStock: boolean;
   badge: string;
@@ -79,7 +79,7 @@ const emptyProduct = (): ProductForm => ({
   name: "",
   price: "",
   category: "HVAC",
-  image: "",
+  images: [],
   description: "",
   inStock: true,
   badge: "",
@@ -109,8 +109,18 @@ export default function AdminClient({
   const [messages, setMessages] = useState<Message[]>([]);
   const [unread, setUnread] = useState(0);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
+  const imgUrlRef = useRef<HTMLInputElement>(null);
 
-   useEffect(() => {
+  const fetchMessages = async () => {
+    try {
+      const data = await fetch("/api/messages").then((r) => r.json());
+      setMessages(data);
+      setUnread(data.filter((m: Message) => !m.read).length);
+      setMessagesLoaded(true);
+    } catch {}
+  };
+
+  useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, 30000);
     return () => clearInterval(interval);
@@ -123,7 +133,11 @@ export default function AdminClient({
 
   const toast = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 3500); };
 
-  const uploadImage = async (file: File, setter: (url: string) => void, setUploading: (v: boolean) => void) => {
+  const uploadImage = async (
+    file: File,
+    setter: (url: string) => void,
+    setUploading: (v: boolean) => void
+  ) => {
     setUploading(true);
     const fd = new FormData();
     fd.append("file", file);
@@ -175,13 +189,6 @@ export default function AdminClient({
     await fetch("/api/products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setProducts((p) => p.filter((x) => x.id !== id));
     toast("Product deleted.");
-  };
-
-  const fetchMessages = async () => {
-    const data = await fetch("/api/messages").then((r) => r.json());
-    setMessages(data);
-    setUnread(data.filter((m: Message) => !m.read).length);
-    setMessagesLoaded(true);
   };
 
   const markRead = async (id: string) => {
@@ -237,7 +244,10 @@ export default function AdminClient({
   };
 
   const sideBtn = (t: Tab, icon: React.ReactNode, lbl: string) => (
-    <button onClick={() => navTo(t)} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 16px", background: tab === t ? "var(--sage-pale)" : "transparent", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: tab === t ? "var(--sage-dark)" : "var(--text-muted)", textAlign: "left", fontWeight: tab === t ? 500 : 400, transition: "all 0.2s" }}>
+    <button
+      onClick={() => navTo(t)}
+      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 16px", background: tab === t ? "var(--sage-pale)" : "transparent", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: tab === t ? "var(--sage-dark)" : "var(--text-muted)", textAlign: "left", fontWeight: tab === t ? 500 : 400, transition: "all 0.2s" }}
+    >
       {icon}{lbl}
     </button>
   );
@@ -276,7 +286,6 @@ export default function AdminClient({
         {sideBtn("dashboard", <LayoutDashboard size={16} />, "Dashboard")}
         {sideBtn("blog", <FileText size={16} />, "Blog Posts")}
         {sideBtn("products", <Package size={16} />, "Products")}
-        {/* Messages with unread badge */}
         <button
           onClick={() => navTo("messages")}
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "12px 16px", background: tab === "messages" ? "var(--sage-pale)" : "transparent", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: tab === "messages" ? "var(--sage-dark)" : "var(--text-muted)", textAlign: "left", fontWeight: tab === "messages" ? 500 : 400, transition: "all 0.2s" }}
@@ -392,7 +401,11 @@ export default function AdminClient({
                 { label: "In Stock", value: products.filter((p) => p.inStock).length, color: "var(--sage-dark)", icon: <Eye size={22} /> },
                 { label: "Unread Messages", value: unread, color: "#c0392b", icon: <Inbox size={22} /> },
               ].map((s, i) => (
-                <div key={i} style={{ background: "white", padding: "24px 20px", borderLeft: `3px solid ${s.color}`, cursor: s.label === "Unread Messages" ? "pointer" : "default" }} onClick={s.label === "Unread Messages" ? () => navTo("messages") : undefined}>
+                <div
+                  key={i}
+                  style={{ background: "white", padding: "24px 20px", borderLeft: `3px solid ${s.color}`, cursor: s.label === "Unread Messages" ? "pointer" : "default" }}
+                  onClick={s.label === "Unread Messages" ? () => navTo("messages") : undefined}
+                >
                   <div style={{ color: s.color, marginBottom: 12 }}>{s.icon}</div>
                   <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "2.2rem", fontWeight: 600, color: "var(--charcoal)", lineHeight: 1 }}>{s.value}</div>
                   <div style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 4 }}>{s.label}</div>
@@ -439,10 +452,22 @@ export default function AdminClient({
                   </div>
                   <div>
                     <label style={labelStyle}>Cover Image</label>
-                    <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, (url) => setBlogForm((bf) => bf ? { ...bf, image: url } : bf), setUploadingBlog); }} style={{ width: "100%", marginBottom: 8 }} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadImage(f, (url) => setBlogForm((bf) => bf ? { ...bf, image: url } : bf), setUploadingBlog);
+                      }}
+                      style={{ width: "100%", marginBottom: 8 }}
+                    />
                     {uploadingBlog && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
                     <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={inp} placeholder="Or paste image URL" />
-                    {blogForm.image && <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}><Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} /></div>}
+                    {blogForm.image && (
+                      <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}>
+                        <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} />
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
                     <button onClick={() => setBlogForm(null)} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>Cancel</button>
@@ -495,7 +520,7 @@ export default function AdminClient({
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
-                        <label style={labelStyle}>Price ($) *</label>
+                        <label style={labelStyle}>Price (KES) *</label>
                         <input type="number" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={inp} placeholder="1299" />
                       </div>
                       <div>
@@ -509,13 +534,70 @@ export default function AdminClient({
                       <label style={labelStyle}>Description</label>
                       <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} rows={3} style={{ ...inp, resize: "vertical" }} />
                     </div>
+
+                    {/* Multi-image upload */}
                     <div>
-                      <label style={labelStyle}>Product Image *</label>
-                      <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, (url) => setProductForm((pf) => pf ? { ...pf, image: url } : pf), setUploadingProduct); }} style={{ width: "100%", marginBottom: 8 }} />
+                      <label style={labelStyle}>Product Images</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          setUploadingProduct(true);
+                          const fd = new FormData();
+                          fd.append("file", f);
+                          try {
+                            const res = await fetch("/api/upload", { method: "POST", body: fd });
+                            const data = await res.json();
+                            setProductForm((pf) => pf ? { ...pf, images: [...pf.images, data.url] } : pf);
+                          } catch { toast("Upload failed"); }
+                          finally { setUploadingProduct(false); }
+                        }}
+                        style={{ width: "100%", marginBottom: 8 }}
+                      />
                       {uploadingProduct && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
-                      <input value={productForm.image} onChange={(e) => setProductForm({ ...productForm, image: e.target.value })} style={inp} placeholder="Or paste image URL" />
-                      {productForm.image && <div style={{ marginTop: 10, height: 100, width: "100%", position: "relative" }}><Image src={productForm.image} alt="preview" fill style={{ objectFit: "cover" }} /></div>}
+
+                      {/* Paste URL */}
+                      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                        <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...inp, flex: 1 }} />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const val = imgUrlRef.current?.value.trim();
+                            if (!val) return;
+                            setProductForm((pf) => pf ? { ...pf, images: [...pf.images, val] } : pf);
+                            if (imgUrlRef.current) imgUrlRef.current.value = "";
+                          }}
+                          style={{ padding: "10px 16px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", whiteSpace: "nowrap" }}
+                        >
+                          Add
+                        </button>
+                      </div>
+
+                      {/* Image previews */}
+                      {productForm.images.length > 0 && (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
+                          {productForm.images.map((url, i) => (
+                            <div key={i} style={{ position: "relative" }}>
+                              {i === 0 && (
+                                <span style={{ position: "absolute", bottom: 4, left: 4, background: "var(--charcoal)", color: "white", fontSize: "0.55rem", padding: "2px 6px", fontFamily: "DM Sans", zIndex: 1 }}>Main</span>
+                              )}
+                              <Image src={url} alt={`img-${i}`} width={90} height={90} style={{ objectFit: "cover", width: "100%", height: 90, display: "block" }} />
+                              <button
+                                type="button"
+                                onClick={() => setProductForm((pf) => pf ? { ...pf, images: pf.images.filter((_, j) => j !== i) } : pf)}
+                                style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", cursor: "pointer", color: "white", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
+                              >
+                                <X size={11} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>First image is used as the main thumbnail.</p>
                     </div>
+
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
                         <label style={labelStyle}>Badge (optional)</label>
@@ -541,17 +623,25 @@ export default function AdminClient({
               {products.map((p) => (
                 <div key={p.id} style={{ background: "white", overflow: "hidden" }}>
                   <div style={{ aspectRatio: "1/1", overflow: "hidden", background: "var(--off-white)", position: "relative" }}>
-                    {p.image
-                      ? <Image src={p.image} alt={p.name} fill style={{ objectFit: "cover" }} />
+                    {p.images?.[0]
+                      ? <Image src={p.images[0]} alt={p.name} fill style={{ objectFit: "cover" }} />
                       : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}><Package size={32} /></div>
                     }
+                    {p.images?.length > 1 && (
+                      <span style={{ position: "absolute", bottom: 6, right: 6, background: "rgba(0,0,0,0.55)", color: "white", fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, fontFamily: "DM Sans" }}>
+                        +{p.images.length - 1}
+                      </span>
+                    )}
                   </div>
                   <div style={{ padding: "12px" }}>
                     <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginBottom: 4 }}>{p.category}</div>
                     <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "0.95rem", fontWeight: 600, color: "var(--charcoal)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</div>
                     <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>${p.price.toLocaleString()}</div>
                     <div style={{ display: "flex", gap: 6 }}>
-                      <button onClick={() => setProductForm({ ...p, price: String(p.price) })} style={{ flex: 1, padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", fontFamily: "DM Sans", fontSize: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                      <button
+                        onClick={() => setProductForm({ ...p, price: String(p.price), images: p.images ?? [] })}
+                        style={{ flex: 1, padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", fontFamily: "DM Sans", fontSize: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}
+                      >
                         <Edit3 size={12} /> Edit
                       </button>
                       <button onClick={() => deleteProduct(p.id)} style={{ padding: "7px 10px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}>
@@ -585,13 +675,8 @@ export default function AdminClient({
                 {messages.map((m) => (
                   <div
                     key={m.id}
-                    style={{
-                      background: m.read ? "white" : "var(--sage-pale)",
-                      padding: "20px 24px",
-                      borderLeft: m.read ? "3px solid transparent" : "3px solid var(--sage-dark)",
-                    }}
+                    style={{ background: m.read ? "white" : "var(--sage-pale)", padding: "20px 24px", borderLeft: m.read ? "3px solid transparent" : "3px solid var(--sage-dark)" }}
                   >
-                    {/* Header row */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -607,12 +692,9 @@ export default function AdminClient({
                           <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
                             <Mail size={12} /> {m.email}
                           </span>
-                          {m.phone && (
-                            <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)" }}>{m.phone}</span>
-                          )}
+                          {m.phone && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)" }}>{m.phone}</span>}
                         </div>
                       </div>
-                      {/* Actions */}
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                         <span style={{ fontFamily: "DM Sans", fontSize: "0.72rem", color: "var(--text-muted)" }}>
                           {new Date(m.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
@@ -620,16 +702,15 @@ export default function AdminClient({
                           {new Date(m.date).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                         {!m.read && (
-                          <button onClick={() => markRead(m.id)} title="Mark as read" style={{ padding: "6px 8px", background: "var(--sage-pale)", border: "1px solid var(--sage)", cursor: "pointer", color: "var(--sage-dark)", display: "flex", alignItems: "center", gap: 4, fontFamily: "DM Sans", fontSize: "0.72rem" }}>
+                          <button onClick={() => markRead(m.id)} style={{ padding: "6px 8px", background: "var(--sage-pale)", border: "1px solid var(--sage)", cursor: "pointer", color: "var(--sage-dark)", display: "flex", alignItems: "center", gap: 4, fontFamily: "DM Sans", fontSize: "0.72rem" }}>
                             <CheckCheck size={13} /> Read
                           </button>
                         )}
-                        <button onClick={() => deleteMessage(m.id)} title="Delete" style={{ padding: "6px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}>
+                        <button onClick={() => deleteMessage(m.id)} style={{ padding: "6px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}>
                           <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
-                    {/* Message body */}
                     {m.message && (
                       <p style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.7, paddingTop: 12, borderTop: "1px solid var(--off-white)", margin: 0 }}>
                         {m.message}
