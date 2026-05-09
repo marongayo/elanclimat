@@ -1,3 +1,5 @@
+// api/messages/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getMessages, saveMessage, deleteMessage } from '@/lib/data';
 import { randomUUID } from 'crypto';

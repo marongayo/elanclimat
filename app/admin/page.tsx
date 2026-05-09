@@ -1,3 +1,5 @@
+// admin/page.tsx
+
 import AdminClient from './AdminClient';
 import { getBlogPosts, getProducts } from '@/lib/data';
 

@@ -1,3 +1,5 @@
+// api/blog/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getBlogPosts, saveBlogPost, deleteBlogPost } from '@/lib/data';
 import { randomUUID } from 'crypto';

@@ -1,3 +1,5 @@
+// blog/[slug]/page.tsx
+
 import { getBlogPosts, getBlogPost } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';

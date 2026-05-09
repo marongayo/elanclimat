@@ -1,3 +1,5 @@
+// admin/AdminClient.tsx
+
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";

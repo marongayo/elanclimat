@@ -1,3 +1,5 @@
+// api/products/[id]/route.ts
+
 import { NextResponse, type NextRequest } from "next/server";
 import { remove } from "@/app/lib/products-store";
 

@@ -1,3 +1,5 @@
+// blog/page.tsx
+
 import { getBlogPosts } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';

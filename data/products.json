@@ -1,15 +1,5 @@
 [
   {
-    "id": "1778186434170",
-    "name": "this",
-    "price": 5665,
-    "category": "Batteries",
-    "image": "/uploads/1778186420298-a2rn1ll3nvw.jpg",
-    "description": "this and that",
-    "inStock": true,
-    "badge": "New"
-  },
-  {
     "id": "1",
     "name": "EcoBreeze 3.5kW Heat Pump",
     "price": 2899,
