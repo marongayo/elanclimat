@@ -19,7 +19,8 @@ export interface Product {
   name: string;
   price: number;
   category: string;
-  image: string;
+  image?: string;      // legacy — kept for backwards compat
+  images: string[];    // primary: first entry is the thumbnail
   description: string;
   inStock: boolean;
   badge: string;
@@ -39,7 +40,12 @@ export function getBlogPost(slug: string): BlogPost | undefined {
 
 export function getProducts(): Product[] {
   const raw = fs.readFileSync(productsPath, 'utf-8');
-  return JSON.parse(raw);
+  const products: Product[] = JSON.parse(raw);
+  // Normalise legacy records that only have `image` (singular)
+  return products.map(p => ({
+    ...p,
+    images: p.images?.length ? p.images : p.image ? [p.image] : [],
+  }));
 }
 
 export function saveBlogPost(post: BlogPost): void {
