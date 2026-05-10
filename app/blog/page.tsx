@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
-
+// import { getBlogPosts } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 
 export default async function BlogPage() {
