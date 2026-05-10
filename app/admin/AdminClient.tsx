@@ -17,6 +17,7 @@ import {
   Inbox,
   Mail,
   CheckCheck,
+  Archive,
 } from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
@@ -287,6 +288,7 @@ export default function AdminClient({
   initialPosts: BlogPost[];
   initialProducts: Product[];
 }) {
+  const [toastVisible, setToastVisible] = useState(false);
   const [authed, setAuthed] = useState(true);
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState("");
@@ -305,6 +307,10 @@ export default function AdminClient({
   const [messages, setMessages] = useState<Message[]>([]);
   const [unread, setUnread] = useState(0);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
+  const [archivedMessages, setArchivedMessages] = useState<Message[]>([]);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveLoaded, setArchiveLoaded] = useState(false);
+  const [loadingArchive, setLoadingArchive] = useState(false);
   const imgUrlRef = useRef<HTMLInputElement>(null);
 
   const fetchMessages = async () => {
@@ -347,9 +353,12 @@ export default function AdminClient({
 
   const toast = (m: string) => {
     setMsg(m);
-    setTimeout(() => setMsg(""), 3500);
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+      setTimeout(() => setMsg(""), 400); // clear text after exit animation
+    }, 3100);
   };
-
   const uploadImage = async (
     file: File,
     setter: (url: string) => void,
@@ -407,7 +416,6 @@ export default function AdminClient({
     toast("Post deleted.");
   };
 
-  // ── Product validation ──────────────────────────────────────────────────────
   const validateProduct = (pf: ProductForm): ProductErrors => {
     const errs: ProductErrors = {};
     if (!pf.name.trim()) errs.name = "Product name is required.";
@@ -417,7 +425,6 @@ export default function AdminClient({
     if (!pf.description.trim()) errs.description = "Description is required.";
     if (pf.images.length < 2)
       errs.images = `At least 2 images are required. You have ${pf.images.length}.`;
-    // badge removed — optional
     return errs;
   };
 
@@ -426,7 +433,6 @@ export default function AdminClient({
     const errs = validateProduct(productForm);
     if (Object.keys(errs).length > 0) {
       setProductErrors(errs);
-      // Scroll to first error
       setTimeout(() => {
         document
           .querySelector("[data-product-error]")
@@ -490,13 +496,30 @@ export default function AdminClient({
     toast("Message deleted.");
   };
 
+  const toggleArchive = async () => {
+    const opening = !archiveOpen;
+    setArchiveOpen(opening);
+    if (opening && !archiveLoaded) {
+      setLoadingArchive(true);
+      try {
+        const res = await fetch("/api/messages?archived=true");
+        const data = await res.json();
+        setArchivedMessages(Array.isArray(data) ? data : []);
+        setArchiveLoaded(true);
+      } catch (err) {
+        console.error("Failed to load archived messages:", err);
+      } finally {
+        setLoadingArchive(false);
+      }
+    }
+  };
+
   const navTo = (t: Tab) => {
     setTab(t);
     setSidebarOpen(false);
     if (t === "messages" && !messagesLoaded) fetchMessages();
   };
 
-  // Clear a single field error when the user edits it
   const clearError = (field: keyof ProductErrors) => {
     if (productErrors[field])
       setProductErrors((e) => ({ ...e, [field]: undefined }));
@@ -632,6 +655,7 @@ export default function AdminClient({
           from { opacity: 0; transform: scale(0.9); }
           to { opacity: 1; transform: scale(1); }
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .sd-pill {
           display: flex; align-items: center; justify-content: center;
           background: var(--charcoal); border-radius: 9999px;
@@ -650,7 +674,6 @@ export default function AdminClient({
         .sd-close { background: none; border: none; border-left: 1px solid rgba(255,255,255,0.2); cursor: pointer; color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; padding: 0 16px 0 12px; height: 100%; flex-shrink: 0; border-radius: 0 9999px 9999px 0; transition: color 0.15s ease; animation: fadeIn 0.15s ease both; }
         .sd-close:hover { color: white; }
       `}</style>
-
       {/* Desktop sidebar */}
       <aside
         className="admin-sidebar-desktop"
@@ -667,7 +690,6 @@ export default function AdminClient({
       >
         <SidebarContent tab={tab} unread={unread} navTo={navTo} />
       </aside>
-
       {/* Mobile top bar */}
       <div
         className="admin-topbar"
@@ -742,7 +764,6 @@ export default function AdminClient({
           </button>
         </div>
       </div>
-
       {/* Mobile drawer */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -800,7 +821,6 @@ export default function AdminClient({
           </>
         )}
       </AnimatePresence>
-
       {/* Main */}
       <main
         className="admin-main"
@@ -811,28 +831,6 @@ export default function AdminClient({
           minHeight: "100vh",
         }}
       >
-        {msg && (
-          <div
-            style={{
-              position: "fixed",
-              top: 20,
-              right: 20,
-              left: 20,
-              background: "var(--sage)",
-              color: "var(--charcoal)",
-              padding: "12px 20px",
-              fontFamily: "DM Sans",
-              fontSize: "0.85rem",
-              fontWeight: 500,
-              zIndex: 999,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              textAlign: "center",
-            }}
-          >
-            ✓ {msg}
-          </div>
-        )}
-
         {/* DASHBOARD */}
         {tab === "dashboard" && (
           <div>
@@ -1323,7 +1321,6 @@ export default function AdminClient({
                     </button>
                   </div>
 
-                  {/* Summary error banner */}
                   {Object.keys(productErrors).length > 0 && (
                     <div
                       data-product-error
@@ -1364,7 +1361,6 @@ export default function AdminClient({
                   )}
 
                   <div style={{ display: "grid", gap: 18 }}>
-                    {/* Name */}
                     <div>
                       <label style={LABEL_STYLE}>Product Name *</label>
                       <input
@@ -1386,7 +1382,6 @@ export default function AdminClient({
                       )}
                     </div>
 
-                    {/* Price + Category */}
                     <div
                       style={{
                         display: "grid",
@@ -1448,7 +1443,6 @@ export default function AdminClient({
                       </div>
                     </div>
 
-                    {/* Description */}
                     <div>
                       <label style={LABEL_STYLE}>Description *</label>
                       <textarea
@@ -1476,7 +1470,6 @@ export default function AdminClient({
                       )}
                     </div>
 
-                    {/* Images */}
                     <div>
                       <label style={LABEL_STYLE}>
                         Product Images *{" "}
@@ -1492,8 +1485,6 @@ export default function AdminClient({
                           ({productForm.images.length}/2 minimum)
                         </span>
                       </label>
-
-                      {/* Progress indicator */}
                       <div
                         style={{ display: "flex", gap: 6, marginBottom: 12 }}
                       >
@@ -1525,7 +1516,6 @@ export default function AdminClient({
                           }}
                         />
                       </div>
-
                       <input
                         type="file"
                         accept="image/*"
@@ -1557,7 +1547,6 @@ export default function AdminClient({
                             toast("Upload failed. Please try again.");
                           } finally {
                             setUploadingProduct(false);
-                            // Reset input so same file can be re-selected
                             e.target.value = "";
                           }
                         }}
@@ -1593,8 +1582,6 @@ export default function AdminClient({
                           </span>
                         </div>
                       )}
-
-                      {/* URL paste */}
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                         <input
                           ref={imgUrlRef}
@@ -1632,14 +1619,11 @@ export default function AdminClient({
                           Add
                         </button>
                       </div>
-
                       {productErrors.images && (
                         <span style={{ ...ERROR_TEXT, marginTop: 8 }}>
                           {productErrors.images}
                         </span>
                       )}
-
-                      {/* Image grid */}
                       {productForm.images.length > 0 && (
                         <div
                           style={{
@@ -1730,7 +1714,6 @@ export default function AdminClient({
                       </p>
                     </div>
 
-                    {/* Badge + In Stock */}
                     <div
                       style={{
                         display: "grid",
@@ -1766,7 +1749,7 @@ export default function AdminClient({
                           display: "flex",
                           alignItems: "center",
                           gap: 10,
-                          paddingTop: productErrors.badge ? 0 : 24,
+                          paddingTop: 24,
                         }}
                       >
                         <input
@@ -2023,7 +2006,7 @@ export default function AdminClient({
                   marginTop: 4,
                 }}
               >
-                {messages.length} total · {unread} unread
+                {messages.length} active · {unread} unread
               </p>
             </div>
 
@@ -2239,82 +2222,490 @@ export default function AdminClient({
                 ))}
               </div>
             )}
+
+            {/* Archive */}
+            <div style={{ marginTop: 40 }}>
+              <button
+                onClick={toggleArchive}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "DM Sans",
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--text-muted)",
+                  marginBottom: 12,
+                  padding: 0,
+                }}
+              >
+                <Archive size={14} />
+                Archive
+                {archiveLoaded && archivedMessages.length > 0 && (
+                  <span
+                    style={{
+                      background: "var(--off-white)",
+                      color: "var(--text-muted)",
+                      fontSize: "0.65rem",
+                      fontWeight: 600,
+                      padding: "2px 7px",
+                      borderRadius: 9999,
+                    }}
+                  >
+                    {archivedMessages.length}
+                  </span>
+                )}
+                <span style={{ fontSize: "0.6rem" }}>
+                  {archiveOpen ? "▲" : "▼"}
+                </span>
+              </button>
+
+              {archiveOpen &&
+                (loadingArchive ? (
+                  <div
+                    style={{
+                      background: "white",
+                      padding: "32px",
+                      textAlign: "center",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    Loading...
+                  </div>
+                ) : archivedMessages.length === 0 ? (
+                  <div
+                    style={{
+                      background: "white",
+                      padding: "32px",
+                      textAlign: "center",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    No archived messages.
+                  </div>
+                ) : (
+                  <div
+                    style={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  >
+                    {archivedMessages.map((m) => (
+                      <div
+                        key={m.id}
+                        style={{
+                          background: "white",
+                          padding: "20px 24px",
+                          borderLeft: "3px solid var(--off-white)",
+                          opacity: 0.75,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            flexWrap: "wrap",
+                            gap: 10,
+                            marginBottom: 10,
+                          }}
+                        >
+                          <div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "DM Sans",
+                                  fontSize: "0.92rem",
+                                  fontWeight: 600,
+                                  color: "var(--charcoal)",
+                                }}
+                              >
+                                {m.name}
+                              </span>
+                              {m.service && (
+                                <span
+                                  style={{
+                                    background: "var(--sage)",
+                                    color: "var(--charcoal)",
+                                    fontSize: "0.68rem",
+                                    padding: "2px 10px",
+                                    borderRadius: 9999,
+                                    fontFamily: "DM Sans",
+                                  }}
+                                >
+                                  {m.service}
+                                </span>
+                              )}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: 16,
+                                marginTop: 5,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "DM Sans",
+                                  fontSize: "0.78rem",
+                                  color: "var(--text-muted)",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <Mail size={12} /> {m.email}
+                              </span>
+                              {m.phone && (
+                                <span
+                                  style={{
+                                    fontFamily: "DM Sans",
+                                    fontSize: "0.78rem",
+                                    color: "var(--text-muted)",
+                                  }}
+                                >
+                                  {m.phone}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              flexShrink: 0,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: "DM Sans",
+                                fontSize: "0.72rem",
+                                color: "var(--text-muted)",
+                              }}
+                            >
+                              {new Date(m.date).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                              {" · "}
+                              {new Date(m.date).toLocaleTimeString("en-GB", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            <button
+                              onClick={async () => {
+                                if (!confirm("Delete this message?")) return;
+                                await fetch("/api/messages", {
+                                  method: "DELETE",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ id: m.id }),
+                                });
+                                setArchivedMessages((prev) =>
+                                  prev.filter((a) => a.id !== m.id),
+                                );
+                                toast("Message deleted.");
+                              }}
+                              style={{
+                                padding: "6px",
+                                background: "#fef2f2",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "#c0392b",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        {m.message && (
+                          <p
+                            style={{
+                              fontFamily: "DM Sans",
+                              fontSize: "0.85rem",
+                              color: "var(--text-muted)",
+                              lineHeight: 1.7,
+                              paddingTop: 12,
+                              borderTop: "1px solid var(--off-white)",
+                              margin: 0,
+                            }}
+                          >
+                            {m.message}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </main>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
-
-      {/* FAB Speed Dial */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed bottom-6 right-6 z-50"
-      >
+      <>
+        {/* Unified FAB / Toast / Speed Dial */}
         <div
-          className={`sd-pill ${open ? "expanded" : "closed"}`}
-          onClick={!open ? () => setOpen(true) : undefined}
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 999,
+          }}
         >
-          {!open ? (
-            <span className="sd-toggle-icon">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </span>
-          ) : (
-            <>
-              <button
-                className="sd-action"
-                onClick={() => {
-                  setTab("blog");
-                  setBlogForm(emptyBlog());
-                  setOpen(false);
-                }}
-              >
-                New Blog
-              </button>
-              <div className="sd-divider" />
-              <button
-                className="sd-action"
-                onClick={() => {
-                  setTab("products");
-                  setProductForm(emptyProduct());
-                  setProductErrors({});
-                  setOpen(false);
-                }}
-              >
-                New Product
-              </button>
-              <button className="sd-close" onClick={() => setOpen(false)}>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
+          <motion.div
+            animate={{
+              width: open ? "auto" : msg ? "auto" : 52,
+            }}
+            transition={{
+              type: "spring",
+              damping: 25,
+              stiffness: 300,
+            }}
+            className={`sd-pill ${open ? "expanded" : ""}`}
+            style={{
+              height: 52,
+              borderRadius: 9999,
+              background: msg && !open ? "var(--sage)" : "var(--charcoal)",
+              display: "flex",
+              alignItems: "center",
+              overflow: "hidden",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
+            }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {/* STATE 1: CLOSED FAB */}
+              {!open && !msg && (
+                <motion.button
+                  key="fab"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
+                  transition={{
+                    duration: 0.18,
+                  }}
+                  onClick={() => setOpen(true)}
+                  style={{
+                    width: 52,
+                    minWidth: 52,
+                    height: 52,
+                    border: "none",
+                    background: "transparent",
+                    color: "white",
+                    cursor: "pointer",
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
+                    padding: 0,
+                  }}
                 >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </>
-          )}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </motion.button>
+              )}
+
+              {/* STATE 2: TOAST */}
+              {!open && msg && (
+                <motion.button
+                  key="toast"
+                  initial={{
+                    width: 52,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    width: "auto",
+                    opacity: 1,
+                  }}
+                  exit={{
+                    width: 52,
+                    opacity: 0,
+                  }}
+                  transition={{
+                    type: "spring",
+                    damping: 25,
+                    stiffness: 300,
+                  }}
+                  onClick={() => setOpen(true)}
+                  style={{
+                    height: 52,
+                    border: "none",
+                    background: "transparent",
+                    padding: "0 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    cursor: "pointer",
+                    color: "var(--charcoal)",
+                    fontFamily: "DM Sans",
+                    fontWeight: 500,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <motion.span
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.05 }}
+                  >
+                    ✓
+                  </motion.span>
+
+                  <motion.span
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.08 }}
+                  >
+                    {msg}
+                  </motion.span>
+                </motion.button>
+              )}
+
+              {/* STATE 3: EXPANDED MENU */}
+              {open && (
+                <motion.div
+                  key="menu"
+                  initial={{
+                    width: 52,
+                    opacity: 0,
+                  }}
+                  animate={{
+                    width: "auto",
+                    opacity: 1,
+                  }}
+                  exit={{
+                    width: 52,
+                    opacity: 0,
+                  }}
+                  transition={{
+                    type: "spring",
+                    damping: 25,
+                    stiffness: 300,
+                  }}
+                  style={{
+                    height: 52,
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "0 8px 0 20px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <button
+                    className="sd-action"
+                    onClick={() => {
+                      setTab("blog");
+                      setBlogForm(emptyBlog());
+                      setOpen(false);
+                    }}
+                    style={{
+                      height: 36,
+                      border: "none",
+                      background: "transparent",
+                      color: "white",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontWeight: 500,
+                      padding: "0 8px",
+                    }}
+                  >
+                    New Blog
+                  </button>
+
+                  <div
+                    style={{
+                      margin: "0 12px",
+                      height: 20,
+                      width: 1,
+                      background: "rgba(255,255,255,0.18)",
+                      flexShrink: 0,
+                    }}
+                  />
+
+                  <button
+                    className="sd-action"
+                    onClick={() => {
+                      setTab("products");
+                      setProductForm(emptyProduct());
+                      setProductErrors({});
+                      setOpen(false);
+                    }}
+                    style={{
+                      height: 36,
+                      border: "none",
+                      background: "transparent",
+                      color: "white",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontWeight: 500,
+                      padding: "0 8px",
+                    }}
+                  >
+                    New Product
+                  </button>
+
+                  <button
+                    className="sd-close"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      width: 36,
+                      minWidth: 36,
+                      height: 36,
+                      marginLeft: 10,
+                      borderRadius: "50%",
+                      display: "grid",
+                      placeItems: "center",
+                      background: "rgba(255,255,255,0.1)",
+                      border: "none",
+                      color: "white",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
-      </motion.div>
+      </>
     </div>
   );
 }

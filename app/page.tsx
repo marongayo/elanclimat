@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import Image from "next/image";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getBlogPosts } from "@/lib/db";
 import {
   Wind,
@@ -101,7 +101,6 @@ export default async function HomePage() {
 
   return (
     <>
-      
       <Navbar />
 
       {/* ── HERO ── */}
@@ -497,7 +496,11 @@ export default async function HomePage() {
                 lineHeight: 1.15,
               }}
             >
-              Integrated climate &amp; energy services
+              Integrated climate{" "}
+              <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
+                &amp; energy{" "}
+              </em>
+              services
             </h2>
           </div>
           <div
