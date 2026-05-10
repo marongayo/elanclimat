@@ -1,6 +1,6 @@
 // blog/page.tsx
 
-import { getBlogPosts } from '@/lib/data';
+import { getBlogPosts } from '@/lib/db';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
@@ -9,8 +9,8 @@ import { ArrowRight, Calendar, Clock } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default function BlogPage() {
-  const posts = getBlogPosts();
+export default async function BlogPage() {
+  const posts = await getBlogPosts();
   const featured = posts[0];
   const rest = posts.slice(1);
 
