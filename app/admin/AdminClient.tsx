@@ -85,6 +85,94 @@ const emptyProduct = (): ProductForm => ({
   badge: "",
 });
 
+const INPUT_STYLE: React.CSSProperties = {
+  width: "100%",
+  padding: "10px 12px",
+  border: "1px solid var(--off-white)",
+  fontFamily: "DM Sans",
+  fontSize: "0.88rem",
+  color: "var(--charcoal)",
+  outline: "none",
+  background: "white",
+  boxSizing: "border-box",
+};
+
+const LABEL_STYLE: React.CSSProperties = {
+  display: "block",
+  fontFamily: "DM Sans",
+  fontSize: "0.7rem",
+  fontWeight: 500,
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: "var(--text-muted)",
+  marginBottom: 6,
+};
+
+const SidebarButton = ({ 
+  active, 
+  onClick, 
+  icon, 
+  label, 
+  unreadCount 
+}: { 
+  active: boolean; 
+  onClick: () => void; 
+  icon: React.ReactNode; 
+  label: string; 
+  unreadCount?: number;
+}) => (
+  <button
+    onClick={onClick}
+    style={{ 
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "space-between", 
+      width: "100%", 
+      padding: "12px 16px", 
+      background: active ? "var(--sage-pale)" : "transparent", 
+      border: "none", 
+      cursor: "pointer", 
+      fontFamily: "DM Sans", 
+      fontSize: "0.85rem", 
+      color: active ? "var(--sage-dark)" : "var(--text-muted)", 
+      textAlign: "left", 
+      fontWeight: active ? 500 : 400, 
+      transition: "all 0.2s" 
+    }}
+  >
+    <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {icon} {label}
+    </span>
+    {unreadCount !== undefined && unreadCount > 0 && (
+      <span style={{ background: "#c0392b", color: "white", fontSize: "0.65rem", fontWeight: 600, padding: "2px 7px", borderRadius: 9999, minWidth: 20, textAlign: "center" }}>
+        {unreadCount}
+      </span>
+    )}
+  </button>
+);
+
+const SidebarContent = ({ tab, unread, navTo }: { tab: Tab; unread: number; navTo: (t: Tab) => void }) => {
+  return (
+    <>
+      <div style={{ padding: "24px 16px", borderBottom: "1px solid var(--off-white)" }}>
+        <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem", fontWeight: 600, color: "var(--charcoal)" }}>Élan Admin</div>
+        <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginTop: 2 }}>Content Manager</div>
+      </div>
+      <nav style={{ padding: "16px 8px", flex: 1 }}>
+        <SidebarButton active={tab === "dashboard"} onClick={() => navTo("dashboard")} icon={<LayoutDashboard size={16} />} label="Dashboard" />
+        <SidebarButton active={tab === "blog"} onClick={() => navTo("blog")} icon={<FileText size={16} />} label="Blog Posts" />
+        <SidebarButton active={tab === "products"} onClick={() => navTo("products")} icon={<Package size={16} />} label="Products" />
+        <SidebarButton active={tab === "messages"} onClick={() => navTo("messages")} icon={<Inbox size={16} />} label="Messages" unreadCount={unread} />
+      </nav>
+      <div style={{ padding: "16px", borderTop: "1px solid var(--off-white)" }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", textDecoration: "none" }}>
+          <ArrowLeft size={14} /> View Site
+        </Link>
+      </div>
+    </>
+  );
+};
+
 export default function AdminClient({
   initialPosts,
   initialProducts,
@@ -234,43 +322,11 @@ useEffect(() => {
     toast("Message deleted.");
   };
 
-  const inp: React.CSSProperties = {
-    width: "100%",
-    padding: "10px 12px",
-    border: "1px solid var(--off-white)",
-    fontFamily: "DM Sans",
-    fontSize: "0.88rem",
-    color: "var(--charcoal)",
-    outline: "none",
-    background: "white",
-    boxSizing: "border-box",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    display: "block",
-    fontFamily: "DM Sans",
-    fontSize: "0.7rem",
-    fontWeight: 500,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: "var(--text-muted)",
-    marginBottom: 6,
-  };
-
   const navTo = (t: Tab) => {
     setTab(t);
     setSidebarOpen(false);
     if (t === "messages" && !messagesLoaded) fetchMessages();
   };
-
-  const sideBtn = (t: Tab, icon: React.ReactNode, lbl: string) => (
-    <button
-      onClick={() => navTo(t)}
-      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 16px", background: tab === t ? "var(--sage-pale)" : "transparent", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: tab === t ? "var(--sage-dark)" : "var(--text-muted)", textAlign: "left", fontWeight: tab === t ? 500 : 400, transition: "all 0.2s" }}
-    >
-      {icon}{lbl}
-    </button>
-  );
 
   if (!authed) {
     return (
@@ -281,8 +337,8 @@ useEffect(() => {
             <div style={{ fontFamily: "DM Sans", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4, letterSpacing: "0.1em", textTransform: "uppercase" }}>Secure Access</div>
           </div>
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Password</label>
-            <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} onKeyDown={(e) => e.key === "Enter" && login()} placeholder="Enter admin password" style={inp} />
+            <label style={LABEL_STYLE}>Password</label>
+            <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} onKeyDown={(e) => e.key === "Enter" && login()} placeholder="Enter admin password" style={INPUT_STYLE} />
           </div>
           {pwError && <p style={{ fontFamily: "DM Sans", fontSize: "0.8rem", color: "#c0392b", marginBottom: 12 }}>{pwError}</p>}
           <button onClick={login} style={{ width: "100%", padding: "12px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.88rem", fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
@@ -295,38 +351,6 @@ useEffect(() => {
       </div>
     );
   }
-
-  const SidebarContent = () => (
-    <>
-      <div style={{ padding: "24px 16px", borderBottom: "1px solid var(--off-white)" }}>
-        <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem", fontWeight: 600, color: "var(--charcoal)" }}>Élan Admin</div>
-        <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginTop: 2 }}>Content Manager</div>
-      </div>
-      <nav style={{ padding: "16px 8px", flex: 1 }}>
-        {sideBtn("dashboard", <LayoutDashboard size={16} />, "Dashboard")}
-        {sideBtn("blog", <FileText size={16} />, "Blog Posts")}
-        {sideBtn("products", <Package size={16} />, "Products")}
-        <button
-          onClick={() => navTo("messages")}
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "12px 16px", background: tab === "messages" ? "var(--sage-pale)" : "transparent", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: tab === "messages" ? "var(--sage-dark)" : "var(--text-muted)", textAlign: "left", fontWeight: tab === "messages" ? 500 : 400, transition: "all 0.2s" }}
-        >
-          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Inbox size={16} /> Messages
-          </span>
-          {unread > 0 && (
-            <span style={{ background: "#c0392b", color: "white", fontSize: "0.65rem", fontWeight: 600, padding: "2px 7px", borderRadius: 9999, minWidth: 20, textAlign: "center" }}>
-              {unread}
-            </span>
-          )}
-        </button>
-      </nav>
-      <div style={{ padding: "16px", borderTop: "1px solid var(--off-white)" }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", textDecoration: "none" }}>
-          <ArrowLeft size={14} /> View Site
-        </Link>
-      </div>
-    </>
-  );
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--warm-white)" }}>
@@ -366,7 +390,7 @@ useEffect(() => {
 
       {/* Desktop sidebar */}
       <aside className="admin-sidebar-desktop" style={{ width: 220, background: "white", borderRight: "1px solid var(--off-white)", flexDirection: "column", position: "fixed", top: 0, bottom: 0, zIndex: 50 }}>
-        <SidebarContent />
+        <SidebarContent tab={tab} unread={unread} navTo={navTo} />
       </aside>
 
       {/* Mobile top bar */}
@@ -394,7 +418,7 @@ useEffect(() => {
               <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px 12px 0" }}>
                 <button onClick={() => setSidebarOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}><X size={20} /></button>
               </div>
-              <SidebarContent />
+              <SidebarContent tab={tab} unread={unread} navTo={navTo} />
             </motion.aside>
           </>
         )}
@@ -447,33 +471,33 @@ useEffect(() => {
               <Modal open={!!blogForm} onClose={() => setBlogForm(null)} title={blogForm.id ? "Edit Blog Post" : "New Blog Post"} maxWidth={800}>
                 <div style={{ display: "grid", gap: 18 }}>
                   <div>
-                    <label style={labelStyle}>Title *</label>
-                    <input value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} style={inp} placeholder="How Heat Pumps Work" />
+                    <label style={LABEL_STYLE}>Title *</label>
+                    <input value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} style={INPUT_STYLE} placeholder="How Heat Pumps Work" />
                   </div>
                   <div>
-                    <label style={labelStyle}>Excerpt</label>
-                    <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...inp, resize: "vertical" }} placeholder="A brief summary..." />
+                    <label style={LABEL_STYLE}>Excerpt</label>
+                    <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...INPUT_STYLE, resize: "vertical" }} placeholder="A brief summary..." />
                   </div>
                   <div>
-  <label style={labelStyle}>Content (HTML)</label>
+  <label style={LABEL_STYLE}>Content (HTML)</label>
   <textarea
     value={blogForm.content}
     onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
     rows={8}
-    style={{ ...inp, resize: "vertical", fontFamily: "DM Mono, monospace" }}
+    style={{ ...INPUT_STYLE, resize: "vertical", fontFamily: "DM Mono, monospace" }}
     placeholder="<h2>Section Title</h2><p>Your content here...</p>"
   />
 </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16 }}>
                     <div>
-                      <label style={labelStyle}>Category</label>
-                      <select value={blogForm.category} onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })} style={inp}>
+                      <label style={LABEL_STYLE}>Category</label>
+                      <select value={blogForm.category} onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })} style={INPUT_STYLE}>
                         <option>HVAC</option><option>Solar</option><option>Batteries</option><option>Guides</option><option>News</option>
                       </select>
                     </div>
                     <div>
-                      <label style={labelStyle}>Author</label>
-                      <input value={blogForm.author} onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })} style={inp} placeholder="Élan Editorial" />
+                      <label style={LABEL_STYLE}>Author</label>
+                      <input value={blogForm.author} onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })} style={INPUT_STYLE} placeholder="Élan Editorial" />
                     </div>
                   </div>
                   <div>
@@ -488,7 +512,7 @@ useEffect(() => {
                       style={{ width: "100%", marginBottom: 8 }}
                     />
                     {uploadingBlog && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
-                    <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={inp} placeholder="Or paste image URL" />
+                    <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={INPUT_STYLE} placeholder="Or paste image URL" />
                     {blogForm.image && (
                       <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}>
                         <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} />
@@ -541,24 +565,24 @@ useEffect(() => {
                   </div>
                   <div style={{ display: "grid", gap: 18 }}>
                     <div>
-                      <label style={labelStyle}>Product Name *</label>
-                      <input value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} style={inp} placeholder="EcoBreeze 3.5kW Heat Pump" />
+                      <label style={LABEL_STYLE}>Product Name *</label>
+                      <input value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} style={INPUT_STYLE} placeholder="EcoBreeze 3.5kW Heat Pump" />
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
-                        <label style={labelStyle}>Price (KES) *</label>
-                        <input type="number" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={inp} placeholder="1299" />
+                        <label style={LABEL_STYLE}>Price (KES) *</label>
+                        <input type="number" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={INPUT_STYLE} placeholder="1299" />
                       </div>
                       <div>
-                        <label style={labelStyle}>Category</label>
-                        <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={inp}>
+                        <label style={LABEL_STYLE}>Category</label>
+                        <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={INPUT_STYLE}>
                           <option>HVAC</option><option>Solar</option><option>Batteries</option>
                         </select>
                       </div>
                     </div>
                     <div>
-                      <label style={labelStyle}>Description</label>
-                      <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} rows={3} style={{ ...inp, resize: "vertical" }} />
+                      <label style={LABEL_STYLE}>Description</label>
+                      <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} rows={3} style={{ ...INPUT_STYLE, resize: "vertical" }} />
                     </div>
 
                     {/* Multi-image upload */}
@@ -585,7 +609,7 @@ useEffect(() => {
                       {uploadingProduct && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
 
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                        <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...inp, flex: 1 }} />
+                        <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...INPUT_STYLE, flex: 1 }} />
                         <button
                           type="button"
                           onClick={() => {
@@ -624,8 +648,8 @@ useEffect(() => {
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
-                        <label style={labelStyle}>Badge (optional)</label>
-                        <input value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} style={inp} placeholder="New, Best Seller..." />
+                        <label style={LABEL_STYLE}>Badge (optional)</label>
+                        <input value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} style={INPUT_STYLE} placeholder="New, Best Seller..." />
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 24 }}>
                         <input type="checkbox" id="inStock" checked={productForm.inStock} onChange={(e) => setProductForm({ ...productForm, inStock: e.target.checked })} />
