@@ -1,3 +1,5 @@
+// lib/db.ts
+
 import { connectDB } from "./mongodb";
 import { BlogPostModel } from "./models/BlogPost";
 import { ProductModel } from "./models/Product";

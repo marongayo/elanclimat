@@ -50,6 +50,15 @@ interface ProductForm {
   badge: string;
 }
 
+interface ProductErrors {
+  name?: string;
+  price?: string;
+  category?: string;
+  description?: string;
+  images?: string;
+  badge?: string;
+}
+
 interface Message {
   id: string;
   name: string;
@@ -97,6 +106,11 @@ const INPUT_STYLE: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
+const INPUT_ERROR_STYLE: React.CSSProperties = {
+  ...INPUT_STYLE,
+  border: "1px solid #c0392b",
+};
+
 const LABEL_STYLE: React.CSSProperties = {
   display: "block",
   fontFamily: "DM Sans",
@@ -106,6 +120,14 @@ const LABEL_STYLE: React.CSSProperties = {
   textTransform: "uppercase",
   color: "var(--text-muted)",
   marginBottom: 6,
+};
+
+const ERROR_TEXT: React.CSSProperties = {
+  fontFamily: "DM Sans",
+  fontSize: "0.72rem",
+  color: "#c0392b",
+  marginTop: 4,
+  display: "block",
 };
 
 const SidebarButton = ({
@@ -187,6 +209,7 @@ export default function AdminClient({
   const [products, setProducts] = useState(initialProducts);
   const [blogForm, setBlogForm] = useState<BlogForm | null>(null);
   const [productForm, setProductForm] = useState<ProductForm | null>(null);
+  const [productErrors, setProductErrors] = useState<ProductErrors>({});
   const [saving, setSaving] = useState(false);
   const [uploadingBlog, setUploadingBlog] = useState(false);
   const [uploadingProduct, setUploadingProduct] = useState(false);
@@ -223,7 +246,6 @@ export default function AdminClient({
         console.error("load error:", err);
       }
     };
-
     load();
     const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
@@ -247,9 +269,14 @@ export default function AdminClient({
     try {
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       setter(data.url);
-    } catch { toast("Upload failed"); }
-    finally { setUploading(false); }
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const saveBlog = async () => {
@@ -275,14 +302,39 @@ export default function AdminClient({
     toast("Post deleted.");
   };
 
+  // ── Product validation ──────────────────────────────────────────────────────
+  const validateProduct = (pf: ProductForm): ProductErrors => {
+  const errs: ProductErrors = {};
+  if (!pf.name.trim()) errs.name = "Product name is required.";
+  if (!pf.price || isNaN(parseFloat(pf.price)) || parseFloat(pf.price) <= 0)
+    errs.price = "A valid price is required.";
+  if (!pf.category) errs.category = "Category is required.";
+  if (!pf.description.trim()) errs.description = "Description is required.";
+  if (pf.images.length < 2)
+    errs.images = `At least 2 images are required. You have ${pf.images.length}.`;
+  // badge removed — optional
+  return errs;
+};
+
   const saveProduct = async () => {
     if (!productForm) return;
+    const errs = validateProduct(productForm);
+    if (Object.keys(errs).length > 0) {
+      setProductErrors(errs);
+      // Scroll to first error
+      setTimeout(() => {
+        document.querySelector("[data-product-error]")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+      return;
+    }
+    setProductErrors({});
     setSaving(true);
     const product = { ...productForm, id: productForm.id || Date.now().toString(), price: parseFloat(productForm.price) || 0 };
     await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(product) });
     const updated = await fetch("/api/products").then((r) => r.json());
     setProducts(Array.isArray(updated) ? updated : []);
     setProductForm(null);
+    setProductErrors({});
     setSaving(false);
     toast("Product saved!");
   };
@@ -321,6 +373,11 @@ export default function AdminClient({
     setTab(t);
     setSidebarOpen(false);
     if (t === "messages" && !messagesLoaded) fetchMessages();
+  };
+
+  // Clear a single field error when the user edits it
+  const clearError = (field: keyof ProductErrors) => {
+    if (productErrors[field]) setProductErrors((e) => ({ ...e, [field]: undefined }));
   };
 
   if (!authed) {
@@ -504,7 +561,7 @@ export default function AdminClient({
                     <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={INPUT_STYLE} placeholder="Or paste image URL" />
                     {blogForm.image && (
                       <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}>
-                        <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} />
+                        <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} sizes="800px" />
                       </div>
                     )}
                   </div>
@@ -548,33 +605,95 @@ export default function AdminClient({
             {productForm && (
               <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, overflow: "auto", padding: "20px 16px" }}>
                 <div style={{ background: "white", maxWidth: 640, margin: "0 auto", padding: "32px 24px", boxShadow: "0 20px 80px rgba(0,0,0,0.2)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                     <h2 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.7rem", color: "var(--charcoal)" }}>{productForm.id ? "Edit" : "New"} Product</h2>
-                    <button onClick={() => setProductForm(null)} style={{ background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
+                    <button onClick={() => { setProductForm(null); setProductErrors({}); }} style={{ background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
                   </div>
+
+                  {/* Summary error banner */}
+                  {Object.keys(productErrors).length > 0 && (
+                    <div
+                      data-product-error
+                      style={{ background: "#fef2f2", border: "1px solid #fca5a5", padding: "12px 16px", marginBottom: 20, borderRadius: 2 }}
+                    >
+                      <p style={{ fontFamily: "DM Sans", fontSize: "0.8rem", color: "#c0392b", fontWeight: 600, margin: "0 0 6px" }}>
+                        Please fix the following before saving:
+                      </p>
+                      <ul style={{ margin: 0, paddingLeft: 18 }}>
+                        {Object.values(productErrors).map((e, i) => (
+                          <li key={i} style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "#c0392b" }}>{e}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div style={{ display: "grid", gap: 18 }}>
+                    {/* Name */}
                     <div>
                       <label style={LABEL_STYLE}>Product Name *</label>
-                      <input value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} style={INPUT_STYLE} placeholder="EcoBreeze 3.5kW Heat Pump" />
+                      <input
+                        value={productForm.name}
+                        onChange={(e) => { setProductForm({ ...productForm, name: e.target.value }); clearError("name"); }}
+                        style={productErrors.name ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                        placeholder="EcoBreeze 3.5kW Heat Pump"
+                      />
+                      {productErrors.name && <span style={ERROR_TEXT}>{productErrors.name}</span>}
                     </div>
+
+                    {/* Price + Category */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
                         <label style={LABEL_STYLE}>Price (KES) *</label>
-                        <input type="number" value={productForm.price} onChange={(e) => setProductForm({ ...productForm, price: e.target.value })} style={INPUT_STYLE} placeholder="1299" />
+                        <input
+                          type="number"
+                          value={productForm.price}
+                          onChange={(e) => { setProductForm({ ...productForm, price: e.target.value }); clearError("price"); }}
+                          style={productErrors.price ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                          placeholder="1299"
+                          min="1"
+                        />
+                        {productErrors.price && <span style={ERROR_TEXT}>{productErrors.price}</span>}
                       </div>
                       <div>
-                        <label style={LABEL_STYLE}>Category</label>
-                        <select value={productForm.category} onChange={(e) => setProductForm({ ...productForm, category: e.target.value })} style={INPUT_STYLE}>
+                        <label style={LABEL_STYLE}>Category *</label>
+                        <select
+                          value={productForm.category}
+                          onChange={(e) => { setProductForm({ ...productForm, category: e.target.value }); clearError("category"); }}
+                          style={productErrors.category ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                        >
                           <option>HVAC</option><option>Solar</option><option>Batteries</option>
                         </select>
+                        {productErrors.category && <span style={ERROR_TEXT}>{productErrors.category}</span>}
                       </div>
                     </div>
+
+                    {/* Description */}
                     <div>
-                      <label style={LABEL_STYLE}>Description</label>
-                      <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} rows={3} style={{ ...INPUT_STYLE, resize: "vertical" }} />
+                      <label style={LABEL_STYLE}>Description *</label>
+                      <textarea
+                        value={productForm.description}
+                        onChange={(e) => { setProductForm({ ...productForm, description: e.target.value }); clearError("description"); }}
+                        rows={3}
+                        style={{ ...(productErrors.description ? INPUT_ERROR_STYLE : INPUT_STYLE), resize: "vertical" }}
+                        placeholder="Describe the product features, specs, and benefits..."
+                      />
+                      {productErrors.description && <span style={ERROR_TEXT}>{productErrors.description}</span>}
                     </div>
+
+                    {/* Images */}
                     <div>
-                      <label style={LABEL_STYLE}>Product Images</label>
+                      <label style={LABEL_STYLE}>
+                        Product Images * <span style={{ color: productForm.images.length >= 2 ? "var(--sage-dark)" : "#c0392b", fontWeight: 600 }}>({productForm.images.length}/2 minimum)</span>
+                      </label>
+
+                      {/* Progress indicator */}
+                      <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                        {[0, 1].map((i) => (
+                          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: productForm.images.length > i ? "var(--sage-dark)" : "var(--off-white)", transition: "background 0.2s" }} />
+                        ))}
+                        <div style={{ flex: 3, height: 4, borderRadius: 2, background: productForm.images.length > 2 ? "var(--sage)" : "var(--off-white)", transition: "background 0.2s" }} />
+                      </div>
+
                       <input
                         type="file"
                         accept="image/*"
@@ -587,13 +706,32 @@ export default function AdminClient({
                           try {
                             const res = await fetch("/api/upload", { method: "POST", body: fd });
                             const data = await res.json();
-                            setProductForm((pf) => pf ? { ...pf, images: [...pf.images, data.url] } : pf);
-                          } catch { toast("Upload failed"); }
-                          finally { setUploadingProduct(false); }
+                            if (!res.ok) throw new Error(data.error);
+                            setProductForm((pf) => {
+                              if (!pf) return pf;
+                              const updated = { ...pf, images: [...pf.images, data.url] };
+                              if (updated.images.length >= 2) clearError("images");
+                              return updated;
+                            });
+                          } catch (err) {
+                            console.error(err);
+                            toast("Upload failed. Please try again.");
+                          } finally {
+                            setUploadingProduct(false);
+                            // Reset input so same file can be re-selected
+                            e.target.value = "";
+                          }
                         }}
                         style={{ width: "100%", marginBottom: 8 }}
                       />
-                      {uploadingProduct && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
+                      {uploadingProduct && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                          <div style={{ width: 14, height: 14, border: "2px solid var(--sage-dark)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                          <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading image...</span>
+                        </div>
+                      )}
+
+                      {/* URL paste */}
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                         <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...INPUT_STYLE, flex: 1 }} />
                         <button
@@ -601,7 +739,12 @@ export default function AdminClient({
                           onClick={() => {
                             const val = imgUrlRef.current?.value.trim();
                             if (!val) return;
-                            setProductForm((pf) => pf ? { ...pf, images: [...pf.images, val] } : pf);
+                            setProductForm((pf) => {
+                              if (!pf) return pf;
+                              const updated = { ...pf, images: [...pf.images, val] };
+                              if (updated.images.length >= 2) clearError("images");
+                              return updated;
+                            });
                             if (imgUrlRef.current) imgUrlRef.current.value = "";
                           }}
                           style={{ padding: "10px 16px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", whiteSpace: "nowrap" }}
@@ -609,6 +752,12 @@ export default function AdminClient({
                           Add
                         </button>
                       </div>
+
+                      {productErrors.images && (
+                        <span style={{ ...ERROR_TEXT, marginTop: 8 }}>{productErrors.images}</span>
+                      )}
+
+                      {/* Image grid */}
                       {productForm.images.length > 0 && (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
                           {productForm.images.map((url, i) => (
@@ -628,22 +777,47 @@ export default function AdminClient({
                           ))}
                         </div>
                       )}
-                      <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>First image is used as the main thumbnail.</p>
+                      <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>
+                        First image is the main thumbnail. Minimum 2 images required.
+                      </p>
                     </div>
+
+                    {/* Badge + In Stock */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
-                        <label style={LABEL_STYLE}>Badge (optional)</label>
-                        <input value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} style={INPUT_STYLE} placeholder="New, Best Seller..." />
+                        <label style={LABEL_STYLE}>Badge *</label>
+                        <input
+                          value={productForm.badge}
+                          onChange={(e) => { setProductForm({ ...productForm, badge: e.target.value }); clearError("badge"); }}
+                          style={productErrors.badge ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                          placeholder="New, Best Seller, Sale..."
+                        />
+                        {productErrors.badge && <span style={ERROR_TEXT}>{productErrors.badge}</span>}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 24 }}>
-                        <input type="checkbox" id="inStock" checked={productForm.inStock} onChange={(e) => setProductForm({ ...productForm, inStock: e.target.checked })} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: productErrors.badge ? 0 : 24 }}>
+                        <input
+                          type="checkbox"
+                          id="inStock"
+                          checked={productForm.inStock}
+                          onChange={(e) => setProductForm({ ...productForm, inStock: e.target.checked })}
+                        />
                         <label htmlFor="inStock" style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--charcoal)", cursor: "pointer" }}>In Stock</label>
                       </div>
                     </div>
+
                     <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
-                      <button onClick={() => setProductForm(null)} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>Cancel</button>
-                      <button onClick={saveProduct} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem" }}>
-                        <Save size={15} /> {saving ? "Saving..." : "Save Product"}
+                      <button
+                        onClick={() => { setProductForm(null); setProductErrors({}); }}
+                        style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={saveProduct}
+                        disabled={saving || uploadingProduct}
+                        style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", background: saving || uploadingProduct ? "var(--text-muted)" : "var(--charcoal)", color: "white", border: "none", cursor: saving || uploadingProduct ? "not-allowed" : "pointer", fontFamily: "DM Sans", fontSize: "0.85rem" }}
+                      >
+                        <Save size={15} /> {saving ? "Saving..." : uploadingProduct ? "Uploading..." : "Save Product"}
                       </button>
                     </div>
                   </div>
@@ -656,7 +830,7 @@ export default function AdminClient({
                 <div key={p.id} style={{ background: "white", overflow: "hidden" }}>
                   <div style={{ aspectRatio: "1/1", overflow: "hidden", background: "var(--off-white)", position: "relative" }}>
                     {p.images?.[0]
-                      ? <Image src={p.images[0]} alt={p.name} fill style={{ objectFit: "cover" }} />
+                      ? <Image src={p.images[0]} alt={p.name} fill style={{ objectFit: "cover" }} sizes="160px" />
                       : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}><Package size={32} /></div>
                     }
                     {p.images?.length > 1 && (
@@ -671,7 +845,7 @@ export default function AdminClient({
                     <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>KES {p.price.toLocaleString()}</div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button
-                        onClick={() => setProductForm({ ...p, price: String(p.price), images: p.images ?? [] })}
+                        onClick={() => { setProductForm({ ...p, price: String(p.price), images: p.images ?? [] }); setProductErrors({}); }}
                         style={{ flex: 1, padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", fontFamily: "DM Sans", fontSize: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}
                       >
                         <Edit3 size={12} /> Edit
@@ -756,6 +930,10 @@ export default function AdminClient({
         )}
       </main>
 
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+
       {/* FAB Speed Dial */}
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="fixed bottom-6 right-6 z-50">
         <div className={`sd-pill ${open ? "expanded" : "closed"}`} onClick={!open ? () => setOpen(true) : undefined}>
@@ -769,7 +947,7 @@ export default function AdminClient({
             <>
               <button className="sd-action" onClick={() => { setTab("blog"); setBlogForm(emptyBlog()); setOpen(false); }}>New Blog</button>
               <div className="sd-divider" />
-              <button className="sd-action" onClick={() => { setTab("products"); setProductForm(emptyProduct()); setOpen(false); }}>New Product</button>
+              <button className="sd-action" onClick={() => { setTab("products"); setProductForm(emptyProduct()); setProductErrors({}); setOpen(false); }}>New Product</button>
               <button className="sd-close" onClick={() => setOpen(false)}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
