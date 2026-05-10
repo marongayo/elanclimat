@@ -1,4 +1,5 @@
 "use client";
+import { Send } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactForm() {
@@ -93,9 +94,27 @@ export default function ContactForm() {
           style={{ display: "flex", flexDirection: "column", gap: 18 }}
         >
           {[
-            { name: "name", label: "Full Name", type: "text", placeholder: "Joan Dupont", required: true },
-            { name: "email", label: "Email Address", type: "email", placeholder: "joan.dupont@example.you", required: true },
-            { name: "phone", label: "Phone (optional)", type: "tel", placeholder: "+254 796 952 717", required: false },
+            {
+              name: "name",
+              label: "Full Name",
+              type: "text",
+              placeholder: "Joan Dupont",
+              required: true,
+            },
+            {
+              name: "email",
+              label: "Email Address",
+              type: "email",
+              placeholder: "joan.dupont@example.you",
+              required: true,
+            },
+            {
+              name: "phone",
+              label: "Phone (optional)",
+              type: "tel",
+              placeholder: "+254 796 952 717",
+              required: false,
+            },
           ].map((field) => (
             <div key={field.name}>
               <label style={labelStyle}>{field.label}</label>
@@ -110,7 +129,10 @@ export default function ContactForm() {
           ))}
           <div>
             <label style={labelStyle}>Service Needed</label>
-            <select name="service" style={{ ...inputStyle, background: "rgba(30,35,32,0.95)" }}>
+            <select
+              name="service"
+              style={{ ...inputStyle, background: "rgba(30,35,32,0.95)" }}
+            >
               <option value="">Select a service</option>
               <option>HVAC Installation</option>
               <option>HVAC Maintenance</option>
@@ -135,6 +157,10 @@ export default function ContactForm() {
             style={{
               width: "100%",
               padding: "14px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
               background: "var(--sage)",
               color: "var(--charcoal)",
               fontFamily: "DM Sans",
@@ -146,10 +172,20 @@ export default function ContactForm() {
               opacity: loading ? 0.7 : 1,
               transition: "background 0.2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--sage-light)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--sage)")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "var(--sage-light)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "var(--sage)")
+            }
           >
-            {loading ? "Sending..." : "Send Message →"}
+            {loading ? (
+              "Sending..."
+            ) : (
+              <>
+                Send Message <Send size={16} />
+              </>
+            )}
           </button>
         </form>
       )}
