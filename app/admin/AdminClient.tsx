@@ -108,36 +108,36 @@ const LABEL_STYLE: React.CSSProperties = {
   marginBottom: 6,
 };
 
-const SidebarButton = ({ 
-  active, 
-  onClick, 
-  icon, 
-  label, 
-  unreadCount 
-}: { 
-  active: boolean; 
-  onClick: () => void; 
-  icon: React.ReactNode; 
-  label: string; 
+const SidebarButton = ({
+  active,
+  onClick,
+  icon,
+  label,
+  unreadCount,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
   unreadCount?: number;
 }) => (
   <button
     onClick={onClick}
-    style={{ 
-      display: "flex", 
-      alignItems: "center", 
-      justifyContent: "space-between", 
-      width: "100%", 
-      padding: "12px 16px", 
-      background: active ? "var(--sage-pale)" : "transparent", 
-      border: "none", 
-      cursor: "pointer", 
-      fontFamily: "DM Sans", 
-      fontSize: "0.85rem", 
-      color: active ? "var(--sage-dark)" : "var(--text-muted)", 
-      textAlign: "left", 
-      fontWeight: active ? 500 : 400, 
-      transition: "all 0.2s" 
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      width: "100%",
+      padding: "12px 16px",
+      background: active ? "var(--sage-pale)" : "transparent",
+      border: "none",
+      cursor: "pointer",
+      fontFamily: "DM Sans",
+      fontSize: "0.85rem",
+      color: active ? "var(--sage-dark)" : "var(--text-muted)",
+      textAlign: "left",
+      fontWeight: active ? 500 : 400,
+      transition: "all 0.2s",
     }}
   >
     <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -151,27 +151,25 @@ const SidebarButton = ({
   </button>
 );
 
-const SidebarContent = ({ tab, unread, navTo }: { tab: Tab; unread: number; navTo: (t: Tab) => void }) => {
-  return (
-    <>
-      <div style={{ padding: "24px 16px", borderBottom: "1px solid var(--off-white)" }}>
-        <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem", fontWeight: 600, color: "var(--charcoal)" }}>Élan Admin</div>
-        <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginTop: 2 }}>Content Manager</div>
-      </div>
-      <nav style={{ padding: "16px 8px", flex: 1 }}>
-        <SidebarButton active={tab === "dashboard"} onClick={() => navTo("dashboard")} icon={<LayoutDashboard size={16} />} label="Dashboard" />
-        <SidebarButton active={tab === "blog"} onClick={() => navTo("blog")} icon={<FileText size={16} />} label="Blog Posts" />
-        <SidebarButton active={tab === "products"} onClick={() => navTo("products")} icon={<Package size={16} />} label="Products" />
-        <SidebarButton active={tab === "messages"} onClick={() => navTo("messages")} icon={<Inbox size={16} />} label="Messages" unreadCount={unread} />
-      </nav>
-      <div style={{ padding: "16px", borderTop: "1px solid var(--off-white)" }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", textDecoration: "none" }}>
-          <ArrowLeft size={14} /> View Site
-        </Link>
-      </div>
-    </>
-  );
-};
+const SidebarContent = ({ tab, unread, navTo }: { tab: Tab; unread: number; navTo: (t: Tab) => void }) => (
+  <>
+    <div style={{ padding: "24px 16px", borderBottom: "1px solid var(--off-white)" }}>
+      <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem", fontWeight: 600, color: "var(--charcoal)" }}>Élan Admin</div>
+      <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginTop: 2 }}>Content Manager</div>
+    </div>
+    <nav style={{ padding: "16px 8px", flex: 1 }}>
+      <SidebarButton active={tab === "dashboard"} onClick={() => navTo("dashboard")} icon={<LayoutDashboard size={16} />} label="Dashboard" />
+      <SidebarButton active={tab === "blog"} onClick={() => navTo("blog")} icon={<FileText size={16} />} label="Blog Posts" />
+      <SidebarButton active={tab === "products"} onClick={() => navTo("products")} icon={<Package size={16} />} label="Products" />
+      <SidebarButton active={tab === "messages"} onClick={() => navTo("messages")} icon={<Inbox size={16} />} label="Messages" unreadCount={unread} />
+    </nav>
+    <div style={{ padding: "16px", borderTop: "1px solid var(--off-white)" }}>
+      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", textDecoration: "none" }}>
+        <ArrowLeft size={14} /> View Site
+      </Link>
+    </div>
+  </>
+);
 
 export default function AdminClient({
   initialPosts,
@@ -199,41 +197,38 @@ export default function AdminClient({
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const imgUrlRef = useRef<HTMLInputElement>(null);
 
-const fetchMessages = async () => {
-  try {
-    const res = await fetch("/api/messages");
-    console.log("status:", res.status);
-    const data = await res.json();
-    console.log("messages response:", data);
-    const arr = Array.isArray(data) ? data : [];
-    setMessages(arr);
-    setUnread(arr.filter((m: Message) => !m.read).length);
-    setMessagesLoaded(true);
-  } catch (err) {
-    console.error("fetchMessages error:", err);
-  }
-};
-useEffect(() => {
-  console.log("effect running");
-  const load = async () => {
+  const fetchMessages = async () => {
     try {
       const res = await fetch("/api/messages");
-      console.log("status:", res.status);
       const data = await res.json();
-      console.log("messages response:", data);
       const arr = Array.isArray(data) ? data : [];
       setMessages(arr);
       setUnread(arr.filter((m: Message) => !m.read).length);
       setMessagesLoaded(true);
     } catch (err) {
-      console.error("load error:", err);
+      console.error("fetchMessages error:", err);
     }
   };
 
-  load();
-  const interval = setInterval(load, 30000);
-  return () => clearInterval(interval);
-}, []);
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/messages");
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : [];
+        setMessages(arr);
+        setUnread(arr.filter((m: Message) => !m.read).length);
+        setMessagesLoaded(true);
+      } catch (err) {
+        console.error("load error:", err);
+      }
+    };
+
+    load();
+    const interval = setInterval(load, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwError(""); }
     else setPwError("Incorrect password. Try again.");
@@ -479,15 +474,9 @@ useEffect(() => {
                     <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...INPUT_STYLE, resize: "vertical" }} placeholder="A brief summary..." />
                   </div>
                   <div>
-  <label style={LABEL_STYLE}>Content (HTML)</label>
-  <textarea
-    value={blogForm.content}
-    onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-    rows={8}
-    style={{ ...INPUT_STYLE, resize: "vertical", fontFamily: "DM Mono, monospace" }}
-    placeholder="<h2>Section Title</h2><p>Your content here...</p>"
-  />
-</div>
+                    <label style={LABEL_STYLE}>Content (HTML)</label>
+                    <textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...INPUT_STYLE, resize: "vertical", fontFamily: "DM Mono, monospace" }} placeholder="<h2>Section Title</h2><p>Your content here...</p>" />
+                  </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16 }}>
                     <div>
                       <label style={LABEL_STYLE}>Category</label>
@@ -501,7 +490,7 @@ useEffect(() => {
                     </div>
                   </div>
                   <div>
-                    <label style={labelStyle}>Cover Image</label>
+                    <label style={LABEL_STYLE}>Cover Image</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -584,10 +573,8 @@ useEffect(() => {
                       <label style={LABEL_STYLE}>Description</label>
                       <textarea value={productForm.description} onChange={(e) => setProductForm({ ...productForm, description: e.target.value })} rows={3} style={{ ...INPUT_STYLE, resize: "vertical" }} />
                     </div>
-
-                    {/* Multi-image upload */}
                     <div>
-                      <label style={labelStyle}>Product Images</label>
+                      <label style={LABEL_STYLE}>Product Images</label>
                       <input
                         type="file"
                         accept="image/*"
@@ -607,7 +594,6 @@ useEffect(() => {
                         style={{ width: "100%", marginBottom: 8 }}
                       />
                       {uploadingProduct && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
-
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                         <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...INPUT_STYLE, flex: 1 }} />
                         <button
@@ -623,7 +609,6 @@ useEffect(() => {
                           Add
                         </button>
                       </div>
-
                       {productForm.images.length > 0 && (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
                           {productForm.images.map((url, i) => (
@@ -645,7 +630,6 @@ useEffect(() => {
                       )}
                       <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>First image is used as the main thumbnail.</p>
                     </div>
-
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
                         <label style={LABEL_STYLE}>Badge (optional)</label>
