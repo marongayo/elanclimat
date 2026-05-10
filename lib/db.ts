@@ -4,14 +4,6 @@ import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import type { BlogPost, Product, Message } from "./data";
 
-const ARCHIVE_AFTER_DAYS = 7;
-
-function archiveCutoff() {
-  const d = new Date();
-  d.setDate(d.getDate() - ARCHIVE_AFTER_DAYS);
-  return d.toISOString();
-}
-
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
   await connectDB();
@@ -80,21 +72,22 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
-
-// Active: last 7 days only
 export async function getMessages(): Promise<Message[]> {
   await connectDB();
-  const messages = await MessageModel.find({ date: { $gte: archiveCutoff() } })
-    .sort({ date: -1 })
+  const messages = await MessageModel.find({
+    archived: { $ne: true },
+  })
+    .sort({ _id: -1 })
     .lean();
   return messages.map(toPlain) as Message[];
 }
 
-// Archived: older than 7 days, loaded on demand
 export async function getArchivedMessages(): Promise<Message[]> {
   await connectDB();
-  const messages = await MessageModel.find({ date: { $lt: archiveCutoff() } })
-    .sort({ date: -1 })
+  const messages = await MessageModel.find({
+    archived: true,
+  })
+    .sort({ _id: -1 })
     .lean();
   return messages.map(toPlain) as Message[];
 }

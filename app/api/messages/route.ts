@@ -1,3 +1,4 @@
+// app/api/messages/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import {
   getMessages,
@@ -14,6 +15,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(messages);
   }
   const messages = await getMessages();
+  console.log("Fetched messages:", messages);
   return NextResponse.json(messages);
 }
 
