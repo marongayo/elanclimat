@@ -1,7 +1,7 @@
 // api/messages/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getProducts, saveProduct, deleteProduct } from '@/lib/data';
+import { getProducts, saveProduct, deleteProduct } from '@/lib/db';
 import { randomUUID } from 'crypto';
 
 export async function GET() {

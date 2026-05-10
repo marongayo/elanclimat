@@ -1,12 +1,14 @@
-import { getProducts } from '@/lib/data';
+// shop/page.tsx
+
+import { getProducts } from '@/lib/db';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ShopClient from './ShopClient';
 
 export const dynamic = 'force-dynamic';
 
-export default function ShopPage() {
-  const products = getProducts();
+export default async function ShopPage() {
+  const products = await getProducts();
   return (
     <>
       <Navbar />

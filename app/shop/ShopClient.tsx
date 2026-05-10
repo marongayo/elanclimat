@@ -1,3 +1,5 @@
+// shop/ShopClient.tsx
+
 "use client";
 import { useState } from "react";
 import Image from "next/image";
@@ -82,7 +84,7 @@ function CardCarousel({ images, name }: { images: string[]; name: string }) {
   );
 }
 
-export default function ShopClient({ products }: { products: Product[] }) {
+export default function ShopClient({ products = [] }: { products: Product[] }) {
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<string[]>([]);

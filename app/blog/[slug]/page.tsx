@@ -1,6 +1,6 @@
 // blog/[slug]/page.tsx
 
-import { getBlogPosts, getBlogPost } from '@/lib/data';
+import { getBlogPosts, getBlogPost } from '@/lib/db';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
@@ -12,9 +12,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
-  const related = getBlogPosts().filter(p => p.id !== post.id).slice(0, 2);
+  const related = await getBlogPosts();
+  const filteredRelated = related.filter(p => p.id !== post.id).slice(0, 2);
 
   return (
     <>
@@ -53,12 +54,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
 
         {/* Related */}
-        {related.length > 0 && (
+        {filteredRelated.length > 0 && (
           <div style={{ background: 'white', padding: '64px 32px' }}>
             <div style={{ maxWidth: 1280, margin: '0 auto' }}>
               <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.8rem', color: 'var(--charcoal)', marginBottom: 32 }}>More Articles</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-                {related.map(p => (
+                {filteredRelated.map(p => (
                   <Link key={p.id} href={`/blog/${p.slug}`} style={{ textDecoration: 'none' }} className="blog-card">
                     <div style={{ overflow: 'hidden', aspectRatio: '16/9', marginBottom: 16, position: 'relative' }}>
                       <Image src={p.image} alt={p.title} fill style={{ objectFit: 'cover' }} />

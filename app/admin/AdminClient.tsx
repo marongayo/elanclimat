@@ -1,5 +1,3 @@
-// admin/AdminClient.tsx
-
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -113,21 +111,41 @@ export default function AdminClient({
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const imgUrlRef = useRef<HTMLInputElement>(null);
 
-  const fetchMessages = async () => {
+const fetchMessages = async () => {
+  try {
+    const res = await fetch("/api/messages");
+    console.log("status:", res.status);
+    const data = await res.json();
+    console.log("messages response:", data);
+    const arr = Array.isArray(data) ? data : [];
+    setMessages(arr);
+    setUnread(arr.filter((m: Message) => !m.read).length);
+    setMessagesLoaded(true);
+  } catch (err) {
+    console.error("fetchMessages error:", err);
+  }
+};
+useEffect(() => {
+  console.log("effect running");
+  const load = async () => {
     try {
-      const data = await fetch("/api/messages").then((r) => r.json());
-      setMessages(data);
-      setUnread(data.filter((m: Message) => !m.read).length);
+      const res = await fetch("/api/messages");
+      console.log("status:", res.status);
+      const data = await res.json();
+      console.log("messages response:", data);
+      const arr = Array.isArray(data) ? data : [];
+      setMessages(arr);
+      setUnread(arr.filter((m: Message) => !m.read).length);
       setMessagesLoaded(true);
-    } catch {}
+    } catch (err) {
+      console.error("load error:", err);
+    }
   };
 
-  useEffect(() => {
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
+  load();
+  const interval = setInterval(load, 30000);
+  return () => clearInterval(interval);
+}, []);
   const login = () => {
     if (pw === ADMIN_PASSWORD) { setAuthed(true); setPwError(""); }
     else setPwError("Incorrect password. Try again.");
@@ -161,7 +179,7 @@ export default function AdminClient({
     };
     await fetch("/api/blog", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(post) });
     const updated = await fetch("/api/blog").then((r) => r.json());
-    setPosts(updated);
+    setPosts(Array.isArray(updated) ? updated : []);
     setBlogForm(null);
     setSaving(false);
     toast("Blog post saved successfully!");
@@ -180,7 +198,7 @@ export default function AdminClient({
     const product = { ...productForm, id: productForm.id || Date.now().toString(), price: parseFloat(productForm.price) || 0 };
     await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(product) });
     const updated = await fetch("/api/products").then((r) => r.json());
-    setProducts(updated);
+    setProducts(Array.isArray(updated) ? updated : []);
     setProductForm(null);
     setSaving(false);
     toast("Product saved!");
@@ -437,9 +455,15 @@ export default function AdminClient({
                     <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...inp, resize: "vertical" }} placeholder="A brief summary..." />
                   </div>
                   <div>
-                    <label style={labelStyle}>Content (Markdown)</label>
-                    <textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...inp, resize: "vertical", fontFamily: "DM Mono, monospace" }} placeholder="Write content here..." />
-                  </div>
+  <label style={labelStyle}>Content (HTML)</label>
+  <textarea
+    value={blogForm.content}
+    onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+    rows={8}
+    style={{ ...inp, resize: "vertical", fontFamily: "DM Mono, monospace" }}
+    placeholder="<h2>Section Title</h2><p>Your content here...</p>"
+  />
+</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16 }}>
                     <div>
                       <label style={labelStyle}>Category</label>
@@ -560,7 +584,6 @@ export default function AdminClient({
                       />
                       {uploadingProduct && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
 
-                      {/* Paste URL */}
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                         <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...inp, flex: 1 }} />
                         <button
@@ -577,7 +600,6 @@ export default function AdminClient({
                         </button>
                       </div>
 
-                      {/* Image previews */}
                       {productForm.images.length > 0 && (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
                           {productForm.images.map((url, i) => (
@@ -638,7 +660,7 @@ export default function AdminClient({
                   <div style={{ padding: "12px" }}>
                     <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginBottom: 4 }}>{p.category}</div>
                     <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "0.95rem", fontWeight: 600, color: "var(--charcoal)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</div>
-                    <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>${p.price.toLocaleString()}</div>
+                    <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>KES {p.price.toLocaleString()}</div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button
                         onClick={() => setProductForm({ ...p, price: String(p.price), images: p.images ?? [] })}

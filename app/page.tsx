@@ -1,8 +1,10 @@
+// page.tsx
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import Image from "next/image";
-import { getBlogPosts } from "@/lib/data";
+import { getBlogPosts } from "@/lib/db";
 import {
   Wind,
   Sun,
@@ -94,7 +96,7 @@ const TESTIMONIALS = [
 ];
 
 export default async function HomePage() {
-  const posts = getBlogPosts().slice(0, 3);
+  const posts = (await getBlogPosts()).slice(0, 3);
 
   return (
     <>

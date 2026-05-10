@@ -1,0 +1,15 @@
+import { Schema, model, models } from "mongoose";
+
+const ProductSchema = new Schema({
+  id:          { type: String, required: true, unique: true },
+  name:        { type: String, required: true },
+  price:       { type: Number, required: true },
+  category:    { type: String, default: "HVAC" },
+  image:       { type: String, default: "" },   // legacy field
+  images:      { type: [String], default: [] },
+  description: { type: String, default: "" },
+  inStock:     { type: Boolean, default: true },
+  badge:       { type: String, default: "" },
+});
+
+export const ProductModel = models.Product ?? model("Product", ProductSchema);
