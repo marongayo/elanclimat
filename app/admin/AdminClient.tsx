@@ -785,7 +785,7 @@ export default function AdminClient({
                     {/* Badge + In Stock */}
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
                       <div>
-                        <label style={LABEL_STYLE}>Badge *</label>
+                        <label style={LABEL_STYLE}>Badge</label>
                         <input
                           value={productForm.badge}
                           onChange={(e) => { setProductForm({ ...productForm, badge: e.target.value }); clearError("badge"); }}
