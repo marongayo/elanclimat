@@ -6,8 +6,7 @@ import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import type { BlogPost, Product, Message } from "./data";
 
-// ─── Blog ────────────────────────────────────────────────────────────────────
-
+// ─── Blog ─────────────────────────────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
   await connectDB();
   const posts = await BlogPostModel.find().sort({ date: -1 }).lean();
@@ -34,13 +33,11 @@ export async function deleteBlogPost(id: string): Promise<void> {
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
-
 export async function getProducts(): Promise<Product[]> {
   await connectDB();
   const products = await ProductModel.find().lean();
   return products.map((p) => {
     const plain = toPlain(p) as Product;
-    // normalise legacy records that only have `image`
     plain.images = plain.images?.length
       ? plain.images
       : plain.image
@@ -48,6 +45,19 @@ export async function getProducts(): Promise<Product[]> {
         : [];
     return plain;
   });
+}
+
+export async function getProductById(id: string): Promise<Product | null> {
+  await connectDB();
+  const product = await ProductModel.findOne({ id }).lean();
+  if (!product) return null;
+  const plain = toPlain(product) as Product;
+  plain.images = plain.images?.length
+    ? plain.images
+    : plain.image
+      ? [plain.image]
+      : [];
+  return plain;
 }
 
 export async function saveProduct(product: Product): Promise<void> {
@@ -64,7 +74,6 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
-
 export async function getMessages(): Promise<Message[]> {
   await connectDB();
   const messages = await MessageModel.find().sort({ date: -1 }).lean();
@@ -85,8 +94,6 @@ export async function deleteMessage(id: string): Promise<void> {
 }
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
-
-// Strips mongoose internals (_id, __v) from lean() results
 function toPlain(doc: any) {
   const { _id, __v, ...rest } = doc;
   return rest;
