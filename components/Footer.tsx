@@ -3,6 +3,14 @@
 import Link from 'next/link';
 import { Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
 
+const SERVICES = ['HVAC Installation', 'Solar Power Systems', 'Battery Storage', 'Maintenance & Repair', 'Energy Audits'];
+const COMPANY_LINKS = [{ l: 'About Us', h: '/#about' }, { l: 'Blog & News', h: '/blog' }, { l: 'Shop', h: '/shop' }, { l: 'Contact', h: '/#contact' }, { l: 'Admin', h: '/admin' }];
+const CONTACT_METHODS = [
+  { icon: <Phone size={14} />, text: '+254 796 952 717' },
+  { icon: <Mail size={14} />, text: 'hello@elanclimat.co.ke' },
+  { icon: <MapPin size={14} />, text: 'Ananas Business Park, Off Garrissa Road, Thika' },
+];
+
 export default function Footer() {
   return (
     <footer style={{ background: 'var(--charcoal)', color: 'white' }}>
@@ -23,7 +31,7 @@ export default function Footer() {
           {/* Services */}
           <div>
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Services</h4>
-            {['HVAC Installation', 'Solar Power Systems', 'Battery Storage', 'Maintenance & Repair', 'Energy Audits'].map(s => (
+            {SERVICES.map(s => (
               
               <Link key={s} href="/#services" style={{ display: 'block', fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
@@ -37,7 +45,7 @@ export default function Footer() {
           {/* Quick links */}
           <div>
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Company</h4>
-            {[{ l: 'About Us', h: '/#about' }, { l: 'Blog & News', h: '/blog' }, { l: 'Shop', h: '/shop' }, { l: 'Contact', h: '/#contact' }, { l: 'Admin', h: '/admin' }].map(item => (
+            {COMPANY_LINKS.map(item => (
               <a key={item.l} href={item.h} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}>
@@ -50,11 +58,7 @@ export default function Footer() {
           <div>
             <h4 style={{ fontFamily: 'DM Sans', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: 18 }}>Contact</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { icon: <Phone size={14} />, text: '+254 796 952 717' },
-                { icon: <Mail size={14} />, text: 'hello@elanclimat.co.ke' },
-                { icon: <MapPin size={14} />, text: 'Ananas Business Park, Off Garrissa Road, Thika' },
-              ].map(item => (
+              {CONTACT_METHODS.map(item => (
                 <div key={item.text} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'DM Sans', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)' }}>
                   <span style={{ color: 'var(--sage)', marginTop: 1 }}>{item.icon}</span>
                   {item.text}
