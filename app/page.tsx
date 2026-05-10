@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import Image from "next/image";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { getBlogPosts } from "@/lib/db";
 import {
   Wind,
@@ -100,6 +101,7 @@ export default async function HomePage() {
 
   return (
     <>
+      
       <Navbar />
 
       {/* ── HERO ── */}
@@ -1243,6 +1245,7 @@ export default async function HomePage() {
           }
         }
       `}</style>
+      <SpeedInsights />
     </>
   );
 }
