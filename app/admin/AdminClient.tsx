@@ -185,11 +185,25 @@ const SidebarContent = ({ tab, unread, navTo }: { tab: Tab; unread: number; navT
       <SidebarButton active={tab === "products"} onClick={() => navTo("products")} icon={<Package size={16} />} label="Products" />
       <SidebarButton active={tab === "messages"} onClick={() => navTo("messages")} icon={<Inbox size={16} />} label="Messages" unreadCount={unread} />
     </nav>
-    <div style={{ padding: "16px", borderTop: "1px solid var(--off-white)" }}>
-      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", textDecoration: "none" }}>
-        <ArrowLeft size={14} /> View Site
-      </Link>
-    </div>
+    <div style={{ padding: "16px", borderTop: "1px solid rgba(255,255,255,0.08)", background: "var(--charcoal)" }}>
+  <Link
+    href="/"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      fontFamily: "DM Sans",
+      fontSize: "0.78rem",
+      color: "rgba(255,255,255,0.55)",
+      textDecoration: "none",
+      transition: "color 0.2s",
+    }}
+    onMouseEnter={e => (e.currentTarget.style.color = "white")}
+    onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}
+  >
+    <ArrowLeft size={14} /> View Site
+  </Link>
+</div>
   </>
 );
 
