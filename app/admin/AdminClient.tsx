@@ -68,7 +68,7 @@ interface Message {
   phone?: string;
   service?: string;
   message?: string;
-  date: string;
+  createdAt: string;
   read: boolean;
 }
 
