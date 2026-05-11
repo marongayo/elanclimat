@@ -274,7 +274,28 @@ const SidebarContent = ({
           (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
         }
       >
-        <Bell size={17} />
+        <>
+          {unread > 0 ? (
+            <motion.div
+              // 1. Define the swinging motion (rotation)
+              animate={{ rotate: [-10, 10, -10] }}
+              transition={{
+                duration: 2.5, // Slow and steady
+                repeat: Infinity, // Loop forever
+                ease: "easeInOut", // Smooth transitions at the edges
+              }}
+              style={{
+                display: "inline-block",
+                originX: 0.5, // Horizontal center
+                originY: 0, // Top edge (pivot point)
+              }}
+            >
+              <Bell size={25} />
+            </motion.div>
+          ) : (
+            <Bell size={16} />
+          )}
+        </>
         {unread > 0 && (
           <span
             style={{
@@ -758,7 +779,7 @@ export default function AdminClient({
               color: "var(--charcoal)",
             }}
           >
-            <Bell size={20} />
+            <Bell size={unread > 0 ? 24 : 20} />
             {unread > 0 && (
               <span
                 style={{
@@ -1496,13 +1517,6 @@ export default function AdminClient({
                   value: products.filter((p) => p.inStock).length,
                   color: "var(--sage-dark)",
                   icon: <Eye size={22} />,
-                },
-                {
-                  label: "Unread Messages",
-                  value: unread,
-                  color: "#c0392b",
-                  icon: <Bell size={22} />,
-                  action: openBell,
                 },
               ].map((s, i) => (
                 <div

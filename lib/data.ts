@@ -16,7 +16,7 @@ export interface Product {
   name: string;
   price: number;
   category: string;
-  image?: string;    // legacy
+  image?: string; // legacy
   images: string[];
   description: string;
   inStock: boolean;
@@ -32,4 +32,6 @@ export interface Message {
   message?: string;
   date: string;
   read: boolean;
+  createdAt: string;
+  archived: boolean;
 }

@@ -10,6 +10,7 @@ const MessageSchema = new mongoose.Schema({
   date: { type: String, required: true },
   read: { type: Boolean, default: false },
   archived: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const MessageModel =

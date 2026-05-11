@@ -2,6 +2,30 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
+const FORM_PLACEHOLDERS = [
+  {
+    name: "name",
+    label: "Full Name",
+    type: "text",
+    placeholder: "Joan Dupont",
+    required: true,
+  },
+  {
+    name: "email",
+    label: "Email Address",
+    type: "email",
+    placeholder: "joan.dupont@example.you",
+    required: true,
+  },
+  {
+    name: "phone",
+    label: "Phone (optional)",
+    type: "tel",
+    placeholder: "+254 796 952 717",
+    required: false,
+  },
+];
+
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,29 +117,7 @@ export default function ContactForm() {
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: 18 }}
         >
-          {[
-            {
-              name: "name",
-              label: "Full Name",
-              type: "text",
-              placeholder: "Joan Dupont",
-              required: true,
-            },
-            {
-              name: "email",
-              label: "Email Address",
-              type: "email",
-              placeholder: "joan.dupont@example.you",
-              required: true,
-            },
-            {
-              name: "phone",
-              label: "Phone (optional)",
-              type: "tel",
-              placeholder: "+254 796 952 717",
-              required: false,
-            },
-          ].map((field) => (
+          {FORM_PLACEHOLDERS.map((field) => (
             <div key={field.name}>
               <label style={labelStyle}>{field.label}</label>
               <input
