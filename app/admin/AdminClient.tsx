@@ -277,17 +277,16 @@ const SidebarContent = ({
         <>
           {unread > 0 ? (
             <motion.div
-              // 1. Define the swinging motion (rotation)
               animate={{ rotate: [-10, 10, -10] }}
               transition={{
-                duration: 2.5, // Slow and steady
-                repeat: Infinity, // Loop forever
-                ease: "easeInOut", // Smooth transitions at the edges
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut",
               }}
               style={{
                 display: "inline-block",
-                originX: 0.5, // Horizontal center
-                originY: 0, // Top edge (pivot point)
+                originX: 0.5,
+                originY: 0,
               }}
             >
               <Bell size={25} />
@@ -345,7 +344,6 @@ export default function AdminClient({
   const [msg, setMsg] = useState("");
   const [open, setOpen] = useState(false);
 
-  // Messages state
   const [messages, setMessages] = useState<Message[]>([]);
   const [unread, setUnread] = useState(0);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
@@ -506,7 +504,6 @@ export default function AdminClient({
     toast("Product deleted.");
   };
 
-  // ── Message handlers ─────────────────────────────────────────────────────
   const markRead = async (id: string) => {
     const m = messages.find((m) => m.id === id);
     if (!m) return;
@@ -573,7 +570,6 @@ export default function AdminClient({
     loadMessages();
   };
 
-  // ── Auth screen ───────────────────────────────────────────────────────────
   if (!authed) {
     return (
       <div
@@ -681,7 +677,6 @@ export default function AdminClient({
     );
   }
 
-  // ── Main layout ───────────────────────────────────────────────────────────
   return (
     <div
       style={{
@@ -880,11 +875,10 @@ export default function AdminClient({
         )}
       </AnimatePresence>
 
-      {/* ── Messages Panel (floating bubble above bell icon) ──────────────── */}
+      {/* Messages Panel */}
       <AnimatePresence>
         {msgPanelOpen && (
           <>
-            {/* Invisible backdrop to close on outside click */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -895,8 +889,6 @@ export default function AdminClient({
               }}
               style={{ position: "fixed", inset: 0, zIndex: 300 }}
             />
-
-            {/* Floating panel — anchored above the sidebar bell (bottom-left) */}
             <motion.div
               className="msg-panel"
               initial={{ opacity: 0, scale: 0.92, y: 12 }}
@@ -955,7 +947,6 @@ export default function AdminClient({
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  {/* Ellipsis menu */}
                   <div style={{ position: "relative" }}>
                     <button
                       onClick={(e) => {
@@ -1035,8 +1026,6 @@ export default function AdminClient({
                       )}
                     </AnimatePresence>
                   </div>
-
-                  {/* Close button */}
                   <button
                     onClick={() => {
                       setMsgPanelOpen(false);
@@ -1058,9 +1047,8 @@ export default function AdminClient({
                 </div>
               </div>
 
-              {/* Panel body — scrollable */}
+              {/* Panel body */}
               <div style={{ flex: 1, overflowY: "auto" }}>
-                {/* Empty state */}
                 {messages.length === 0 && !archiveOpen && (
                   <div style={{ padding: "48px 24px", textAlign: "center" }}>
                     <Inbox
@@ -1083,7 +1071,6 @@ export default function AdminClient({
                   </div>
                 )}
 
-                {/* Active messages */}
                 {messages.map((m) => (
                   <div
                     key={m.id}
@@ -1098,7 +1085,6 @@ export default function AdminClient({
                       transition: "background 0.15s",
                     }}
                   >
-                    {/* Row 1: name + badges + date */}
                     <div
                       style={{
                         display: "flex",
@@ -1175,8 +1161,6 @@ export default function AdminClient({
                         })}
                       </span>
                     </div>
-
-                    {/* Row 2: email + phone */}
                     <div
                       style={{
                         display: "flex",
@@ -1209,8 +1193,6 @@ export default function AdminClient({
                         </span>
                       )}
                     </div>
-
-                    {/* Message body */}
                     {m.message && (
                       <p
                         style={{
@@ -1227,8 +1209,6 @@ export default function AdminClient({
                         {m.message}
                       </p>
                     )}
-
-                    {/* Actions */}
                     <div
                       style={{
                         display: "flex",
@@ -1275,7 +1255,6 @@ export default function AdminClient({
                   </div>
                 ))}
 
-                {/* ── Archived messages render inline below active ones ── */}
                 {archiveOpen &&
                   (loadingArchive ? (
                     <div
@@ -1306,7 +1285,6 @@ export default function AdminClient({
                     </div>
                   ) : (
                     <>
-                      {/* Sticky archive divider */}
                       <div
                         style={{
                           padding: "8px 16px",
@@ -1328,7 +1306,6 @@ export default function AdminClient({
                       >
                         Archive · {archivedMessages.length}
                       </div>
-
                       {archivedMessages.map((m) => (
                         <div
                           key={m.id}
@@ -1525,9 +1502,7 @@ export default function AdminClient({
                     background: "white",
                     padding: "24px 20px",
                     borderLeft: `3px solid ${s.color}`,
-                    cursor: s.action ? "pointer" : "default",
                   }}
-                  onClick={s.action}
                 >
                   <div style={{ color: s.color, marginBottom: 12 }}>
                     {s.icon}
@@ -2602,7 +2577,7 @@ export default function AdminClient({
         )}
       </main>
 
-      {/* ── FAB Speed Dial + Toast ─────────────────────────────────────── */}
+      {/* FAB Speed Dial + Toast */}
       <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 999 }}>
         <motion.div
           animate={{ width: open ? "auto" : toastVisible ? "auto" : 52 }}
