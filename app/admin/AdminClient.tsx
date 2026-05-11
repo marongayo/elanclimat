@@ -72,6 +72,7 @@ interface Message {
   read: boolean;
 }
 
+// Used for non-message dates (blog, products) — no relative time needed
 const formatDate = (raw: string | undefined, showYear = false): string => {
   if (!raw) return "—";
   const date = new Date(raw);
@@ -81,6 +82,38 @@ const formatDate = (raw: string | undefined, showYear = false): string => {
       day: "numeric",
       month: "short",
       ...(showYear ? { year: "2-digit" } : {}),
+    }) +
+    " · " +
+    date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
+};
+
+// Used for messages: relative time if < 6 days, otherwise full date with year
+const formatMessageDate = (raw: string | undefined): string => {
+  if (!raw) return "—";
+  const date = new Date(raw);
+  if (isNaN(date.getTime())) return "—";
+
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+  const diffMins = Math.floor(diffMs / 60_000);
+  const diffHours = Math.floor(diffMs / 3_600_000);
+  const diffDays = Math.floor(diffMs / 86_400_000);
+
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? "" : "s"} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  if (diffDays < 6) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+
+  // 6+ days: show full date with year
+  return (
+    date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     }) +
     " · " +
     date.toLocaleTimeString("en-GB", {
@@ -366,7 +399,8 @@ export default function AdminClient({
   const [unread, setUnread] = useState(0);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [archivedMessages, setArchivedMessages] = useState<Message[]>([]);
-  const [archiveOpen, setArchiveOpen] = useState(false);
+  // FIX 1: showingArchive replaces archiveOpen — it's a mode toggle, not a stacking flag
+  const [showingArchive, setShowingArchive] = useState(false);
   const [archiveLoaded, setArchiveLoaded] = useState(false);
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [msgPanelOpen, setMsgPanelOpen] = useState(false);
@@ -553,10 +587,16 @@ export default function AdminClient({
     toast("Message deleted.");
   };
 
+  // FIX 1: toggleArchive now switches modes instead of stacking
   const toggleArchive = async () => {
-    const opening = !archiveOpen;
-    setArchiveOpen(opening);
-    if (opening && !archiveLoaded) {
+    if (showingArchive) {
+      // Switch back to active messages
+      setShowingArchive(false);
+      return;
+    }
+    // Switch to archive view
+    setShowingArchive(true);
+    if (!archiveLoaded) {
       setLoadingArchive(true);
       try {
         const res = await fetch("/api/messages?archived=true");
@@ -951,7 +991,8 @@ export default function AdminClient({
                       color: "var(--charcoal)",
                     }}
                   >
-                    Admin
+                    {/* FIX 1: show which view we're in */}
+                    {showingArchive ? "Archive" : "Admin"}
                   </div>
                   <div
                     style={{
@@ -961,7 +1002,9 @@ export default function AdminClient({
                       marginTop: 1,
                     }}
                   >
-                    {messages.length} active · {unread} unread
+                    {showingArchive
+                      ? `${archivedMessages.length} archived`
+                      : `${messages.length} active · ${unread} unread`}
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -1038,7 +1081,8 @@ export default function AdminClient({
                             }
                           >
                             <Archive size={13} />
-                            {archiveOpen ? "Hide Archive" : "Load Archive"}
+                            {/* FIX 1: label reflects current mode */}
+                            {showingArchive ? "← Active Messages" : "Load Archive"}
                           </button>
                         </motion.div>
                       )}
@@ -1065,213 +1109,12 @@ export default function AdminClient({
                 </div>
               </div>
 
-              {/* Panel body */}
+              {/* Panel body — FIX 1: renders ONE list at a time, never both */}
               <div style={{ flex: 1, overflowY: "auto" }}>
-                {messages.length === 0 && !archiveOpen && (
-                  <div style={{ padding: "48px 24px", textAlign: "center" }}>
-                    <Inbox
-                      size={28}
-                      style={{
-                        color: "var(--text-muted)",
-                        opacity: 0.3,
-                        marginBottom: 10,
-                      }}
-                    />
-                    <p
-                      style={{
-                        fontFamily: "DM Sans",
-                        fontSize: "0.82rem",
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      No messages yet.
-                    </p>
-                  </div>
-                )}
 
-                {messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className="msg-item"
-                    style={{
-                      padding: "14px 16px",
-                      borderBottom: "1px solid var(--off-white)",
-                      background: m.read ? "white" : "var(--sage-pale)",
-                      borderLeft: m.read
-                        ? "3px solid transparent"
-                        : "3px solid var(--sage-dark)",
-                      transition: "background 0.15s",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        gap: 8,
-                        marginBottom: 4,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                          flexWrap: "wrap",
-                          minWidth: 0,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "DM Sans",
-                            fontSize: "0.85rem",
-                            fontWeight: 600,
-                            color: "var(--charcoal)",
-                          }}
-                        >
-                          {m.name}
-                        </span>
-                        {!m.read && (
-                          <span
-                            style={{
-                              background: "#c0392b",
-                              color: "white",
-                              fontSize: "0.55rem",
-                              fontWeight: 700,
-                              padding: "2px 6px",
-                              borderRadius: 9999,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.05em",
-                              flexShrink: 0,
-                            }}
-                          >
-                            New
-                          </span>
-                        )}
-                        {m.service && (
-                          <span
-                            style={{
-                              background: "var(--sage)",
-                              color: "var(--charcoal)",
-                              fontSize: "0.62rem",
-                              padding: "2px 7px",
-                              borderRadius: 9999,
-                              fontFamily: "DM Sans",
-                              flexShrink: 0,
-                            }}
-                          >
-                            {m.service}
-                          </span>
-                        )}
-                      </div>
-                      <span
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.65rem",
-                          color: "var(--text-muted)",
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {formatDate(m.createdAt)}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 12,
-                        marginBottom: 8,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.72rem",
-                          color: "var(--text-muted)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                        }}
-                      >
-                        <Mail size={10} /> {m.email}
-                      </span>
-                      {m.phone && (
-                        <span
-                          style={{
-                            fontFamily: "DM Sans",
-                            fontSize: "0.72rem",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          {m.phone}
-                        </span>
-                      )}
-                    </div>
-                    {m.message && (
-                      <p
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.8rem",
-                          color: "var(--charcoal)",
-                          lineHeight: 1.6,
-                          margin: "0 0 10px",
-                          padding: "8px 10px",
-                          background: "rgba(0,0,0,0.03)",
-                          borderRadius: 4,
-                        }}
-                      >
-                        {m.message}
-                      </p>
-                    )}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 6,
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      {!m.read && (
-                        <button
-                          onClick={() => markRead(m.id)}
-                          style={{
-                            padding: "4px 10px",
-                            background: "var(--sage-pale)",
-                            border: "1px solid var(--sage)",
-                            cursor: "pointer",
-                            color: "var(--sage-dark)",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 4,
-                            fontFamily: "DM Sans",
-                            fontSize: "0.68rem",
-                            borderRadius: 4,
-                          }}
-                        >
-                          <CheckCheck size={11} /> Mark read
-                        </button>
-                      )}
-                      <button
-                        onClick={() => deleteMessage(m.id)}
-                        style={{
-                          padding: "4px 8px",
-                          background: "#fef2f2",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "#c0392b",
-                          display: "flex",
-                          alignItems: "center",
-                          borderRadius: 4,
-                        }}
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {archiveOpen &&
-                  (loadingArchive ? (
+                {/* ── ARCHIVE VIEW ── */}
+                {showingArchive && (
+                  loadingArchive ? (
                     <div
                       style={{
                         padding: "24px",
@@ -1286,14 +1129,11 @@ export default function AdminClient({
                   ) : archivedMessages.length === 0 ? (
                     <div
                       style={{
-                        padding: "14px 16px",
+                        padding: "48px 24px",
+                        textAlign: "center",
                         fontFamily: "DM Sans",
-                        fontSize: "0.78rem",
+                        fontSize: "0.82rem",
                         color: "var(--text-muted)",
-                        borderTop:
-                          messages.length > 0
-                            ? "1px solid var(--off-white)"
-                            : "none",
                       }}
                     >
                       No archived messages.
@@ -1309,10 +1149,6 @@ export default function AdminClient({
                           textTransform: "uppercase",
                           color: "var(--text-muted)",
                           background: "var(--warm-white)",
-                          borderTop:
-                            messages.length > 0
-                              ? "1px solid var(--off-white)"
-                              : "none",
                           borderBottom: "1px solid var(--off-white)",
                           position: "sticky",
                           top: 0,
@@ -1382,6 +1218,7 @@ export default function AdminClient({
                                 flexShrink: 0,
                               }}
                             >
+                              {/* FIX 2 & 3: use formatMessageDate for archived too */}
                               <span
                                 style={{
                                   fontFamily: "DM Sans",
@@ -1390,7 +1227,7 @@ export default function AdminClient({
                                   whiteSpace: "nowrap",
                                 }}
                               >
-                                {formatDate(m.createdAt, true)}
+                                {formatMessageDate(m.createdAt)}
                               </span>
                               <button
                                 onClick={() => deleteMessage(m.id, true)}
@@ -1438,7 +1275,217 @@ export default function AdminClient({
                         </div>
                       ))}
                     </>
-                  ))}
+                  )
+                )}
+
+                {/* ── ACTIVE MESSAGES VIEW ── */}
+                {!showingArchive && (
+                  <>
+                    {messages.length === 0 ? (
+                      <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                        <Inbox
+                          size={28}
+                          style={{
+                            color: "var(--text-muted)",
+                            opacity: 0.3,
+                            marginBottom: 10,
+                          }}
+                        />
+                        <p
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.82rem",
+                            color: "var(--text-muted)",
+                          }}
+                        >
+                          No messages yet.
+                        </p>
+                      </div>
+                    ) : (
+                      messages.map((m) => (
+                        <div
+                          key={m.id}
+                          className="msg-item"
+                          style={{
+                            padding: "14px 16px",
+                            borderBottom: "1px solid var(--off-white)",
+                            background: m.read ? "white" : "var(--sage-pale)",
+                            borderLeft: m.read
+                              ? "3px solid transparent"
+                              : "3px solid var(--sage-dark)",
+                            transition: "background 0.15s",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
+                              gap: 8,
+                              marginBottom: 4,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                flexWrap: "wrap",
+                                minWidth: 0,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "DM Sans",
+                                  fontSize: "0.85rem",
+                                  fontWeight: 600,
+                                  color: "var(--charcoal)",
+                                }}
+                              >
+                                {m.name}
+                              </span>
+                              {!m.read && (
+                                <span
+                                  style={{
+                                    background: "#c0392b",
+                                    color: "white",
+                                    fontSize: "0.55rem",
+                                    fontWeight: 700,
+                                    padding: "2px 6px",
+                                    borderRadius: 9999,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.05em",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  New
+                                </span>
+                              )}
+                              {m.service && (
+                                <span
+                                  style={{
+                                    background: "var(--sage)",
+                                    color: "var(--charcoal)",
+                                    fontSize: "0.62rem",
+                                    padding: "2px 7px",
+                                    borderRadius: 9999,
+                                    fontFamily: "DM Sans",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {m.service}
+                                </span>
+                              )}
+                            </div>
+                            {/* FIX 2 & 3: relative time for recent, full date+year for older */}
+                            <span
+                              style={{
+                                fontFamily: "DM Sans",
+                                fontSize: "0.65rem",
+                                color: "var(--text-muted)",
+                                whiteSpace: "nowrap",
+                                flexShrink: 0,
+                              }}
+                            >
+                              {formatMessageDate(m.createdAt)}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 12,
+                              marginBottom: 8,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: "DM Sans",
+                                fontSize: "0.72rem",
+                                color: "var(--text-muted)",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 4,
+                              }}
+                            >
+                              <Mail size={10} /> {m.email}
+                            </span>
+                            {m.phone && (
+                              <span
+                                style={{
+                                  fontFamily: "DM Sans",
+                                  fontSize: "0.72rem",
+                                  color: "var(--text-muted)",
+                                }}
+                              >
+                                {m.phone}
+                              </span>
+                            )}
+                          </div>
+                          {m.message && (
+                            <p
+                              style={{
+                                fontFamily: "DM Sans",
+                                fontSize: "0.8rem",
+                                color: "var(--charcoal)",
+                                lineHeight: 1.6,
+                                margin: "0 0 10px",
+                                padding: "8px 10px",
+                                background: "rgba(0,0,0,0.03)",
+                                borderRadius: 4,
+                              }}
+                            >
+                              {m.message}
+                            </p>
+                          )}
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 6,
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            {!m.read && (
+                              <button
+                                onClick={() => markRead(m.id)}
+                                style={{
+                                  padding: "4px 10px",
+                                  background: "var(--sage-pale)",
+                                  border: "1px solid var(--sage)",
+                                  cursor: "pointer",
+                                  color: "var(--sage-dark)",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  fontFamily: "DM Sans",
+                                  fontSize: "0.68rem",
+                                  borderRadius: 4,
+                                }}
+                              >
+                                <CheckCheck size={11} /> Mark read
+                              </button>
+                            )}
+                            <button
+                              onClick={() => deleteMessage(m.id)}
+                              style={{
+                                padding: "4px 8px",
+                                background: "#fef2f2",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "#c0392b",
+                                display: "flex",
+                                alignItems: "center",
+                                borderRadius: 4,
+                              }}
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </>
+                )}
               </div>
             </motion.div>
           </>
