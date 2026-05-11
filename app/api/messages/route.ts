@@ -21,7 +21,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const msg = { ...body, id: body.id || randomUUID(), read: false };
+  const msg = {
+    ...body,
+    id: body.id || randomUUID(),
+    read: false,
+  };
   await saveMessage(msg);
   return NextResponse.json(msg, { status: 201 });
 }
