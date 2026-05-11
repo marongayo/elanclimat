@@ -72,6 +72,24 @@ interface Message {
   read: boolean;
 }
 
+const formatDate = (raw: string | undefined, showYear = false): string => {
+  if (!raw) return "—";
+  const date = new Date(raw);
+  if (isNaN(date.getTime())) return "—";
+  return (
+    date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      ...(showYear ? { year: "2-digit" } : {}),
+    }) +
+    " · " +
+    date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
+};
+
 const emptyBlog = (): BlogForm => ({
   id: "",
   title: "",
@@ -1155,10 +1173,7 @@ export default function AdminClient({
                           flexShrink: 0,
                         }}
                       >
-                        {new Date(m.date).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                        })}
+                        {formatDate(m.createdAt)}
                       </span>
                     </div>
                     <div
@@ -1375,11 +1390,7 @@ export default function AdminClient({
                                   whiteSpace: "nowrap",
                                 }}
                               >
-                                {new Date(m.date).toLocaleDateString("en-GB", {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "2-digit",
-                                })}
+                                {formatDate(m.createdAt, true)}
                               </span>
                               <button
                                 onClick={() => deleteMessage(m.id, true)}
