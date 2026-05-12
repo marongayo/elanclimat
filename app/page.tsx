@@ -958,9 +958,9 @@ export default async function HomePage() {
               >
                 From 
                 <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
-                   the Élan 
+                   the Élan Blog,
                 </em>
-                 Blog, about the industry 
+                  about the industry 
               </h2>
             </div>
             <Link
