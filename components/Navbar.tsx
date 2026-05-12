@@ -13,15 +13,14 @@ const NAV_LINKS = [
   { label: "Admin", href: "/admin" },
 ];
 
-const NAVBAR_HEIGHT = 72; // approximate max navbar height in px
+const NAVBAR_HEIGHT = 72;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [navOffset, setNavOffset] = useState(0); // 0 = fully visible, -NAVBAR_HEIGHT = fully hidden
+  const [navOffset, setNavOffset] = useState(0);
 
   const lastScrollY = useRef(0);
-  const scrollUpAccum = useRef(0); // how many px the user has scrolled up since direction changed
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,24 +30,23 @@ export default function Navbar() {
       // Glass background
       setScrolled(currentScrollY > 40);
 
-      // Always close mobile menu on scroll
-      if (open) setOpen(false);
-
       // Near top — snap fully visible
       if (currentScrollY < 10) {
         setNavOffset(0);
-        scrollUpAccum.current = 0;
         lastScrollY.current = currentScrollY;
         return;
       }
 
       if (delta > 0) {
-        // Scrolling DOWN — reset upward accumulator, push navbar out proportionally
-        scrollUpAccum.current = 0;
-        setNavOffset((prev) => Math.min(prev + delta, NAVBAR_HEIGHT));
+        // Scrolling DOWN — push navbar out proportionally
+        setNavOffset((prev) => {
+          const next = Math.min(prev + delta, NAVBAR_HEIGHT);
+          // Once fully out of view, close the mobile menu
+          if (next >= NAVBAR_HEIGHT) setOpen(false);
+          return next;
+        });
       } else {
-        // Scrolling UP — accumulate upward distance, pull navbar in proportionally
-        scrollUpAccum.current += Math.abs(delta);
+        // Scrolling UP — pull navbar in proportionally
         setNavOffset((prev) => Math.max(prev - Math.abs(delta), 0));
       }
 
@@ -57,7 +55,7 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [open]);
+  }, []);
 
   return (
     <nav
@@ -67,8 +65,6 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        // No transition on transform — it follows scroll 1:1
-        // Only transition background/padding for the glass effect
         transition: "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
         willChange: "transform",
         background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
@@ -282,4 +278,6 @@ export default function Navbar() {
       )}
     </nav>
   );
-}
+                                }
+
+                  
