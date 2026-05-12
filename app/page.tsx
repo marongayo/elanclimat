@@ -732,8 +732,9 @@ export default async function HomePage() {
                   marginBottom: 24,
                 }}
               >
-                Engineering comfort <em style={{ fontStyle: "italic" }}>and</em>{" "}
-                sustainability, since 2007
+                Engineering comfort <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
+                  &amp; sustainability, 
+                </em> since 2007
               </h2>
               <p
                 style={{
