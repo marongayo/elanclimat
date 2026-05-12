@@ -956,7 +956,11 @@ export default async function HomePage() {
                   lineHeight: 1.2,
                 }}
               >
-                From the Élan blog
+                From the Élan
+                <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
+                   the Élan 
+                </em>
+                blog, about the industry 
               </h2>
             </div>
             <Link
