@@ -26,6 +26,9 @@ import Modal from "@/components/Modal";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ADMIN_PASSWORD = "elan2024";
+const ADMIN_EMAIL = "admin@elanclimat.co.ke";
+const SUPER_ADMIN_PASSWORD = "elanSuper2024";
+const SUPER_ADMIN_EMAIL = "superadmin@elanclimat.co.ke";
 
 type Tab = "dashboard" | "blog" | "products";
 
@@ -381,6 +384,7 @@ export default function AdminClient({
 }) {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
+  const [email, setEmail] = useState("");
   const [pwError, setPwError] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -430,10 +434,10 @@ export default function AdminClient({
   }, []);
 
   const login = () => {
-    if (pw === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && pw === ADMIN_PASSWORD) {
       setAuthed(true);
       setPwError("");
-    } else setPwError("Incorrect password. Try again.");
+    } else setPwError("Incorrect email or password. Try again.");
   };
 
   const toast = (m: string) => {
@@ -676,7 +680,19 @@ export default function AdminClient({
             </div>
           </div>
           <div style={{ marginBottom: 16 }}>
+            <label style={LABEL_STYLE}>Email</label>
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && login()}
+              placeholder="Enter admin email"
+              style={INPUT_STYLE}
+            />
+
             <label style={LABEL_STYLE}>Password</label>
+
             <input
               type="password"
               value={pw}
