@@ -13,52 +13,50 @@ const NAV_LINKS = [
   { label: "Admin", href: "/admin" },
 ];
 
+const NAVBAR_HEIGHT = 72; // approximate max navbar height in px
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [visible, setVisible] = useState(true);
+  const [navOffset, setNavOffset] = useState(0); // 0 = fully visible, -NAVBAR_HEIGHT = fully hidden
 
   const lastScrollY = useRef(0);
+  const scrollUpAccum = useRef(0); // how many px the user has scrolled up since direction changed
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
 
-      // Glass background after scroll
+      // Glass background
       setScrolled(currentScrollY > 40);
 
-      // Keep navbar visible when near top
+      // Always close mobile menu on scroll
+      if (open) setOpen(false);
+
+      // Near top — snap fully visible
       if (currentScrollY < 10) {
-        setVisible(true);
+        setNavOffset(0);
+        scrollUpAccum.current = 0;
         lastScrollY.current = currentScrollY;
         return;
       }
 
-      // Close mobile menu on scroll
-      if (open) {
-        setOpen(false);
-      }
-
-      // Detect scroll direction
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        // scrolling DOWN
-        setVisible(false);
+      if (delta > 0) {
+        // Scrolling DOWN — reset upward accumulator, push navbar out proportionally
+        scrollUpAccum.current = 0;
+        setNavOffset((prev) => Math.min(prev + delta, NAVBAR_HEIGHT));
       } else {
-        // scrolling UP
-        setVisible(true);
+        // Scrolling UP — accumulate upward distance, pull navbar in proportionally
+        scrollUpAccum.current += Math.abs(delta);
+        setNavOffset((prev) => Math.max(prev - Math.abs(delta), 0));
       }
 
-      // Save current scroll position
       lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [open]);
 
   return (
@@ -69,8 +67,9 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        transition:
-          "transform 0.35s ease, background 0.35s ease, padding 0.35s ease",
+        // No transition on transform — it follows scroll 1:1
+        // Only transition background/padding for the glass effect
+        transition: "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
         willChange: "transform",
         background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
@@ -78,30 +77,18 @@ export default function Navbar() {
           ? "1px solid rgba(143,175,159,0.2)"
           : "1px solid transparent",
         padding: scrolled ? "14px 0" : "22px 0",
-        transform: visible ? "translateY(0)" : "translateY(-100%)",
+        transform: `translateY(-${navOffset}px)`,
       }}
     >
       <style>{`
         @media (max-width: 768px) {
-          .hidden-mobile {
-            display: none !important;
-          }
-
-          .show-mobile {
-            display: flex !important;
-          }
+          .hidden-mobile { display: none !important; }
+          .show-mobile { display: flex !important; }
         }
-
         @media (min-width: 769px) {
-          .show-mobile {
-            display: none !important;
-          }
+          .show-mobile { display: none !important; }
         }
-
-        .nav-link {
-          position: relative;
-        }
-
+        .nav-link { position: relative; }
         .nav-link::after {
           content: "";
           position: absolute;
@@ -112,10 +99,7 @@ export default function Navbar() {
           background: var(--charcoal);
           transition: width 0.25s ease;
         }
-
-        .nav-link:hover::after {
-          width: 100%;
-        }
+        .nav-link:hover::after { width: 100%; }
       `}</style>
 
       <div
@@ -130,13 +114,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              lineHeight: 1,
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
             <span
               style={{
                 fontFamily: "Cormorant Garamond, serif",
@@ -148,7 +126,6 @@ export default function Navbar() {
             >
               Élan Climat
             </span>
-
             <span
               style={{
                 fontFamily: "DM Sans, sans-serif",
@@ -165,14 +142,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div
-          className="hidden-mobile"
-          style={{
-            display: "flex",
-            gap: 36,
-            alignItems: "center",
-          }}
-        >
+        <div className="hidden-mobile" style={{ display: "flex", gap: 36, alignItems: "center" }}>
           {NAV_LINKS.map((l) => (
             <Link
               key={l.label}
@@ -193,14 +163,7 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          {/* Shop */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Link
             href="/shop"
             className="hidden-mobile"
@@ -218,7 +181,6 @@ export default function Navbar() {
             <span>Shop</span>
           </Link>
 
-          {/* CTA */}
           <Link
             href="/#contact"
             className="hidden-mobile"
@@ -234,17 +196,12 @@ export default function Navbar() {
               letterSpacing: "0.03em",
               transition: "background 0.2s ease",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "var(--sage-dark)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "var(--charcoal)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--sage-dark)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--charcoal)")}
           >
             Get a Quote
           </Link>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setOpen(!open)}
             className="show-mobile"
