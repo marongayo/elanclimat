@@ -944,7 +944,7 @@ export default async function HomePage() {
                     color: "var(--sage-dark)",
                   }}
                 >
-                  Insights
+                  Sector Insights
                 </span>
               </div>
               <h2
@@ -956,9 +956,9 @@ export default async function HomePage() {
                   lineHeight: 1.2,
                 }}
               >
-                From 
+                From {""} 
                 <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
-                   the Élan Blog,
+                   the Élan Blog, {""} 
                 </em>
                   about the industry 
               </h2>
