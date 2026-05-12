@@ -13,24 +13,30 @@ const NAV_LINKS = [
   { label: "Admin", href: "/admin" },
 ];
 
-const NAVBAR_HEIGHT = 72;
-
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [navOffset, setNavOffset] = useState(0);
 
   const lastScrollY = useRef(0);
+  const navRef = useRef<HTMLElement>(null);
+  // Keep a ref in sync with open so the scroll handler always sees current value
+  const openRef = useRef(false);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY.current;
+      // Read the real height of the nav (collapsed or expanded)
+      const navHeight = navRef.current?.offsetHeight ?? 72;
 
-      // Glass background
       setScrolled(currentScrollY > 40);
 
-      // Near top — snap fully visible
+      // Near top — snap fully visible and reset
       if (currentScrollY < 10) {
         setNavOffset(0);
         lastScrollY.current = currentScrollY;
@@ -38,15 +44,15 @@ export default function Navbar() {
       }
 
       if (delta > 0) {
-        // Scrolling DOWN — push navbar out proportionally
+        // Scrolling DOWN — push out by delta, capped at full nav height
         setNavOffset((prev) => {
-          const next = Math.min(prev + delta, NAVBAR_HEIGHT);
-          // Once fully out of view, close the mobile menu
-          if (next >= NAVBAR_HEIGHT) setOpen(false);
+          const next = Math.min(prev + delta, navHeight);
+          // Once fully off-screen, reset open state cleanly
+          if (next >= navHeight && openRef.current) setOpen(false);
           return next;
         });
       } else {
-        // Scrolling UP — pull navbar in proportionally
+        // Scrolling UP — pull back in by delta, floored at 0
         setNavOffset((prev) => Math.max(prev - Math.abs(delta), 0));
       }
 
@@ -55,16 +61,18 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, []); // no deps — openRef keeps it fresh without re-registering
 
   return (
     <nav
+      ref={navRef}
       style={{
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 100,
+        // NO transition on transform — must follow scroll 1:1
         transition: "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
         willChange: "transform",
         background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
@@ -199,7 +207,7 @@ export default function Navbar() {
           </Link>
 
           <button
-            onClick={() => setOpen(!open)}
+            onClick={() => setOpen((prev) => !prev)}
             className="show-mobile"
             style={{
               background: "none",
@@ -278,6 +286,4 @@ export default function Navbar() {
       )}
     </nav>
   );
-                                }
-
-                  
+}
