@@ -34,10 +34,9 @@ export default function Navbar() {
         return;
       }
 
-      // Prevent hide/show glitches while mobile menu is open
+      // Close mobile menu on scroll
       if (open) {
-        lastScrollY.current = currentScrollY;
-        return;
+        setOpen(false);
       }
 
       // Detect scroll direction
