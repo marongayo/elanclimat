@@ -105,7 +105,8 @@ const formatMessageDate = (raw: string | undefined): string => {
 
   if (diffMins < 1) return "just now";
   if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? "" : "s"} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
   if (diffDays < 6) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
 
   // 6+ days: show full date with year
@@ -378,7 +379,7 @@ export default function AdminClient({
   initialPosts: BlogPost[];
   initialProducts: Product[];
 }) {
-  const [authed, setAuthed] = useState(true);
+  const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState("");
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -1082,7 +1083,9 @@ export default function AdminClient({
                           >
                             <Archive size={13} />
                             {/* FIX 1: label reflects current mode */}
-                            {showingArchive ? "← Active Messages" : "Load Archive"}
+                            {showingArchive
+                              ? "← Active Messages"
+                              : "Load Archive"}
                           </button>
                         </motion.div>
                       )}
@@ -1111,10 +1114,9 @@ export default function AdminClient({
 
               {/* Panel body — FIX 1: renders ONE list at a time, never both */}
               <div style={{ flex: 1, overflowY: "auto" }}>
-
                 {/* ── ARCHIVE VIEW ── */}
-                {showingArchive && (
-                  loadingArchive ? (
+                {showingArchive &&
+                  (loadingArchive ? (
                     <div
                       style={{
                         padding: "24px",
@@ -1275,14 +1277,15 @@ export default function AdminClient({
                         </div>
                       ))}
                     </>
-                  )
-                )}
+                  ))}
 
                 {/* ── ACTIVE MESSAGES VIEW ── */}
                 {!showingArchive && (
                   <>
                     {messages.length === 0 ? (
-                      <div style={{ padding: "48px 24px", textAlign: "center" }}>
+                      <div
+                        style={{ padding: "48px 24px", textAlign: "center" }}
+                      >
                         <Inbox
                           size={28}
                           style={{

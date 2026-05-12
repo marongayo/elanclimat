@@ -1,116 +1,329 @@
-'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { ShoppingBag, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: 'Home', href: '/#home' },
-  { label: 'Services', href: '/#services' },
-  { label: 'About', href: '/#about' },
-  { label: 'Blog', href: '/#news' },
-  { label: 'Contact', href: '/#contact' },
-  { label: 'Admin', href: '/admin' }
+  { label: "Home", href: "/#home" },
+  { label: "Services", href: "/#services" },
+  { label: "About", href: "/#about" },
+  { label: "Blog", href: "/#news" },
+  { label: "Contact", href: "/#contact" },
+  { label: "Admin", href: "/admin" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Glass background after scroll
+      setScrolled(currentScrollY > 40);
+
+      // Keep navbar visible when near top
+      if (currentScrollY < 10) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Prevent hide/show glitches while mobile menu is open
+      if (open) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Detect scroll direction
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        // scrolling DOWN
+        setVisible(false);
+      } else {
+        // scrolling UP
+        setVisible(true);
+      }
+
+      // Save current scroll position
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [open]);
 
   return (
     <nav
       style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        transition: 'all 0.35s ease',
-        background: scrolled ? 'rgba(247,245,240,0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(143,175,159,0.2)' : '1px solid transparent',
-        padding: scrolled ? '14px 0' : '22px 0',
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        transition:
+          "transform 0.35s ease, background 0.35s ease, padding 0.35s ease",
+        willChange: "transform",
+        background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        borderBottom: scrolled
+          ? "1px solid rgba(143,175,159,0.2)"
+          : "1px solid transparent",
+        padding: scrolled ? "14px 0" : "22px 0",
+        transform: visible ? "translateY(0)" : "translateY(-100%)",
       }}
     >
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .hidden-mobile {
+            display: none !important;
+          }
+
+          .show-mobile {
+            display: flex !important;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .show-mobile {
+            display: none !important;
+          }
+        }
+
+        .nav-link {
+          position: relative;
+        }
+
+        .nav-link::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -4px;
+          width: 0%;
+          height: 1px;
+          background: var(--charcoal);
+          transition: width 0.25s ease;
+        }
+
+        .nav-link:hover::after {
+          width: 100%;
+        }
+      `}</style>
+
+      <div
+        style={{
+          maxWidth: 1280,
+          margin: "0 auto",
+          padding: "0 32px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         {/* Logo */}
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-            <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.3rem', fontWeight: 600, color: 'var(--charcoal)', letterSpacing: '-0.01em' }}>
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              lineHeight: 1,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "1.3rem",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+                letterSpacing: "-0.01em",
+              }}
+            >
               Élan Climat
             </span>
-            <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--sage-dark)', marginTop: 1 }}>
+
+            <span
+              style={{
+                fontFamily: "DM Sans, sans-serif",
+                fontSize: "0.62rem",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "var(--sage-dark)",
+                marginTop: 1,
+              }}
+            >
               & Énergie
             </span>
           </div>
         </Link>
 
-        {/* Desktop links */}
-        <div style={{ display: 'flex', gap: 36, alignItems: 'center' }} className="hidden-mobile">
-          {NAV_LINKS.map(l => (
-            <a key={l.label} href={l.href} className="nav-link"
-              style={{ fontFamily: 'DM Sans', fontSize: '0.85rem', fontWeight: 400, color: 'var(--charcoal)', textDecoration: 'none', letterSpacing: '0.01em' }}>
+        {/* Desktop Nav */}
+        <div
+          className="hidden-mobile"
+          style={{
+            display: "flex",
+            gap: 36,
+            alignItems: "center",
+          }}
+        >
+          {NAV_LINKS.map((l) => (
+            <Link
+              key={l.label}
+              href={l.href}
+              className="nav-link"
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                fontWeight: 400,
+                color: "var(--charcoal)",
+                textDecoration: "none",
+                letterSpacing: "0.01em",
+              }}
+            >
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        {/* Right actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none', fontFamily: 'DM Sans', fontSize: '0.82rem', color: 'var(--charcoal)' }}
-            className="hidden-mobile">
+        {/* Right Actions */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          {/* Shop */}
+          <Link
+            href="/shop"
+            className="hidden-mobile"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              textDecoration: "none",
+              fontFamily: "DM Sans",
+              fontSize: "0.82rem",
+              color: "var(--charcoal)",
+            }}
+          >
             <ShoppingBag size={16} />
             <span>Shop</span>
           </Link>
-          
-          <Link href="/#contact" style={{
-            display: 'inline-block', padding: '9px 22px',
-            background: 'var(--charcoal)', color: 'white',
-            fontFamily: 'DM Sans', fontSize: '0.8rem', fontWeight: 500,
-            textDecoration: 'none', letterSpacing: '0.03em',
-            transition: 'background 0.2s',
-          }}
+
+          {/* CTA */}
+          <Link
+            href="/#contact"
             className="hidden-mobile"
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--sage-dark)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--charcoal)')}>
+            style={{
+              display: "inline-block",
+              padding: "9px 22px",
+              background: "var(--charcoal)",
+              color: "white",
+              fontFamily: "DM Sans",
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              textDecoration: "none",
+              letterSpacing: "0.03em",
+              transition: "background 0.2s ease",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "var(--sage-dark)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "var(--charcoal)")
+            }
+          >
             Get a Quote
           </Link>
-          <button onClick={() => setOpen(!open)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--charcoal)', display: 'none' }} className="show-mobile">
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="show-mobile"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--charcoal)",
+              display: "none",
+            }}
+          >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       {open && (
-        <div style={{ background: 'var(--warm-white)', borderTop: '1px solid var(--off-white)', padding: '24px 32px 32px' }}>
-          {NAV_LINKS.map(l => (
-            <Link key={l.label} href={l.href} onClick={() => setOpen(false)}
-              style={{ display: 'block', padding: '12px 0', fontFamily: 'DM Sans', fontSize: '1rem', color: 'var(--charcoal)', textDecoration: 'none', borderBottom: '1px solid var(--off-white)' }}>
+        <div
+          style={{
+            background: "var(--warm-white)",
+            borderTop: "1px solid var(--off-white)",
+            padding: "24px 32px 32px",
+          }}
+        >
+          {NAV_LINKS.map((l) => (
+            <Link
+              key={l.label}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              style={{
+                display: "block",
+                padding: "12px 0",
+                fontFamily: "DM Sans",
+                fontSize: "1rem",
+                color: "var(--charcoal)",
+                textDecoration: "none",
+                borderBottom: "1px solid var(--off-white)",
+              }}
+            >
               {l.label}
             </Link>
           ))}
-          <Link href="/shop" onClick={() => setOpen(false)}
-            style={{ display: 'block', padding: '12px 0', fontFamily: 'DM Sans', fontSize: '1rem', color: 'var(--charcoal)', textDecoration: 'none', borderBottom: '1px solid var(--off-white)' }}>
+
+          <Link
+            href="/shop"
+            onClick={() => setOpen(false)}
+            style={{
+              display: "block",
+              padding: "12px 0",
+              fontFamily: "DM Sans",
+              fontSize: "1rem",
+              color: "var(--charcoal)",
+              textDecoration: "none",
+              borderBottom: "1px solid var(--off-white)",
+            }}
+          >
             Shop
           </Link>
-          <Link href="/#contact" onClick={() => setOpen(false)}
-            style={{ display: 'inline-block', marginTop: 20, padding: '10px 24px', background: 'var(--charcoal)', color: 'white', fontFamily: 'DM Sans', fontSize: '0.85rem', textDecoration: 'none' }}>
+
+          <Link
+            href="/#contact"
+            onClick={() => setOpen(false)}
+            style={{
+              display: "inline-block",
+              marginTop: 20,
+              padding: "10px 24px",
+              background: "var(--charcoal)",
+              color: "white",
+              fontFamily: "DM Sans",
+              fontSize: "0.85rem",
+              textDecoration: "none",
+            }}
+          >
             Get a Quote
           </Link>
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 768px) {
-          .hidden-mobile { display: none !important; }
-          .show-mobile { display: flex !important; }
-        }
-        @media (min-width: 769px) {
-          .show-mobile { display: none !important; }
-        }
-      `}</style>
     </nav>
   );
 }
