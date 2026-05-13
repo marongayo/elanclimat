@@ -4,8 +4,8 @@
 import { useState } from "react";
 import { Product } from "@/lib/data";
 import { Search, ShoppingBag } from "lucide-react";
-import { CardCarousel } from "./CardCarousel";
-import { CartDrawer } from "./CartDrawer";
+import { CardCarousel } from "@/components/shop-components/CardCarousel";
+import { CartDrawer } from "@/components/shop-components/CartDrawer";
 
 const CATEGORIES = ["All", "HVAC", "Solar", "Batteries"];
 
