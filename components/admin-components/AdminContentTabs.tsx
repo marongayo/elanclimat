@@ -1,0 +1,559 @@
+"use client";
+import { useRef } from "react";
+import Image from "next/image";
+import { BlogPost, Product } from "@/lib/data";
+import { Trash2, Edit3, X, Save, FileText, Package, Eye } from "lucide-react";
+import Link from "next/link";
+import Modal from "@/components/Modal";
+
+type Tab = "dashboard" | "blog" | "products";
+
+interface BlogForm {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  image: string;
+  author: string;
+  date: string;
+  readTime: string;
+}
+
+interface ProductForm {
+  id: string;
+  name: string;
+  price: string;
+  category: string;
+  images: string[];
+  description: string;
+  inStock: boolean;
+  badge: string;
+}
+
+interface ProductErrors {
+  name?: string;
+  price?: string;
+  category?: string;
+  description?: string;
+  images?: string;
+}
+
+const INPUT_STYLE: React.CSSProperties = {
+  width: "100%",
+  padding: "10px 12px",
+  border: "1px solid var(--off-white)",
+  fontFamily: "DM Sans",
+  fontSize: "0.88rem",
+  color: "var(--charcoal)",
+  outline: "none",
+  background: "white",
+  boxSizing: "border-box",
+};
+
+const INPUT_ERROR_STYLE: React.CSSProperties = {
+  ...INPUT_STYLE,
+  border: "1px solid #c0392b",
+};
+
+const LABEL_STYLE: React.CSSProperties = {
+  display: "block",
+  fontFamily: "DM Sans",
+  fontSize: "0.7rem",
+  fontWeight: 500,
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: "var(--text-muted)",
+  marginBottom: 6,
+};
+
+const ERROR_TEXT: React.CSSProperties = {
+  fontFamily: "DM Sans",
+  fontSize: "0.72rem",
+  color: "#c0392b",
+  marginTop: 4,
+  display: "block",
+};
+
+export default function AdminContentTabs({
+  tab,
+  posts,
+  products,
+  blogForm,
+  setBlogForm,
+  productForm,
+  setProductForm,
+  productErrors,
+  setProductErrors,
+  saving,
+  uploadingBlog,
+  setUploadingBlog,
+  uploadingProduct,
+  setUploadingProduct,
+  saveBlog,
+  deleteBlog,
+  saveProduct,
+  deleteProduct,
+  clearError,
+  toast,
+}: {
+  tab: Tab;
+  posts: BlogPost[];
+  products: Product[];
+  blogForm: BlogForm | null;
+  setBlogForm: (f: BlogForm | null) => void;
+  productForm: ProductForm | null;
+  setProductForm: (f: ProductForm | ((prev: ProductForm | null) => ProductForm | null) | null) => void;
+  productErrors: ProductErrors;
+  setProductErrors: (e: ProductErrors) => void;
+  saving: boolean;
+  uploadingBlog: boolean;
+  setUploadingBlog: (v: boolean) => void;
+  uploadingProduct: boolean;
+  setUploadingProduct: (v: boolean) => void;
+  saveBlog: () => void;
+  deleteBlog: (id: string) => void;
+  saveProduct: () => void;
+  deleteProduct: (id: string) => void;
+  clearError: (field: keyof ProductErrors) => void;
+  toast: (msg: string) => void;
+}) {
+  const imgUrlRef = useRef<HTMLInputElement>(null);
+
+  const uploadImage = async (
+    file: File,
+    setter: (url: string) => void,
+    setUploading: (v: boolean) => void,
+  ) => {
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setter(data.url);
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <main
+      className="admin-main"
+      style={{ marginLeft: 220, flex: 1, padding: "32px 40px", minHeight: "100vh" }}
+    >
+      {/* ── DASHBOARD ────────────────────────────────────────────────────── */}
+      {tab === "dashboard" && (
+        <div>
+          <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)", marginBottom: 8 }}>
+            Dashboard
+          </h1>
+          <p style={{ fontFamily: "DM Sans", fontSize: "0.88rem", color: "var(--text-muted)", marginBottom: 36 }}>
+            Welcome back. Manage your website content below.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 40 }}>
+            {[
+              { label: "Blog Posts", value: posts.length, color: "var(--sage)", icon: <FileText size={22} /> },
+              { label: "Products", value: products.length, color: "var(--accent)", icon: <Package size={22} /> },
+              { label: "In Stock", value: products.filter((p) => p.inStock).length, color: "var(--sage-dark)", icon: <Eye size={22} /> },
+            ].map((s, i) => (
+              <div key={i} style={{ background: "white", padding: "24px 20px", borderLeft: `3px solid ${s.color}` }}>
+                <div style={{ color: s.color, marginBottom: 12 }}>{s.icon}</div>
+                <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "2.2rem", fontWeight: 600, color: "var(--charcoal)", lineHeight: 1 }}>
+                  {s.value}
+                </div>
+                <div style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 4 }}>
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── BLOG ─────────────────────────────────────────────────────────── */}
+      {tab === "blog" && (
+        <div>
+          <div style={{ marginBottom: 32 }}>
+            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)" }}>
+              Blog Posts
+            </h1>
+            <p style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 4 }}>
+              {posts.length} articles published
+            </p>
+          </div>
+
+          {blogForm && (
+            <Modal open={!!blogForm} onClose={() => setBlogForm(null)} title={blogForm.id ? "Edit Blog Post" : "New Blog Post"} maxWidth={800}>
+              <div style={{ display: "grid", gap: 18 }}>
+                <div>
+                  <label style={LABEL_STYLE}>Title *</label>
+                  <input value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} style={INPUT_STYLE} placeholder="How Heat Pumps Work" />
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Excerpt</label>
+                  <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...INPUT_STYLE, resize: "vertical" }} placeholder="A brief summary..." />
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Content (HTML)</label>
+                  <textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...INPUT_STYLE, resize: "vertical", fontFamily: "DM Mono, monospace" }} placeholder="<h2>Section Title</h2><p>Your content here...</p>" />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16 }}>
+                  <div>
+                    <label style={LABEL_STYLE}>Category</label>
+                    <select value={blogForm.category} onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })} style={INPUT_STYLE}>
+                      <option>HVAC</option>
+                      <option>Solar</option>
+                      <option>Batteries</option>
+                      <option>Guides</option>
+                      <option>News</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={LABEL_STYLE}>Author</label>
+                    <input value={blogForm.author} onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })} style={INPUT_STYLE} placeholder="Élan Editorial" />
+                  </div>
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Cover Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadImage(f, (url) => setBlogForm(blogForm ? { ...blogForm, image: url } : null), setUploadingBlog);
+                    }}
+                    style={{ width: "100%", marginBottom: 8 }}
+                  />
+                  {uploadingBlog && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
+                  <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={INPUT_STYLE} placeholder="Or paste image URL" />
+                  {blogForm.image && (
+                    <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}>
+                      <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} sizes="800px" />
+                    </div>
+                  )}
+                </div>
+                <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
+                  <button onClick={() => setBlogForm(null)} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                    Cancel
+                  </button>
+                  <button onClick={saveBlog} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem" }}>
+                    <Save size={15} /> {saving ? "Saving..." : "Save Post"}
+                  </button>
+                </div>
+              </div>
+            </Modal>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {posts.map((p) => (
+              <div key={p.id} style={{ background: "white", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}>
+                <img src={p.image} alt={p.title} style={{ width: 52, height: 52, objectFit: "cover", flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1rem", fontWeight: 600, color: "var(--charcoal)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {p.title}
+                  </div>
+                  <div style={{ fontFamily: "DM Sans", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
+                    {p.category} · {p.date}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                  <Link href={`/blog/${p.slug}`} target="_blank" style={{ padding: "7px", background: "var(--sage-pale)", color: "var(--sage-dark)", display: "flex", alignItems: "center", textDecoration: "none" }}>
+                    <Eye size={14} />
+                  </Link>
+                  <button onClick={() => setBlogForm({ ...p })} style={{ padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", display: "flex", alignItems: "center" }}>
+                    <Edit3 size={14} />
+                  </button>
+                  <button onClick={() => deleteBlog(p.id)} style={{ padding: "7px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}>
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── PRODUCTS ─────────────────────────────────────────────────────── */}
+      {tab === "products" && (
+        <div>
+          <div style={{ marginBottom: 32 }}>
+            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)" }}>
+              Products
+            </h1>
+            <p style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 4 }}>
+              {products.length} products in catalogue
+            </p>
+          </div>
+
+          {productForm && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, overflow: "auto", padding: "20px 16px" }}>
+              <div style={{ background: "white", maxWidth: 640, margin: "0 auto", padding: "32px 24px", boxShadow: "0 20px 80px rgba(0,0,0,0.2)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <h2 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.7rem", color: "var(--charcoal)" }}>
+                    {productForm.id ? "Edit" : "New"} Product
+                  </h2>
+                  <button onClick={() => { setProductForm(null); setProductErrors({}); }} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {Object.keys(productErrors).length > 0 && (
+                  <div data-product-error style={{ background: "#fef2f2", border: "1px solid #fca5a5", padding: "12px 16px", marginBottom: 20, borderRadius: 2 }}>
+                    <p style={{ fontFamily: "DM Sans", fontSize: "0.8rem", color: "#c0392b", fontWeight: 600, margin: "0 0 6px" }}>
+                      Please fix the following before saving:
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: 18 }}>
+                      {Object.values(productErrors).map((e, i) => (
+                        <li key={i} style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "#c0392b" }}>{e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div style={{ display: "grid", gap: 18 }}>
+                  <div>
+                    <label style={LABEL_STYLE}>Product Name *</label>
+                    <input
+                      value={productForm.name}
+                      onChange={(e) => { setProductForm({ ...productForm, name: e.target.value }); clearError("name"); }}
+                      style={productErrors.name ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                      placeholder="EcoBreeze 3.5kW Heat Pump"
+                    />
+                    {productErrors.name && <span style={ERROR_TEXT}>{productErrors.name}</span>}
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+                    <div>
+                      <label style={LABEL_STYLE}>Price (KES) *</label>
+                      <input
+                        type="number"
+                        value={productForm.price}
+                        onChange={(e) => { setProductForm({ ...productForm, price: e.target.value }); clearError("price"); }}
+                        style={productErrors.price ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                        placeholder="1299"
+                        min="1"
+                      />
+                      {productErrors.price && <span style={ERROR_TEXT}>{productErrors.price}</span>}
+                    </div>
+                    <div>
+                      <label style={LABEL_STYLE}>Category *</label>
+                      <select
+                        value={productForm.category}
+                        onChange={(e) => { setProductForm({ ...productForm, category: e.target.value }); clearError("category"); }}
+                        style={productErrors.category ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                      >
+                        <option>HVAC</option>
+                        <option>Solar</option>
+                        <option>Batteries</option>
+                      </select>
+                      {productErrors.category && <span style={ERROR_TEXT}>{productErrors.category}</span>}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={LABEL_STYLE}>Description *</label>
+                    <textarea
+                      value={productForm.description}
+                      onChange={(e) => { setProductForm({ ...productForm, description: e.target.value }); clearError("description"); }}
+                      rows={3}
+                      style={{ ...(productErrors.description ? INPUT_ERROR_STYLE : INPUT_STYLE), resize: "vertical" }}
+                      placeholder="Describe the product features, specs, and benefits..."
+                    />
+                    {productErrors.description && <span style={ERROR_TEXT}>{productErrors.description}</span>}
+                  </div>
+
+                  <div>
+                    <label style={LABEL_STYLE}>
+                      Product Images *{" "}
+                      <span style={{ color: productForm.images.length >= 2 ? "var(--sage-dark)" : "#c0392b", fontWeight: 600 }}>
+                        ({productForm.images.length}/2 minimum)
+                      </span>
+                    </label>
+
+                    {/* Progress bars */}
+                    <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                      {[0, 1].map((i) => (
+                        <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: productForm.images.length > i ? "var(--sage-dark)" : "var(--off-white)", transition: "background 0.2s" }} />
+                      ))}
+                      <div style={{ flex: 3, height: 4, borderRadius: 2, background: productForm.images.length > 2 ? "var(--sage)" : "var(--off-white)", transition: "background 0.2s" }} />
+                    </div>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0];
+                        if (!f) return;
+                        setUploadingProduct(true);
+                        const fd = new FormData();
+                        fd.append("file", f);
+                        try {
+                          const res = await fetch("/api/upload", { method: "POST", body: fd });
+                          const data = await res.json();
+                          if (!res.ok) throw new Error(data.error);
+                          setProductForm((pf) => {
+                            if (!pf) return pf;
+                            const updated = { ...pf, images: [...pf.images, data.url] };
+                            if (updated.images.length >= 2) clearError("images");
+                            return updated;
+                          });
+                        } catch (err) {
+                          console.error(err);
+                          toast("Upload failed. Please try again.");
+                        } finally {
+                          setUploadingProduct(false);
+                          e.target.value = "";
+                        }
+                      }}
+                      style={{ width: "100%", marginBottom: 8 }}
+                    />
+
+                    {uploadingProduct && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                        <div style={{ width: 14, height: 14, border: "2px solid var(--sage-dark)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                        <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading image...</span>
+                      </div>
+                    )}
+
+                    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                      <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...INPUT_STYLE, flex: 1 }} />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = imgUrlRef.current?.value.trim();
+                          if (!val) return;
+                          setProductForm((pf) => {
+                            if (!pf) return pf;
+                            const updated = { ...pf, images: [...pf.images, val] };
+                            if (updated.images.length >= 2) clearError("images");
+                            return updated;
+                          });
+                          if (imgUrlRef.current) imgUrlRef.current.value = "";
+                        }}
+                        style={{ padding: "10px 16px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", whiteSpace: "nowrap" }}
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    {productErrors.images && <span style={{ ...ERROR_TEXT, marginTop: 8 }}>{productErrors.images}</span>}
+
+                    {productForm.images.length > 0 && (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
+                        {productForm.images.map((url, i) => (
+                          <div key={i} style={{ position: "relative" }}>
+                            {i === 0 && (
+                              <span style={{ position: "absolute", bottom: 4, left: 4, background: "var(--charcoal)", color: "white", fontSize: "0.55rem", padding: "2px 6px", fontFamily: "DM Sans", zIndex: 1 }}>
+                                Main
+                              </span>
+                            )}
+                            <Image src={url} alt={`img-${i}`} width={90} height={90} style={{ objectFit: "cover", width: "100%", height: 90, display: "block" }} />
+                            <button
+                              type="button"
+                              onClick={() => setProductForm((pf) => pf ? { ...pf, images: pf.images.filter((_, j) => j !== i) } : pf)}
+                              style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", cursor: "pointer", color: "white", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
+                            >
+                              <X size={11} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>
+                      First image is the main thumbnail. Minimum 2 images required.
+                    </p>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+                    <div>
+                      <label style={LABEL_STYLE}>Badge</label>
+                      <input value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} style={INPUT_STYLE} placeholder="New, Best Seller, Sale..." />
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 24 }}>
+                      <input type="checkbox" id="inStock" checked={productForm.inStock} onChange={(e) => setProductForm({ ...productForm, inStock: e.target.checked })} />
+                      <label htmlFor="inStock" style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--charcoal)", cursor: "pointer" }}>
+                        In Stock
+                      </label>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
+                    <button onClick={() => { setProductForm(null); setProductErrors({}); }} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                      Cancel
+                    </button>
+                    <button
+                      onClick={saveProduct}
+                      disabled={saving || uploadingProduct}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8, padding: "10px 24px",
+                        background: saving || uploadingProduct ? "var(--text-muted)" : "var(--charcoal)",
+                        color: "white", border: "none", cursor: saving || uploadingProduct ? "not-allowed" : "pointer",
+                        fontFamily: "DM Sans", fontSize: "0.85rem",
+                      }}
+                    >
+                      <Save size={15} /> {saving ? "Saving..." : uploadingProduct ? "Uploading..." : "Save Product"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Product grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+            {products.map((p) => (
+              <div key={p.id} style={{ background: "white", overflow: "hidden" }}>
+                <div style={{ aspectRatio: "1/1", overflow: "hidden", background: "var(--off-white)", position: "relative" }}>
+                  {p.images?.[0] ? (
+                    <Image src={p.images[0]} alt={p.name} fill style={{ objectFit: "cover" }} sizes="160px" />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                      <Package size={32} />
+                    </div>
+                  )}
+                  {p.images?.length > 1 && (
+                    <span style={{ position: "absolute", bottom: 6, right: 6, background: "rgba(0,0,0,0.55)", color: "white", fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, fontFamily: "DM Sans" }}>
+                      +{p.images.length - 1}
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: "12px" }}>
+                  <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginBottom: 4 }}>
+                    {p.category}
+                  </div>
+                  <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "0.95rem", fontWeight: 600, color: "var(--charcoal)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {p.name}
+                  </div>
+                  <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>
+                    KES {p.price.toLocaleString()}
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button
+                      onClick={() => setProductForm({ ...p, price: String(p.price), images: p.images ?? [] })}
+                      style={{ flex: 1, padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", fontFamily: "DM Sans", fontSize: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}
+                    >
+                      <Edit3 size={12} /> Edit
+                    </button>
+                    <button
+                      onClick={() => deleteProduct(p.id)}
+                      style={{ padding: "7px 10px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
