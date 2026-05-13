@@ -31,6 +31,10 @@ const SUPER_ADMIN_PASSWORD = "elanSuper2024";
 const SUPER_ADMIN_EMAIL = "superadmin@elanclimat.co.ke";
 
 type Tab = "dashboard" | "blog" | "products";
+type Role = "admin" | "superadmin";
+
+const SESSION_KEY = "elan_admin_session";
+const SESSION_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 interface BlogForm {
   id: string;
@@ -226,11 +230,15 @@ const SidebarContent = ({
   unread,
   navTo,
   onBell,
+  role,
+  onLogout,
 }: {
   tab: Tab;
   unread: number;
   navTo: (t: Tab) => void;
   onBell: () => void;
+  role: Role;
+  onLogout: () => void;
 }) => (
   <>
     <div
@@ -249,17 +257,34 @@ const SidebarContent = ({
       >
         Élan Admin
       </div>
-      <div
-        style={{
-          fontFamily: "DM Sans",
-          fontSize: "0.62rem",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: "var(--sage-dark)",
-          marginTop: 2,
-        }}
-      >
-        Content Manager
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+        <div
+          style={{
+            fontFamily: "DM Sans",
+            fontSize: "0.62rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--sage-dark)",
+          }}
+        >
+          Content Manager
+        </div>
+        <span
+          style={{
+            fontFamily: "DM Sans",
+            fontSize: "0.55rem",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            padding: "2px 7px",
+            borderRadius: 9999,
+            background: role === "superadmin" ? "var(--charcoal)" : "var(--sage-pale)",
+            color: role === "superadmin" ? "white" : "var(--sage-dark)",
+            lineHeight: 1.8,
+          }}
+        >
+          {role === "superadmin" ? "Super" : "Admin"}
+        </span>
       </div>
     </div>
     <nav style={{ padding: "16px 8px", flex: 1 }}>
@@ -372,6 +397,30 @@ const SidebarContent = ({
         )}
       </button>
     </div>
+    {/* Logout button */}
+    <button
+      onClick={onLogout}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        width: "100%",
+        padding: "10px 16px",
+        background: "transparent",
+        border: "none",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        cursor: "pointer",
+        fontFamily: "DM Sans",
+        fontSize: "0.75rem",
+        color: "rgba(255,255,255,0.45)",
+        transition: "color 0.2s",
+        textAlign: "left" as React.CSSProperties["textAlign"],
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = "#f08080")}
+      onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
+    >
+      <LogIn size={13} style={{ transform: "rotate(180deg)" }} /> Sign Out
+    </button>
   </>
 );
 
@@ -382,7 +431,70 @@ export default function AdminClient({
   initialPosts: BlogPost[];
   initialProducts: Product[];
 }) {
-  const [authed, setAuthed] = useState(false);
+  // ── Session management ──────────────────────────────────────────────────
+  const [role, setRole] = useState<Role | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const { role: r, expiresAt } = JSON.parse(raw) as { role: Role; expiresAt: number };
+      if (Date.now() > expiresAt) { sessionStorage.removeItem(SESSION_KEY); return null; }
+      return r;
+    } catch { return null; }
+  });
+
+  const persistSession = (r: Role) => {
+    sessionStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({ role: r, expiresAt: Date.now() + SESSION_TIMEOUT_MS })
+    );
+  };
+
+  const clearSession = () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    setRole(null);
+  };
+
+  // Refresh session expiry on user activity
+  const lastActivityRef = useRef(Date.now());
+  useEffect(() => {
+    if (!role) return;
+    const bump = () => {
+      lastActivityRef.current = Date.now();
+      if (role) persistSession(role);
+    };
+    window.addEventListener("mousemove", bump);
+    window.addEventListener("keydown", bump);
+    window.addEventListener("click", bump);
+    const idleCheck = setInterval(() => {
+      if (Date.now() - lastActivityRef.current > SESSION_TIMEOUT_MS) clearSession();
+    }, 60_000);
+    return () => {
+      window.removeEventListener("mousemove", bump);
+      window.removeEventListener("keydown", bump);
+      window.removeEventListener("click", bump);
+      clearInterval(idleCheck);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role]);
+  // Session expiry warning (shows banner 10 min before timeout)
+  const [sessionWarning, setSessionWarning] = useState(false);
+  useEffect(() => {
+    if (!role) { setSessionWarning(false); return; }
+    const warnCheck = setInterval(() => {
+      if (typeof window === "undefined") return;
+      try {
+        const raw = sessionStorage.getItem(SESSION_KEY);
+        if (!raw) return;
+        const { expiresAt } = JSON.parse(raw) as { expiresAt: number };
+        const remaining = expiresAt - Date.now();
+        setSessionWarning(remaining > 0 && remaining < 10 * 60 * 1000);
+      } catch { /* ignore */ }
+    }, 30_000);
+    return () => clearInterval(warnCheck);
+  }, [role]);
+  // ─────────────────────────────────────────────────────────────────────────
+
   const [pw, setPw] = useState("");
   const [email, setEmail] = useState("");
   const [pwError, setPwError] = useState("");
@@ -434,10 +546,22 @@ export default function AdminClient({
   }, []);
 
   const login = () => {
-    if (email === ADMIN_EMAIL && pw === ADMIN_PASSWORD) {
-      setAuthed(true);
+    if (email === SUPER_ADMIN_EMAIL && pw === SUPER_ADMIN_PASSWORD) {
+      setRole("superadmin");
+      persistSession("superadmin");
       setPwError("");
-    } else setPwError("Incorrect email or password. Try again.");
+    } else if (email === ADMIN_EMAIL && pw === ADMIN_PASSWORD) {
+      setRole("admin");
+      persistSession("admin");
+      setPwError("");
+    } else {
+      setPwError("Incorrect email or password. Try again.");
+    }
+  };
+
+  const logout = () => {
+    if (!confirm("Sign out of the admin panel?")) return;
+    clearSession();
   };
 
   const toast = (m: string) => {
@@ -633,7 +757,7 @@ export default function AdminClient({
     loadMessages();
   };
 
-  if (!authed) {
+  if (!role) {
     return (
       <div
         style={{
@@ -666,17 +790,32 @@ export default function AdminClient({
             >
               Élan Admin
             </div>
-            <div
-              style={{
-                fontFamily: "DM Sans",
-                fontSize: "0.72rem",
-                color: "var(--text-muted)",
-                marginTop: 4,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              Secure Access
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 6 }}>
+              <div
+                style={{
+                  fontFamily: "DM Sans",
+                  fontSize: "0.72rem",
+                  color: "var(--text-muted)",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Secure Access
+              </div>
+              {email === SUPER_ADMIN_EMAIL && (
+                <span style={{
+                  fontFamily: "DM Sans",
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  background: "var(--charcoal)",
+                  color: "white",
+                  lineHeight: 1.8,
+                }}>Super Admin</span>
+              )}
             </div>
           </div>
           <div style={{ marginBottom: 16 }}>
@@ -787,6 +926,45 @@ export default function AdminClient({
         .msg-item:hover { background: #f9fafb !important; }
       `}</style>
 
+      {/* Session expiry warning banner */}
+      {sessionWarning && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          background: "#7c4a1e",
+          color: "white",
+          fontFamily: "DM Sans",
+          fontSize: "0.8rem",
+          padding: "10px 20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+        }}>
+          <span>⚠️ Your session expires in less than 10 minutes due to inactivity.</span>
+          <button
+            onClick={() => { persistSession(role!); setSessionWarning(false); }}
+            style={{
+              background: "white",
+              color: "#7c4a1e",
+              border: "none",
+              borderRadius: 4,
+              padding: "4px 12px",
+              fontFamily: "DM Sans",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Stay signed in
+          </button>
+        </div>
+      )}
+
       {/* Desktop sidebar */}
       <aside
         className="admin-sidebar-desktop"
@@ -806,6 +984,8 @@ export default function AdminClient({
           unread={unread}
           navTo={navTo}
           onBell={openBell}
+          role={role!}
+          onLogout={logout}
         />
       </aside>
 
@@ -944,6 +1124,8 @@ export default function AdminClient({
                   setSidebarOpen(false);
                   openBell();
                 }}
+                role={role!}
+                onLogout={logout}
               />
             </motion.aside>
           </>
