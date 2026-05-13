@@ -191,16 +191,19 @@ const ERROR_TEXT: React.CSSProperties = {
   display: "block",
 };
 
-const SidebarButton = ({
+// ── Redesigned sidebar nav item ──────────────────────────────────────────
+const NavItem = ({
   active,
   onClick,
   icon,
   label,
+  badge,
 }: {
   active: boolean;
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
+  badge?: number;
 }) => (
   <button
     onClick={onClick}
@@ -209,20 +212,59 @@ const SidebarButton = ({
       alignItems: "center",
       gap: 10,
       width: "100%",
-      padding: "12px 16px",
-      background: active ? "var(--sage-pale)" : "transparent",
+      padding: "8px 12px",
+      background: active ? "#f3f4f6" : "transparent",
       border: "none",
+      borderRadius: 8,
       cursor: "pointer",
-      fontFamily: "DM Sans",
-      fontSize: "0.85rem",
-      color: active ? "var(--sage-dark)" : "var(--text-muted)",
-      textAlign: "left",
-      fontWeight: active ? 500 : 400,
-      transition: "all 0.2s",
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: "0.82rem",
+      color: active ? "#111" : "#6b7280",
+      textAlign: "left" as React.CSSProperties["textAlign"],
+      fontWeight: active ? 600 : 400,
+      transition: "background 0.15s, color 0.15s",
+      position: "relative" as React.CSSProperties["position"],
     }}
+    onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "#111"; }}
+    onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; } }}
   >
-    {icon} {label}
+    <span style={{ display: "flex", alignItems: "center", color: active ? "#111" : "#9ca3af", flexShrink: 0 }}>
+      {icon}
+    </span>
+    <span style={{ flex: 1 }}>{label}</span>
+    {badge !== undefined && badge > 0 && (
+      <span style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: "0.65rem",
+        fontWeight: 700,
+        background: "#111",
+        color: "white",
+        borderRadius: 9999,
+        padding: "1px 6px",
+        lineHeight: 1.7,
+        minWidth: 18,
+        textAlign: "center" as React.CSSProperties["textAlign"],
+      }}>{badge}</span>
+    )}
   </button>
+);
+
+const NavSection = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div style={{ marginTop: 20 }}>
+    <div style={{
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: "0.6rem",
+      fontWeight: 700,
+      letterSpacing: "0.12em",
+      textTransform: "uppercase",
+      color: "#9ca3af",
+      padding: "0 12px",
+      marginBottom: 4,
+    }}>
+      {label}
+    </div>
+    {children}
+  </div>
 );
 
 const SidebarContent = ({
@@ -240,188 +282,147 @@ const SidebarContent = ({
   role: Role;
   onLogout: () => void;
 }) => (
-  <>
-    <div
-      style={{
-        padding: "24px 16px",
-        borderBottom: "1px solid var(--off-white)",
-      }}
-    >
-      <div
-        style={{
-          fontFamily: "Cormorant Garamond, serif",
-          fontSize: "1.15rem",
-          fontWeight: 600,
-          color: "var(--charcoal)",
-        }}
-      >
-        Élan Admin
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-        <div
-          style={{
-            fontFamily: "DM Sans",
-            fontSize: "0.62rem",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--sage-dark)",
-          }}
-        >
-          Content Manager
+  <div style={{
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    background: "white",
+  }}>
+    {/* ── Logo / Brand ───────────────────────────────────────── */}
+    <div style={{ padding: "20px 16px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{
+          width: 30,
+          height: 30,
+          background: "#111",
+          borderRadius: 8,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1L14 5V11L8 15L2 11V5L8 1Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+            <circle cx="8" cy="8" r="2" fill="white"/>
+          </svg>
         </div>
-        <span
-          style={{
-            fontFamily: "DM Sans",
-            fontSize: "0.55rem",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            fontWeight: 600,
-            padding: "2px 7px",
-            borderRadius: 9999,
-            background: role === "superadmin" ? "var(--charcoal)" : "var(--sage-pale)",
-            color: role === "superadmin" ? "white" : "var(--sage-dark)",
-            lineHeight: 1.8,
-          }}
-        >
-          {role === "superadmin" ? "Super" : "Admin"}
+        <span style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontWeight: 700,
+          fontSize: "0.92rem",
+          color: "#111",
+          letterSpacing: "-0.01em",
+        }}>
+          ÉLAN ADMIN
         </span>
       </div>
     </div>
-    <nav style={{ padding: "16px 8px", flex: 1 }}>
-      <SidebarButton
-        active={tab === "dashboard"}
-        onClick={() => navTo("dashboard")}
-        icon={<LayoutDashboard size={16} />}
-        label="Dashboard"
-      />
-      <SidebarButton
-        active={tab === "blog"}
-        onClick={() => navTo("blog")}
-        icon={<FileText size={16} />}
-        label="Blog Posts"
-      />
-      <SidebarButton
-        active={tab === "products"}
-        onClick={() => navTo("products")}
-        icon={<Package size={16} />}
-        label="Products"
-      />
-    </nav>
-    <div
-      style={{
-        padding: "12px 16px",
-        borderTop: "1px solid rgba(255,255,255,0.08)",
-        background: "var(--charcoal)",
+
+    {/* ── Main nav ──────────────────────────────────────────── */}
+    <div style={{ padding: "0 8px", flex: 1, overflowY: "auto" }}>
+      <NavItem active={tab === "dashboard"} onClick={() => navTo("dashboard")} icon={<LayoutDashboard size={15} />} label="Dashboard" />
+      <NavItem active={false} onClick={onBell} icon={
+        <span style={{ position: "relative", display: "flex" }}>
+          {unread > 0
+            ? <motion.div animate={{ rotate: [-10, 10, -10] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }} style={{ display: "inline-flex", originX: 0.5, originY: 0 }}><Bell size={15} /></motion.div>
+            : <Bell size={15} />}
+        </span>
+      } label="Inbox" badge={unread} />
+      <NavItem active={false} onClick={() => window.open("/", "_blank")} icon={<Eye size={15} />} label="View Site" />
+
+      <NavSection label="Content">
+        <NavItem active={tab === "blog"} onClick={() => navTo("blog")} icon={<FileText size={15} />} label="Blog Posts" />
+        <NavItem active={tab === "products"} onClick={() => navTo("products")} icon={<Package size={15} />} label="Products" />
+      </NavSection>
+
+      <NavSection label="Account">
+        <NavItem active={false} onClick={() => {}} icon={<Bell size={15} />} label="Notifications" badge={unread} />
+        <NavItem active={false} onClick={() => {}} icon={<Mail size={15} />} label="Messages" />
+        <NavItem
+          active={false}
+          onClick={onLogout}
+          icon={<LogIn size={15} style={{ transform: "rotate(180deg)" }} />}
+          label="Sign Out"
+        />
+      </NavSection>
+    </div>
+
+    {/* ── User footer ────────────────────────────────────────── */}
+    <div style={{
+      margin: "8px",
+      padding: "10px 12px",
+      borderRadius: 10,
+      background: "#f9fafb",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+    }}>
+      {/* Avatar */}
+      <div style={{
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        background: "linear-gradient(135deg, #d1d5db, #9ca3af)",
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <Link
-        href="/"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          fontFamily: "DM Sans",
-          fontSize: "0.78rem",
-          color: "rgba(255,255,255,0.55)",
-          textDecoration: "none",
-          transition: "color 0.2s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
-        }
-      >
-        <ArrowLeft size={14} /> View Site
-      </Link>
+        justifyContent: "center",
+        flexShrink: 0,
+        color: "white",
+        fontSize: "0.75rem",
+        fontWeight: 700,
+        fontFamily: "'DM Sans', sans-serif",
+      }}>
+        {role === "superadmin" ? "SA" : "A"}
+      </div>
+      {/* Name + role */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.8rem",
+          fontWeight: 600,
+          color: "#111",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}>
+          {role === "superadmin" ? "Super Admin" : "Admin"}
+        </div>
+        <div style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.68rem",
+          color: "#9ca3af",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}>
+          {role === "superadmin" ? "Full Access" : "Content Manager"}
+        </div>
+      </div>
+      {/* Ellipsis / logout trigger */}
       <button
-        onClick={onBell}
+        onClick={onLogout}
+        title="Sign out"
         style={{
-          position: "relative",
           background: "none",
           border: "none",
           cursor: "pointer",
-          color: "rgba(255,255,255,0.55)",
+          color: "#9ca3af",
           display: "flex",
           alignItems: "center",
-          padding: 4,
-          transition: "color 0.2s",
+          padding: 2,
+          borderRadius: 4,
+          transition: "color 0.15s",
+          flexShrink: 0,
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(255,255,255,0.55)")
-        }
+        onMouseEnter={(e) => (e.currentTarget.style.color = "#111")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "#9ca3af")}
       >
-        <>
-          {unread > 0 ? (
-            <motion.div
-              animate={{ rotate: [-10, 10, -10] }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              style={{
-                display: "inline-block",
-                originX: 0.5,
-                originY: 0,
-              }}
-            >
-              <Bell size={25} />
-            </motion.div>
-          ) : (
-            <Bell size={16} />
-          )}
-        </>
-        {unread > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: -2,
-              right: -2,
-              background: "#c0392b",
-              color: "white",
-              fontSize: "0.55rem",
-              fontWeight: 700,
-              padding: "1px 4px",
-              borderRadius: 9999,
-              minWidth: 14,
-              textAlign: "center",
-              lineHeight: 1.6,
-            }}
-          >
-            {unread}
-          </span>
-        )}
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="2" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="14" cy="8" r="1.4"/>
+        </svg>
       </button>
     </div>
-    {/* Logout button */}
-    <button
-      onClick={onLogout}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        width: "100%",
-        padding: "10px 16px",
-        background: "transparent",
-        border: "none",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        cursor: "pointer",
-        fontFamily: "DM Sans",
-        fontSize: "0.75rem",
-        color: "rgba(255,255,255,0.45)",
-        transition: "color 0.2s",
-        textAlign: "left" as React.CSSProperties["textAlign"],
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.color = "#f08080")}
-      onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
-    >
-      <LogIn size={13} style={{ transform: "rotate(180deg)" }} /> Sign Out
-    </button>
-  </>
+  </div>
 );
 
 export default function AdminClient({
@@ -903,7 +904,7 @@ export default function AdminClient({
         @media (min-width: 768px) {
           .admin-sidebar-desktop { display: flex !important; }
           .admin-topbar { display: none !important; }
-          .admin-main { margin-left: 220px !important; }
+          .admin-main { margin-left: 240px !important; }
         }
         @media (max-width: 767px) {
           .admin-sidebar-desktop { display: none !important; }
@@ -969,14 +970,15 @@ export default function AdminClient({
       <aside
         className="admin-sidebar-desktop"
         style={{
-          width: 220,
+          width: 240,
           background: "white",
-          borderRight: "1px solid var(--off-white)",
+          borderRight: "1px solid #f3f4f6",
           flexDirection: "column",
           position: "fixed",
           top: 0,
           bottom: 0,
           zIndex: 50,
+          boxShadow: "1px 0 0 #f3f4f6",
         }}
       >
         <SidebarContent
