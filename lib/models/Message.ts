@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true },
     phone: String,
@@ -13,7 +12,7 @@ const MessageSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // auto-manages createdAt + updatedAt
-  }
+  },
 );
 
 export const MessageModel =

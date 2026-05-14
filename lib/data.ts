@@ -1,5 +1,7 @@
+// lib/data.ts
+
 export interface BlogPost {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
   excerpt: string;
@@ -12,7 +14,7 @@ export interface BlogPost {
 }
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   price: number;
   category: string;
@@ -24,7 +26,7 @@ export interface Product {
 }
 
 export interface Message {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   phone?: string;
@@ -34,4 +36,12 @@ export interface Message {
   read: boolean;
   createdAt: string;
   archived: boolean;
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
 }

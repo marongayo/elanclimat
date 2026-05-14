@@ -217,7 +217,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
           >
             {filtered.map((p) => (
               <div
-                key={p.id}
+                key={p._id}
                 className="product-card"
                 style={{
                   background: "white",
@@ -348,19 +348,19 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
                     {p.inStock && (
                       <button
                         onClick={() => {
-                          if (p.inStock && !cart.includes(p.id)) {
-                            addToCart(p.id);
+                          if (p.inStock && !cart.includes(p._id)) {
+                            addToCart(p._id);
                           }
                         }}
-                        disabled={!p.inStock || cart.includes(p.id)}
+                        disabled={!p.inStock || cart.includes(p._id)}
                         style={{
                           padding: "8px 16px",
                           border: "none",
                           cursor:
-                            !p.inStock || cart.includes(p.id)
+                            !p.inStock || cart.includes(p._id)
                               ? "not-allowed"
                               : "pointer",
-                          background: cart.includes(p.id)
+                          background: cart.includes(p._id)
                             ? "var(--sage)"
                             : "var(--charcoal)",
                           color: "white",
@@ -375,7 +375,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
                         }}
                       >
                         <ShoppingBag size={13} />
-                        {cart.includes(p.id) ? "Added" : "Add to Cart"}
+                        {cart.includes(p._id) ? "Added" : "Add to Cart"}
                       </button>
                     )}
                   </div>

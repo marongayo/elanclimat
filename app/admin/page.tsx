@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import AdminClient from "./AdminClient";
 import { getBlogPosts, getProducts } from "@/lib/db";
 
-
 export default async function AdminPage() {
   const session = await auth();
 
@@ -13,12 +12,17 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
-
   const posts = await getBlogPosts();
   const products = await getProducts();
+  const serializedPosts = JSON.parse(JSON.stringify(posts));
+  const serializedProducts = JSON.parse(JSON.stringify(products));
+
   return (
     <div>
-      <AdminClient initialPosts={posts} initialProducts={products} />
+      <AdminClient
+        initialProducts={serializedProducts}
+        initialPosts={serializedPosts}
+      />
     </div>
   );
 }

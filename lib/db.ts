@@ -1,112 +1,173 @@
+// lib/db.ts
+
+import { Types } from "mongoose";
 import { connectDB } from "./mongodb";
 import { BlogPostModel } from "./models/BlogPost";
 import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
-import type { BlogPost, Product, Message } from "./data";
+import { UserModel } from "./models/User";
+import bcrypt from "bcryptjs";
+import type { BlogPost, Product, Message, User } from "./data";
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
   await connectDB();
   const posts = await BlogPostModel.find().sort({ date: -1 }).lean();
-  return posts.map(toPlain) as BlogPost[];
+  return posts.map(({ _id, __v, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(),
+  })) as unknown as BlogPost[];
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   await connectDB();
   const post = await BlogPostModel.findOne({ slug }).lean();
-  return post ? (toPlain(post) as BlogPost) : undefined;
+  return post
+    ? ({ ...post, id: post._id.toString() } as unknown as BlogPost)
+    : undefined;
 }
 
 export async function saveBlogPost(post: BlogPost): Promise<void> {
   await connectDB();
-  await BlogPostModel.findOneAndUpdate({ id: post.id }, post, {
-    upsert: true,
-    returnDocument: "after",
-  });
+  const { id, ...data } = post;
+  if (id) {
+    await BlogPostModel.findByIdAndUpdate(new Types.ObjectId(id), data, {
+      upsert: false,
+    });
+  } else {
+    await BlogPostModel.create(data);
+  }
 }
 
 export async function deleteBlogPost(id: string): Promise<void> {
   await connectDB();
-  await BlogPostModel.findOneAndDelete({ id });
+  await BlogPostModel.findByIdAndDelete(new Types.ObjectId(id));
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 export async function getProducts(): Promise<Product[]> {
   await connectDB();
   const products = await ProductModel.find().lean();
-  return products.map((p) => {
-    const plain = toPlain(p) as Product;
-    plain.images = plain.images?.length
-      ? plain.images
-      : plain.image
-        ? [plain.image]
-        : [];
-    return plain;
-  });
+  return products.map(({ _id, __v, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(), // ← convert ObjectId to plain string
+    images: rest.images?.length ? rest.images : rest.image ? [rest.image] : [],
+  })) as unknown as Product[];
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   await connectDB();
-  const product = await ProductModel.findOne({ id }).lean();
-  if (!product) return null;
-  const plain = toPlain(product) as Product;
-  plain.images = plain.images?.length
-    ? plain.images
-    : plain.image
-      ? [plain.image]
-      : [];
-  return plain;
+  const p = await ProductModel.findById(new Types.ObjectId(id)).lean();
+  if (!p) return null;
+  return {
+    ...p,
+    id: p._id.toString(),
+    images: p.images?.length ? p.images : p.image ? [p.image] : [],
+  } as unknown as Product;
 }
 
 export async function saveProduct(product: Product): Promise<void> {
   await connectDB();
-  await ProductModel.findOneAndUpdate({ id: product.id }, product, {
-    upsert: true,
-    returnDocument: "after",
-  });
+  const { id, ...data } = product;
+  if (id) {
+    await ProductModel.findByIdAndUpdate(new Types.ObjectId(id), data, {
+      upsert: false,
+    });
+  } else {
+    await ProductModel.create(data);
+  }
 }
 
 export async function deleteProduct(id: string): Promise<void> {
   await connectDB();
-  await ProductModel.findOneAndDelete({ id });
+  await ProductModel.findByIdAndDelete(new Types.ObjectId(id));
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
 export async function getMessages(): Promise<Message[]> {
   await connectDB();
-  const messages = await MessageModel.find({
-    archived: { $ne: true },
-  })
+  const messages = await MessageModel.find({ archived: { $ne: true } })
     .sort({ _id: -1 })
     .lean();
-  return messages.map(toPlain) as Message[];
+  return messages.map(({ _id, __v, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(),
+  })) as unknown as Message[];
 }
 
 export async function getArchivedMessages(): Promise<Message[]> {
   await connectDB();
-  const messages = await MessageModel.find({
-    archived: true,
-  })
+  const messages = await MessageModel.find({ archived: true })
     .sort({ _id: -1 })
     .lean();
-  return messages.map(toPlain) as Message[];
+  return messages.map((m) => ({
+    ...m,
+    id: m._id.toString(),
+  })) as unknown as Message[];
 }
 
 export async function saveMessage(msg: Message): Promise<void> {
   await connectDB();
-  await MessageModel.findOneAndUpdate({ id: msg.id }, msg, {
-    upsert: true,
-    returnDocument: "after",
-  });
+  const { id, ...data } = msg;
+  if (id) {
+    await MessageModel.findByIdAndUpdate(new Types.ObjectId(id), data);
+  } else {
+    await MessageModel.create(data);
+  }
 }
 
 export async function deleteMessage(id: string): Promise<void> {
   await connectDB();
-  await MessageModel.findOneAndDelete({ id });
+  await MessageModel.findByIdAndDelete(new Types.ObjectId(id));
 }
 
-// ─── Helper ───────────────────────────────────────────────────────────────────
-function toPlain(doc: any) {
-  const { _id, __v, ...rest } = doc;
-  return rest;
+// ─── User ─────────────────────────────────────────────────────────────────────
+export async function createUser(user: {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}): Promise<void> {
+  await connectDB();
+  user.role = user.role;
+  user.password = await bcrypt.hash(user.password, 10);
+  await UserModel.create(user);
+}
+
+export async function getUserById(id: string): Promise<User | null> {
+  await connectDB();
+  const user = await UserModel.findById(new Types.ObjectId(id)).lean();
+  return user
+    ? ({ ...user, id: user._id.toString() } as unknown as User)
+    : null;
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  await connectDB();
+  const user = await UserModel.findOne({ email }).lean();
+  return user
+    ? ({ ...user, id: user._id.toString() } as unknown as User)
+    : null;
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await connectDB();
+  await UserModel.findByIdAndDelete(new Types.ObjectId(id));
+}
+
+export async function getAllUsers(): Promise<User[]> {
+  await connectDB();
+  const users = await UserModel.find().lean();
+  return users.map(({ _id, __v, password, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(),
+  })) as unknown as User[];
+}
+
+export async function updateUserPassword(
+  id: string,
+  password: string,
+): Promise<void> {
+  await connectDB();
+  await UserModel.findByIdAndUpdate(new Types.ObjectId(id), { password });
 }

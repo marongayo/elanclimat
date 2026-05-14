@@ -1,12 +1,25 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { BlogPost, Product } from "@/lib/data";
-import { Trash2, Edit3, X, Save, FileText, Package, Eye } from "lucide-react";
+import { BlogPost, Product, User } from "@/lib/data";
+import {
+  Trash2,
+  Edit3,
+  X,
+  Save,
+  FileText,
+  Package,
+  Eye,
+  Users,
+  KeyRound,
+  ShieldCheck,
+  Shield,
+} from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 
-type Tab = "dashboard" | "blog" | "products";
+type Tab = "dashboard" | "blog" | "products" | "admins";
+type Role = "admin" | "superadmin";
 
 interface BlogForm {
   id: string;
@@ -78,8 +91,11 @@ const ERROR_TEXT: React.CSSProperties = {
 
 export default function AdminContentTabs({
   tab,
+  role,
+  currentUserId,
   posts,
   products,
+  admins,
   blogForm,
   setBlogForm,
   productForm,
@@ -95,16 +111,23 @@ export default function AdminContentTabs({
   deleteBlog,
   saveProduct,
   deleteProduct,
+  deleteAdmin,
+  changeAdminPassword,
   clearError,
   toast,
 }: {
   tab: Tab;
+  role: Role;
+  currentUserId: string;
   posts: BlogPost[];
   products: Product[];
+  admins: User[];
   blogForm: BlogForm | null;
   setBlogForm: (f: BlogForm | null) => void;
   productForm: ProductForm | null;
-  setProductForm: (f: ProductForm | ((prev: ProductForm | null) => ProductForm | null) | null) => void;
+  setProductForm: (
+    f: ProductForm | ((prev: ProductForm | null) => ProductForm | null) | null,
+  ) => void;
   productErrors: ProductErrors;
   setProductErrors: (e: ProductErrors) => void;
   saving: boolean;
@@ -116,10 +139,54 @@ export default function AdminContentTabs({
   deleteBlog: (id: string) => void;
   saveProduct: () => void;
   deleteProduct: (id: string) => void;
+  deleteAdmin: (id: string) => void;
+  changeAdminPassword: (id: string, newPassword: string) => Promise<void>;
   clearError: (field: keyof ProductErrors) => void;
   toast: (msg: string) => void;
 }) {
   const imgUrlRef = useRef<HTMLInputElement>(null);
+
+  // ── Password change modal state ──────────────────────────────────────────
+  const [pwTarget, setPwTarget] = useState<User | null>(null);
+  const [pwValue, setPwValue] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
+  const [pwError, setPwError] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
+
+  const openPasswordModal = (admin: User) => {
+    setPwTarget(admin);
+    setPwValue("");
+    setPwConfirm("");
+    setPwError("");
+  };
+
+  const closePasswordModal = () => {
+    setPwTarget(null);
+    setPwValue("");
+    setPwConfirm("");
+    setPwError("");
+  };
+
+  const submitPassword = async () => {
+    if (pwValue.length < 8) {
+      setPwError("Password must be at least 8 characters.");
+      return;
+    }
+    if (pwValue !== pwConfirm) {
+      setPwError("Passwords do not match.");
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await changeAdminPassword(pwTarget!._id, pwValue);
+      toast("Password updated successfully.");
+      closePasswordModal();
+    } catch {
+      setPwError("Failed to update password. Please try again.");
+    } finally {
+      setPwSaving(false);
+    }
+  };
 
   const uploadImage = async (
     file: File,
@@ -145,29 +212,103 @@ export default function AdminContentTabs({
   return (
     <main
       className="admin-main"
-      style={{ marginLeft: 220, flex: 1, padding: "32px 40px", minHeight: "100vh" }}
+      style={{
+        marginLeft: 220,
+        flex: 1,
+        padding: "32px 40px",
+        minHeight: "100vh",
+      }}
     >
       {/* ── DASHBOARD ────────────────────────────────────────────────────── */}
       {tab === "dashboard" && (
         <div>
-          <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)", marginBottom: 8 }}>
+          <h1
+            style={{
+              fontFamily: "Cormorant Garamond, serif",
+              fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
+              fontWeight: 600,
+              color: "var(--charcoal)",
+              marginBottom: 8,
+            }}
+          >
             Dashboard
           </h1>
-          <p style={{ fontFamily: "DM Sans", fontSize: "0.88rem", color: "var(--text-muted)", marginBottom: 36 }}>
+          <p
+            style={{
+              fontFamily: "DM Sans",
+              fontSize: "0.88rem",
+              color: "var(--text-muted)",
+              marginBottom: 36,
+            }}
+          >
             Welcome back. Manage your website content below.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 40 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+              gap: 12,
+              marginBottom: 40,
+            }}
+          >
             {[
-              { label: "Blog Posts", value: posts.length, color: "var(--sage)", icon: <FileText size={22} /> },
-              { label: "Products", value: products.length, color: "var(--accent)", icon: <Package size={22} /> },
-              { label: "In Stock", value: products.filter((p) => p.inStock).length, color: "var(--sage-dark)", icon: <Eye size={22} /> },
+              {
+                label: "Blog Posts",
+                value: posts.length,
+                color: "var(--sage)",
+                icon: <FileText size={22} />,
+              },
+              {
+                label: "Products",
+                value: products.length,
+                color: "var(--accent)",
+                icon: <Package size={22} />,
+              },
+              {
+                label: "In Stock",
+                value: products.filter((p) => p.inStock).length,
+                color: "var(--sage-dark)",
+                icon: <Eye size={22} />,
+              },
+              ...(role === "superadmin"
+                ? [
+                    {
+                      label: "Admins",
+                      value: admins.length,
+                      color: "var(--charcoal)",
+                      icon: <Users size={22} />,
+                    },
+                  ]
+                : []),
             ].map((s, i) => (
-              <div key={i} style={{ background: "white", padding: "24px 20px", borderLeft: `3px solid ${s.color}` }}>
+              <div
+                key={i}
+                style={{
+                  background: "white",
+                  padding: "24px 20px",
+                  borderLeft: `3px solid ${s.color}`,
+                }}
+              >
                 <div style={{ color: s.color, marginBottom: 12 }}>{s.icon}</div>
-                <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "2.2rem", fontWeight: 600, color: "var(--charcoal)", lineHeight: 1 }}>
+                <div
+                  style={{
+                    fontFamily: "Cormorant Garamond, serif",
+                    fontSize: "2.2rem",
+                    fontWeight: 600,
+                    color: "var(--charcoal)",
+                    lineHeight: 1,
+                  }}
+                >
                   {s.value}
                 </div>
-                <div style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 4 }}>
+                <div
+                  style={{
+                    fontFamily: "DM Sans",
+                    fontSize: "0.78rem",
+                    color: "var(--text-muted)",
+                    marginTop: 4,
+                  }}
+                >
                   {s.label}
                 </div>
               </div>
@@ -180,33 +321,91 @@ export default function AdminContentTabs({
       {tab === "blog" && (
         <div>
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)" }}>
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+              }}
+            >
               Blog Posts
             </h1>
-            <p style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 4 }}>
+            <p
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginTop: 4,
+              }}
+            >
               {posts.length} articles published
             </p>
           </div>
 
           {blogForm && (
-            <Modal open={!!blogForm} onClose={() => setBlogForm(null)} title={blogForm.id ? "Edit Blog Post" : "New Blog Post"} maxWidth={800}>
+            <Modal
+              open={!!blogForm}
+              onClose={() => setBlogForm(null)}
+              title={blogForm.id ? "Edit Blog Post" : "New Blog Post"}
+              maxWidth={800}
+            >
               <div style={{ display: "grid", gap: 18 }}>
                 <div>
                   <label style={LABEL_STYLE}>Title *</label>
-                  <input value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} style={INPUT_STYLE} placeholder="How Heat Pumps Work" />
+                  <input
+                    value={blogForm.title}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, title: e.target.value })
+                    }
+                    style={INPUT_STYLE}
+                    placeholder="How Heat Pumps Work"
+                  />
                 </div>
                 <div>
                   <label style={LABEL_STYLE}>Excerpt</label>
-                  <textarea value={blogForm.excerpt} onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })} rows={2} style={{ ...INPUT_STYLE, resize: "vertical" }} placeholder="A brief summary..." />
+                  <textarea
+                    value={blogForm.excerpt}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, excerpt: e.target.value })
+                    }
+                    rows={2}
+                    style={{ ...INPUT_STYLE, resize: "vertical" }}
+                    placeholder="A brief summary..."
+                  />
                 </div>
                 <div>
                   <label style={LABEL_STYLE}>Content (HTML)</label>
-                  <textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} rows={8} style={{ ...INPUT_STYLE, resize: "vertical", fontFamily: "DM Mono, monospace" }} placeholder="<h2>Section Title</h2><p>Your content here...</p>" />
+                  <textarea
+                    value={blogForm.content}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, content: e.target.value })
+                    }
+                    rows={8}
+                    style={{
+                      ...INPUT_STYLE,
+                      resize: "vertical",
+                      fontFamily: "DM Mono, monospace",
+                    }}
+                    placeholder="<h2>Section Title</h2><p>Your content here...</p>"
+                  />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                    gap: 16,
+                  }}
+                >
                   <div>
                     <label style={LABEL_STYLE}>Category</label>
-                    <select value={blogForm.category} onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })} style={INPUT_STYLE}>
+                    <select
+                      value={blogForm.category}
+                      onChange={(e) =>
+                        setBlogForm({ ...blogForm, category: e.target.value })
+                      }
+                      style={INPUT_STYLE}
+                    >
                       <option>HVAC</option>
                       <option>Solar</option>
                       <option>Batteries</option>
@@ -216,7 +415,14 @@ export default function AdminContentTabs({
                   </div>
                   <div>
                     <label style={LABEL_STYLE}>Author</label>
-                    <input value={blogForm.author} onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })} style={INPUT_STYLE} placeholder="Élan Editorial" />
+                    <input
+                      value={blogForm.author}
+                      onChange={(e) =>
+                        setBlogForm({ ...blogForm, author: e.target.value })
+                      }
+                      style={INPUT_STYLE}
+                      placeholder="Élan Editorial"
+                    />
                   </div>
                 </div>
                 <div>
@@ -226,23 +432,95 @@ export default function AdminContentTabs({
                     accept="image/*"
                     onChange={(e) => {
                       const f = e.target.files?.[0];
-                      if (f) uploadImage(f, (url) => setBlogForm(blogForm ? { ...blogForm, image: url } : null), setUploadingBlog);
+                      if (f)
+                        uploadImage(
+                          f,
+                          (url) =>
+                            setBlogForm(
+                              blogForm ? { ...blogForm, image: url } : null,
+                            ),
+                          setUploadingBlog,
+                        );
                     }}
                     style={{ width: "100%", marginBottom: 8 }}
                   />
-                  {uploadingBlog && <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading...</span>}
-                  <input value={blogForm.image} onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })} style={INPUT_STYLE} placeholder="Or paste image URL" />
+                  {uploadingBlog && (
+                    <span
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.78rem",
+                        color: "var(--sage-dark)",
+                      }}
+                    >
+                      Uploading...
+                    </span>
+                  )}
+                  <input
+                    value={blogForm.image}
+                    onChange={(e) =>
+                      setBlogForm({ ...blogForm, image: e.target.value })
+                    }
+                    style={INPUT_STYLE}
+                    placeholder="Or paste image URL"
+                  />
                   {blogForm.image && (
-                    <div style={{ marginTop: 10, height: 120, width: "100%", position: "relative" }}>
-                      <Image src={blogForm.image} alt="preview" fill style={{ objectFit: "cover" }} sizes="800px" />
+                    <div
+                      style={{
+                        marginTop: 10,
+                        height: 120,
+                        width: "100%",
+                        position: "relative",
+                      }}
+                    >
+                      <Image
+                        src={blogForm.image}
+                        alt="preview"
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="800px"
+                      />
                     </div>
                   )}
                 </div>
-                <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
-                  <button onClick={() => setBlogForm(null)} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 12,
+                    justifyContent: "flex-end",
+                    paddingTop: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    onClick={() => setBlogForm(null)}
+                    style={{
+                      padding: "10px 20px",
+                      background: "none",
+                      border: "1px solid var(--off-white)",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
                     Cancel
                   </button>
-                  <button onClick={saveBlog} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 24px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem" }}>
+                  <button
+                    onClick={saveBlog}
+                    disabled={saving}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "10px 24px",
+                      background: "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                    }}
+                  >
                     <Save size={15} /> {saving ? "Saving..." : "Save Post"}
                   </button>
                 </div>
@@ -252,24 +530,92 @@ export default function AdminContentTabs({
 
           <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {posts.map((p) => (
-              <div key={p.id} style={{ background: "white", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" }}>
-                <img src={p.image} alt={p.title} style={{ width: 52, height: 52, objectFit: "cover", flexShrink: 0 }} />
+              <div
+                key={p._id}
+                style={{
+                  background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "14px 16px",
+                }}
+              >
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  style={{
+                    width: 52,
+                    height: 52,
+                    objectFit: "cover",
+                    flexShrink: 0,
+                  }}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1rem", fontWeight: 600, color: "var(--charcoal)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div
+                    style={{
+                      fontFamily: "Cormorant Garamond, serif",
+                      fontSize: "1rem",
+                      fontWeight: 600,
+                      color: "var(--charcoal)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     {p.title}
                   </div>
-                  <div style={{ fontFamily: "DM Sans", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
+                  <div
+                    style={{
+                      fontFamily: "DM Sans",
+                      fontSize: "0.72rem",
+                      color: "var(--text-muted)",
+                      marginTop: 2,
+                    }}
+                  >
                     {p.category} · {p.date}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                  <Link href={`/blog/${p.slug}`} target="_blank" style={{ padding: "7px", background: "var(--sage-pale)", color: "var(--sage-dark)", display: "flex", alignItems: "center", textDecoration: "none" }}>
+                  <Link
+                    href={`/blog/${p.slug}`}
+                    target="_blank"
+                    style={{
+                      padding: "7px",
+                      background: "var(--sage-pale)",
+                      color: "var(--sage-dark)",
+                      display: "flex",
+                      alignItems: "center",
+                      textDecoration: "none",
+                    }}
+                  >
                     <Eye size={14} />
                   </Link>
-                  <button onClick={() => setBlogForm({ ...p })} style={{ padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", display: "flex", alignItems: "center" }}>
+                  <button
+                    onClick={() => setBlogForm({ ...p })}
+                    style={{
+                      padding: "7px",
+                      background: "var(--off-white)",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "var(--charcoal)",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
                     <Edit3 size={14} />
                   </button>
-                  <button onClick={() => deleteBlog(p.id)} style={{ padding: "7px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}>
+                  <button
+                    onClick={() => deleteBlog(p._id)}
+                    style={{
+                      padding: "7px",
+                      background: "#fef2f2",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#c0392b",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -283,34 +629,114 @@ export default function AdminContentTabs({
       {tab === "products" && (
         <div>
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: "var(--charcoal)" }}>
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+              }}
+            >
               Products
             </h1>
-            <p style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 4 }}>
+            <p
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginTop: 4,
+              }}
+            >
               {products.length} products in catalogue
             </p>
           </div>
 
           {productForm && (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, overflow: "auto", padding: "20px 16px" }}>
-              <div style={{ background: "white", maxWidth: 640, margin: "0 auto", padding: "32px 24px", boxShadow: "0 20px 80px rgba(0,0,0,0.2)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <h2 style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.7rem", color: "var(--charcoal)" }}>
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.4)",
+                zIndex: 200,
+                overflow: "auto",
+                padding: "20px 16px",
+              }}
+            >
+              <div
+                style={{
+                  background: "white",
+                  maxWidth: 640,
+                  margin: "0 auto",
+                  padding: "32px 24px",
+                  boxShadow: "0 20px 80px rgba(0,0,0,0.2)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: "Cormorant Garamond, serif",
+                      fontSize: "1.7rem",
+                      color: "var(--charcoal)",
+                    }}
+                  >
                     {productForm.id ? "Edit" : "New"} Product
                   </h2>
-                  <button onClick={() => { setProductForm(null); setProductErrors({}); }} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                  <button
+                    onClick={() => {
+                      setProductForm(null);
+                      setProductErrors({});
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
                     <X size={20} />
                   </button>
                 </div>
 
                 {Object.keys(productErrors).length > 0 && (
-                  <div data-product-error style={{ background: "#fef2f2", border: "1px solid #fca5a5", padding: "12px 16px", marginBottom: 20, borderRadius: 2 }}>
-                    <p style={{ fontFamily: "DM Sans", fontSize: "0.8rem", color: "#c0392b", fontWeight: 600, margin: "0 0 6px" }}>
+                  <div
+                    data-product-error
+                    style={{
+                      background: "#fef2f2",
+                      border: "1px solid #fca5a5",
+                      padding: "12px 16px",
+                      marginBottom: 20,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.8rem",
+                        color: "#c0392b",
+                        fontWeight: 600,
+                        margin: "0 0 6px",
+                      }}
+                    >
                       Please fix the following before saving:
                     </p>
                     <ul style={{ margin: 0, paddingLeft: 18 }}>
                       {Object.values(productErrors).map((e, i) => (
-                        <li key={i} style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "#c0392b" }}>{e}</li>
+                        <li
+                          key={i}
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.78rem",
+                            color: "#c0392b",
+                          }}
+                        >
+                          {e}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -321,38 +747,77 @@ export default function AdminContentTabs({
                     <label style={LABEL_STYLE}>Product Name *</label>
                     <input
                       value={productForm.name}
-                      onChange={(e) => { setProductForm({ ...productForm, name: e.target.value }); clearError("name"); }}
-                      style={productErrors.name ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                      onChange={(e) => {
+                        setProductForm({
+                          ...productForm,
+                          name: e.target.value,
+                        });
+                        clearError("name");
+                      }}
+                      style={
+                        productErrors.name ? INPUT_ERROR_STYLE : INPUT_STYLE
+                      }
                       placeholder="EcoBreeze 3.5kW Heat Pump"
                     />
-                    {productErrors.name && <span style={ERROR_TEXT}>{productErrors.name}</span>}
+                    {productErrors.name && (
+                      <span style={ERROR_TEXT}>{productErrors.name}</span>
+                    )}
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(130px, 1fr))",
+                      gap: 16,
+                    }}
+                  >
                     <div>
                       <label style={LABEL_STYLE}>Price (KES) *</label>
                       <input
                         type="number"
                         value={productForm.price}
-                        onChange={(e) => { setProductForm({ ...productForm, price: e.target.value }); clearError("price"); }}
-                        style={productErrors.price ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                        onChange={(e) => {
+                          setProductForm({
+                            ...productForm,
+                            price: e.target.value,
+                          });
+                          clearError("price");
+                        }}
+                        style={
+                          productErrors.price ? INPUT_ERROR_STYLE : INPUT_STYLE
+                        }
                         placeholder="1299"
                         min="1"
                       />
-                      {productErrors.price && <span style={ERROR_TEXT}>{productErrors.price}</span>}
+                      {productErrors.price && (
+                        <span style={ERROR_TEXT}>{productErrors.price}</span>
+                      )}
                     </div>
                     <div>
                       <label style={LABEL_STYLE}>Category *</label>
                       <select
                         value={productForm.category}
-                        onChange={(e) => { setProductForm({ ...productForm, category: e.target.value }); clearError("category"); }}
-                        style={productErrors.category ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                        onChange={(e) => {
+                          setProductForm({
+                            ...productForm,
+                            category: e.target.value,
+                          });
+                          clearError("category");
+                        }}
+                        style={
+                          productErrors.category
+                            ? INPUT_ERROR_STYLE
+                            : INPUT_STYLE
+                        }
                       >
                         <option>HVAC</option>
                         <option>Solar</option>
                         <option>Batteries</option>
                       </select>
-                      {productErrors.category && <span style={ERROR_TEXT}>{productErrors.category}</span>}
+                      {productErrors.category && (
+                        <span style={ERROR_TEXT}>{productErrors.category}</span>
+                      )}
                     </div>
                   </div>
 
@@ -360,28 +825,73 @@ export default function AdminContentTabs({
                     <label style={LABEL_STYLE}>Description *</label>
                     <textarea
                       value={productForm.description}
-                      onChange={(e) => { setProductForm({ ...productForm, description: e.target.value }); clearError("description"); }}
+                      onChange={(e) => {
+                        setProductForm({
+                          ...productForm,
+                          description: e.target.value,
+                        });
+                        clearError("description");
+                      }}
                       rows={3}
-                      style={{ ...(productErrors.description ? INPUT_ERROR_STYLE : INPUT_STYLE), resize: "vertical" }}
+                      style={{
+                        ...(productErrors.description
+                          ? INPUT_ERROR_STYLE
+                          : INPUT_STYLE),
+                        resize: "vertical",
+                      }}
                       placeholder="Describe the product features, specs, and benefits..."
                     />
-                    {productErrors.description && <span style={ERROR_TEXT}>{productErrors.description}</span>}
+                    {productErrors.description && (
+                      <span style={ERROR_TEXT}>
+                        {productErrors.description}
+                      </span>
+                    )}
                   </div>
 
                   <div>
                     <label style={LABEL_STYLE}>
                       Product Images *{" "}
-                      <span style={{ color: productForm.images.length >= 2 ? "var(--sage-dark)" : "#c0392b", fontWeight: 600 }}>
+                      <span
+                        style={{
+                          color:
+                            productForm.images.length >= 2
+                              ? "var(--sage-dark)"
+                              : "#c0392b",
+                          fontWeight: 600,
+                        }}
+                      >
                         ({productForm.images.length}/2 minimum)
                       </span>
                     </label>
 
-                    {/* Progress bars */}
                     <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
                       {[0, 1].map((i) => (
-                        <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: productForm.images.length > i ? "var(--sage-dark)" : "var(--off-white)", transition: "background 0.2s" }} />
+                        <div
+                          key={i}
+                          style={{
+                            flex: 1,
+                            height: 4,
+                            borderRadius: 2,
+                            background:
+                              productForm.images.length > i
+                                ? "var(--sage-dark)"
+                                : "var(--off-white)",
+                            transition: "background 0.2s",
+                          }}
+                        />
                       ))}
-                      <div style={{ flex: 3, height: 4, borderRadius: 2, background: productForm.images.length > 2 ? "var(--sage)" : "var(--off-white)", transition: "background 0.2s" }} />
+                      <div
+                        style={{
+                          flex: 3,
+                          height: 4,
+                          borderRadius: 2,
+                          background:
+                            productForm.images.length > 2
+                              ? "var(--sage)"
+                              : "var(--off-white)",
+                          transition: "background 0.2s",
+                        }}
+                      />
                     </div>
 
                     <input
@@ -394,13 +904,20 @@ export default function AdminContentTabs({
                         const fd = new FormData();
                         fd.append("file", f);
                         try {
-                          const res = await fetch("/api/upload", { method: "POST", body: fd });
+                          const res = await fetch("/api/upload", {
+                            method: "POST",
+                            body: fd,
+                          });
                           const data = await res.json();
                           if (!res.ok) throw new Error(data.error);
                           setProductForm((pf) => {
                             if (!pf) return pf;
-                            const updated = { ...pf, images: [...pf.images, data.url] };
-                            if (updated.images.length >= 2) clearError("images");
+                            const updated = {
+                              ...pf,
+                              images: [...pf.images, data.url],
+                            };
+                            if (updated.images.length >= 2)
+                              clearError("images");
                             return updated;
                           });
                         } catch (err) {
@@ -415,14 +932,42 @@ export default function AdminContentTabs({
                     />
 
                     {uploadingProduct && (
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                        <div style={{ width: 14, height: 14, border: "2px solid var(--sage-dark)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                        <span style={{ fontFamily: "DM Sans", fontSize: "0.78rem", color: "var(--sage-dark)" }}>Uploading image...</span>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          marginBottom: 8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 14,
+                            height: 14,
+                            border: "2px solid var(--sage-dark)",
+                            borderTopColor: "transparent",
+                            borderRadius: "50%",
+                            animation: "spin 0.7s linear infinite",
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.78rem",
+                            color: "var(--sage-dark)",
+                          }}
+                        >
+                          Uploading image...
+                        </span>
                       </div>
                     )}
 
                     <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                      <input ref={imgUrlRef} placeholder="Or paste image URL and click Add" style={{ ...INPUT_STYLE, flex: 1 }} />
+                      <input
+                        ref={imgUrlRef}
+                        placeholder="Or paste image URL and click Add"
+                        style={{ ...INPUT_STYLE, flex: 1 }}
+                      />
                       <button
                         type="button"
                         onClick={() => {
@@ -430,34 +975,107 @@ export default function AdminContentTabs({
                           if (!val) return;
                           setProductForm((pf) => {
                             if (!pf) return pf;
-                            const updated = { ...pf, images: [...pf.images, val] };
-                            if (updated.images.length >= 2) clearError("images");
+                            const updated = {
+                              ...pf,
+                              images: [...pf.images, val],
+                            };
+                            if (updated.images.length >= 2)
+                              clearError("images");
                             return updated;
                           });
                           if (imgUrlRef.current) imgUrlRef.current.value = "";
                         }}
-                        style={{ padding: "10px 16px", background: "var(--charcoal)", color: "white", border: "none", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", whiteSpace: "nowrap" }}
+                        style={{
+                          padding: "10px 16px",
+                          background: "var(--charcoal)",
+                          color: "white",
+                          border: "none",
+                          cursor: "pointer",
+                          fontFamily: "DM Sans",
+                          fontSize: "0.85rem",
+                          whiteSpace: "nowrap",
+                        }}
                       >
                         Add
                       </button>
                     </div>
 
-                    {productErrors.images && <span style={{ ...ERROR_TEXT, marginTop: 8 }}>{productErrors.images}</span>}
+                    {productErrors.images && (
+                      <span style={{ ...ERROR_TEXT, marginTop: 8 }}>
+                        {productErrors.images}
+                      </span>
+                    )}
 
                     {productForm.images.length > 0 && (
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))", gap: 8, marginTop: 12 }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(90px, 1fr))",
+                          gap: 8,
+                          marginTop: 12,
+                        }}
+                      >
                         {productForm.images.map((url, i) => (
                           <div key={i} style={{ position: "relative" }}>
                             {i === 0 && (
-                              <span style={{ position: "absolute", bottom: 4, left: 4, background: "var(--charcoal)", color: "white", fontSize: "0.55rem", padding: "2px 6px", fontFamily: "DM Sans", zIndex: 1 }}>
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  bottom: 4,
+                                  left: 4,
+                                  background: "var(--charcoal)",
+                                  color: "white",
+                                  fontSize: "0.55rem",
+                                  padding: "2px 6px",
+                                  fontFamily: "DM Sans",
+                                  zIndex: 1,
+                                }}
+                              >
                                 Main
                               </span>
                             )}
-                            <Image src={url} alt={`img-${i}`} width={90} height={90} style={{ objectFit: "cover", width: "100%", height: 90, display: "block" }} />
+                            <Image
+                              src={url}
+                              alt={`img-${i}`}
+                              width={90}
+                              height={90}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                height: 90,
+                                display: "block",
+                              }}
+                            />
                             <button
                               type="button"
-                              onClick={() => setProductForm((pf) => pf ? { ...pf, images: pf.images.filter((_, j) => j !== i) } : pf)}
-                              style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", cursor: "pointer", color: "white", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
+                              onClick={() =>
+                                setProductForm((pf) =>
+                                  pf
+                                    ? {
+                                        ...pf,
+                                        images: pf.images.filter(
+                                          (_, j) => j !== i,
+                                        ),
+                                      }
+                                    : pf,
+                                )
+                              }
+                              style={{
+                                position: "absolute",
+                                top: 4,
+                                right: 4,
+                                background: "rgba(0,0,0,0.6)",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "white",
+                                borderRadius: "50%",
+                                width: 20,
+                                height: 20,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
                             >
                               <X size={11} />
                             </button>
@@ -466,39 +1084,128 @@ export default function AdminContentTabs({
                       </div>
                     )}
 
-                    <p style={{ fontFamily: "DM Sans", fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 6 }}>
-                      First image is the main thumbnail. Minimum 2 images required.
+                    <p
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.7rem",
+                        color: "var(--text-muted)",
+                        marginTop: 6,
+                      }}
+                    >
+                      First image is the main thumbnail. Minimum 2 images
+                      required.
                     </p>
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(130px, 1fr))",
+                      gap: 16,
+                    }}
+                  >
                     <div>
                       <label style={LABEL_STYLE}>Badge</label>
-                      <input value={productForm.badge} onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })} style={INPUT_STYLE} placeholder="New, Best Seller, Sale..." />
+                      <input
+                        value={productForm.badge}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            badge: e.target.value,
+                          })
+                        }
+                        style={INPUT_STYLE}
+                        placeholder="New, Best Seller, Sale..."
+                      />
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 24 }}>
-                      <input type="checkbox" id="inStock" checked={productForm.inStock} onChange={(e) => setProductForm({ ...productForm, inStock: e.target.checked })} />
-                      <label htmlFor="inStock" style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--charcoal)", cursor: "pointer" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        paddingTop: 24,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        id="inStock"
+                        checked={productForm.inStock}
+                        onChange={(e) =>
+                          setProductForm({
+                            ...productForm,
+                            inStock: e.target.checked,
+                          })
+                        }
+                      />
+                      <label
+                        htmlFor="inStock"
+                        style={{
+                          fontFamily: "DM Sans",
+                          fontSize: "0.85rem",
+                          color: "var(--charcoal)",
+                          cursor: "pointer",
+                        }}
+                      >
                         In Stock
                       </label>
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", paddingTop: 8, flexWrap: "wrap" }}>
-                    <button onClick={() => { setProductForm(null); setProductErrors({}); }} style={{ padding: "10px 20px", background: "none", border: "1px solid var(--off-white)", cursor: "pointer", fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 12,
+                      justifyContent: "flex-end",
+                      paddingTop: 8,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        setProductForm(null);
+                        setProductErrors({});
+                      }}
+                      style={{
+                        padding: "10px 20px",
+                        background: "none",
+                        border: "1px solid var(--off-white)",
+                        cursor: "pointer",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.85rem",
+                        color: "var(--text-muted)",
+                      }}
+                    >
                       Cancel
                     </button>
                     <button
                       onClick={saveProduct}
                       disabled={saving || uploadingProduct}
                       style={{
-                        display: "flex", alignItems: "center", gap: 8, padding: "10px 24px",
-                        background: saving || uploadingProduct ? "var(--text-muted)" : "var(--charcoal)",
-                        color: "white", border: "none", cursor: saving || uploadingProduct ? "not-allowed" : "pointer",
-                        fontFamily: "DM Sans", fontSize: "0.85rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "10px 24px",
+                        background:
+                          saving || uploadingProduct
+                            ? "var(--text-muted)"
+                            : "var(--charcoal)",
+                        color: "white",
+                        border: "none",
+                        cursor:
+                          saving || uploadingProduct
+                            ? "not-allowed"
+                            : "pointer",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.85rem",
                       }}
                     >
-                      <Save size={15} /> {saving ? "Saving..." : uploadingProduct ? "Uploading..." : "Save Product"}
+                      <Save size={15} />{" "}
+                      {saving
+                        ? "Saving..."
+                        : uploadingProduct
+                          ? "Uploading..."
+                          : "Save Product"}
                     </button>
                   </div>
                 </div>
@@ -506,44 +1213,140 @@ export default function AdminContentTabs({
             </div>
           )}
 
-          {/* Product grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: 12,
+            }}
+          >
             {products.map((p) => (
-              <div key={p.id} style={{ background: "white", overflow: "hidden" }}>
-                <div style={{ aspectRatio: "1/1", overflow: "hidden", background: "var(--off-white)", position: "relative" }}>
+              <div
+                key={p._id}
+                style={{ background: "white", overflow: "hidden" }}
+              >
+                <div
+                  style={{
+                    aspectRatio: "1/1",
+                    overflow: "hidden",
+                    background: "var(--off-white)",
+                    position: "relative",
+                  }}
+                >
                   {p.images?.[0] ? (
-                    <Image src={p.images[0]} alt={p.name} fill style={{ objectFit: "cover" }} sizes="160px" />
+                    <Image
+                      src={p.images[0]}
+                      alt={p.name}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      sizes="160px"
+                    />
                   ) : (
-                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "var(--text-muted)",
+                      }}
+                    >
                       <Package size={32} />
                     </div>
                   )}
                   {p.images?.length > 1 && (
-                    <span style={{ position: "absolute", bottom: 6, right: 6, background: "rgba(0,0,0,0.55)", color: "white", fontSize: "0.65rem", padding: "2px 6px", borderRadius: 4, fontFamily: "DM Sans" }}>
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: 6,
+                        right: 6,
+                        background: "rgba(0,0,0,0.55)",
+                        color: "white",
+                        fontSize: "0.65rem",
+                        padding: "2px 6px",
+                        borderRadius: 4,
+                        fontFamily: "DM Sans",
+                      }}
+                    >
                       +{p.images.length - 1}
                     </span>
                   )}
                 </div>
                 <div style={{ padding: "12px" }}>
-                  <div style={{ fontFamily: "DM Sans", fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)", marginBottom: 4 }}>
+                  <div
+                    style={{
+                      fontFamily: "DM Sans",
+                      fontSize: "0.62rem",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "var(--sage-dark)",
+                      marginBottom: 4,
+                    }}
+                  >
                     {p.category}
                   </div>
-                  <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "0.95rem", fontWeight: 600, color: "var(--charcoal)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div
+                    style={{
+                      fontFamily: "Cormorant Garamond, serif",
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "var(--charcoal)",
+                      marginBottom: 4,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     {p.name}
                   </div>
-                  <div style={{ fontFamily: "DM Sans", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 10 }}>
+                  <div
+                    style={{
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                      marginBottom: 10,
+                    }}
+                  >
                     KES {p.price.toLocaleString()}
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
                     <button
-                      onClick={() => setProductForm({ ...p, price: String(p.price), images: p.images ?? [] })}
-                      style={{ flex: 1, padding: "7px", background: "var(--off-white)", border: "none", cursor: "pointer", color: "var(--charcoal)", fontFamily: "DM Sans", fontSize: "0.75rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}
+                      onClick={() =>
+                        setProductForm({
+                          ...p,
+                          price: String(p.price),
+                          images: p.images ?? [],
+                        })
+                      }
+                      style={{
+                        flex: 1,
+                        padding: "7px",
+                        background: "var(--off-white)",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "var(--charcoal)",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 4,
+                      }}
                     >
                       <Edit3 size={12} /> Edit
                     </button>
                     <button
-                      onClick={() => deleteProduct(p.id)}
-                      style={{ padding: "7px 10px", background: "#fef2f2", border: "none", cursor: "pointer", color: "#c0392b", display: "flex", alignItems: "center" }}
+                      onClick={() => deleteProduct(p._id)}
+                      style={{
+                        padding: "7px 10px",
+                        background: "#fef2f2",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#c0392b",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
                     >
                       <Trash2 size={12} />
                     </button>
@@ -551,6 +1354,281 @@ export default function AdminContentTabs({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── ADMINS ───────────────────────────────────────────────────────── */}
+      {tab === "admins" && (
+        <div>
+          <div style={{ marginBottom: 32 }}>
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+              }}
+            >
+              Admins
+            </h1>
+            <p
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginTop: 4,
+              }}
+            >
+              {admins.length} {admins.length === 1 ? "user" : "users"} with
+              admin access
+            </p>
+          </div>
+
+          {/* Password change modal */}
+          {pwTarget && (
+            <Modal
+              open={!!pwTarget}
+              onClose={closePasswordModal}
+              title={`Change Password — ${pwTarget.name}`}
+              maxWidth={440}
+            >
+              <div style={{ display: "grid", gap: 16 }}>
+                <div>
+                  <label style={LABEL_STYLE}>New Password *</label>
+                  <input
+                    type="password"
+                    value={pwValue}
+                    onChange={(e) => {
+                      setPwValue(e.target.value);
+                      setPwError("");
+                    }}
+                    style={pwError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Min. 8 characters"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Confirm Password *</label>
+                  <input
+                    type="password"
+                    value={pwConfirm}
+                    onChange={(e) => {
+                      setPwConfirm(e.target.value);
+                      setPwError("");
+                    }}
+                    style={pwError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Repeat password"
+                  />
+                </div>
+                {pwError && <span style={ERROR_TEXT}>{pwError}</span>}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "flex-end",
+                    paddingTop: 4,
+                  }}
+                >
+                  <button
+                    onClick={closePasswordModal}
+                    style={{
+                      padding: "10px 20px",
+                      background: "none",
+                      border: "1px solid var(--off-white)",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitPassword}
+                    disabled={pwSaving}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "10px 24px",
+                      background: pwSaving
+                        ? "var(--text-muted)"
+                        : "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: pwSaving ? "not-allowed" : "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    <KeyRound size={14} />
+                    {pwSaving ? "Saving..." : "Update Password"}
+                  </button>
+                </div>
+              </div>
+            </Modal>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {admins.map((a) => {
+              const isSelf = a._id === currentUserId;
+              const isSuperadmin = a.role === "superadmin";
+
+              return (
+                <div
+                  key={a._id}
+                  style={{
+                    background: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    padding: "14px 16px",
+                    borderLeft: isSelf
+                      ? "3px solid var(--sage-dark)"
+                      : "3px solid transparent",
+                  }}
+                >
+                  {/* Avatar */}
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%",
+                      background: isSuperadmin ? "#111" : "var(--off-white)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      color: isSuperadmin ? "white" : "var(--text-muted)",
+                    }}
+                  >
+                    {isSuperadmin ? (
+                      <ShieldCheck size={18} />
+                    ) : (
+                      <Shield size={18} />
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "DM Sans",
+                          fontSize: "0.9rem",
+                          fontWeight: 600,
+                          color: "var(--charcoal)",
+                        }}
+                      >
+                        {a.name}
+                      </span>
+                      {isSelf && (
+                        <span
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.6rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            background: "var(--sage-pale)",
+                            color: "var(--sage-dark)",
+                            padding: "2px 8px",
+                            borderRadius: 9999,
+                          }}
+                        >
+                          You
+                        </span>
+                      )}
+                      <span
+                        style={{
+                          fontFamily: "DM Sans",
+                          fontSize: "0.6rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                          background: isSuperadmin
+                            ? "#111"
+                            : "var(--off-white)",
+                          color: isSuperadmin ? "white" : "var(--text-muted)",
+                          padding: "2px 8px",
+                          borderRadius: 9999,
+                        }}
+                      >
+                        {isSuperadmin ? "Super Admin" : "Admin"}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.75rem",
+                        color: "var(--text-muted)",
+                        marginTop: 2,
+                      }}
+                    >
+                      {a.email}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    {/*
+                      Change password:
+                      - superadmin can change anyone's password
+                      - admin can only change their own
+                    */}
+                    {(role === "superadmin" || isSelf) && (
+                      <button
+                        onClick={() => openPasswordModal(a)}
+                        style={{
+                          padding: "7px 10px",
+                          background: "var(--off-white)",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "var(--charcoal)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 5,
+                          fontFamily: "DM Sans",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        <KeyRound size={13} />
+                        Password
+                      </button>
+                    )}
+
+                    {/*
+                      Delete: superadmin only, cannot delete themselves
+                      or another superadmin
+                    */}
+                    {role === "superadmin" && !isSelf && !isSuperadmin && (
+                      <button
+                        onClick={() => deleteAdmin(a._id)}
+                        style={{
+                          padding: "7px 10px",
+                          background: "#fef2f2",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "#c0392b",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

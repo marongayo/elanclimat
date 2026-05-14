@@ -1,8 +1,10 @@
+// lib/mongodb.ts
 import mongoose from "mongoose";
+
 import { setServers } from "node:dns/promises";
 setServers(["1.1.1.1", "8.8.8.8"]);
 
-const MONGODB_URI = process.env.URI!;
+const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) throw new Error("Please define MONGODB_URI in .env.local");
 

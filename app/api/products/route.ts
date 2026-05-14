@@ -8,7 +8,6 @@ import {
   getProductById,
 } from "@/lib/db";
 import { v2 as cloudinary } from "cloudinary";
-import { randomUUID } from "crypto";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
@@ -32,7 +31,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const product = { ...body, id: body.id || randomUUID() };
+  const product = { ...body };
   await saveProduct(product);
   const products = await getProducts();
   return NextResponse.json(products, { status: 201 });

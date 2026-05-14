@@ -6,7 +6,6 @@ import {
   saveMessage,
   deleteMessage,
 } from "@/lib/db";
-import { randomUUID } from "crypto";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -23,7 +22,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const msg = {
     ...body,
-    id: body.id || randomUUID(),
     read: false,
   };
   await saveMessage(msg);
