@@ -81,7 +81,7 @@ const emptyBlog = (): BlogForm => ({
   content: "",
   category: "HVAC",
   image: "",
-  author: ` ${session?.user?.name || "Élan Editorial"}`,
+  author: "Élan Editorial",
   date: new Date().toISOString().split("T")[0],
   readTime: "5 min",
 });
