@@ -8,67 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "@/components/admin-components/AdminSidebar";
 import AdminMessagesPanel from "@/components/admin-components/AdminMessagesPanel";
 import AdminContentTabs from "@/components/admin-components/AdminContentTabs";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
-type Tab = "dashboard" | "blog" | "products" | "admins";
-type Role = "admin" | "superadmin";
-
-interface BlogForm {
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  image: string;
-  author: string;
-  date: string;
-  readTime: string;
-}
-
-interface ProductForm {
-  name: string;
-  price: string;
-  category: string;
-  images: string[];
-  description: string;
-  inStock: boolean;
-  badge: string;
-}
-
-interface ProductErrors {
-  name?: string;
-  price?: string;
-  category?: string;
-  description?: string;
-  images?: string;
-}
-
-interface Message {
-  _id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  service?: string;
-  message?: string;
-  createdAt: string;
-  read: boolean;
-}
-
-interface AdminForm {
-  name: string;
-  email: string;
-  password: string;
-  role: Role;
-}
-
-interface AdminFormErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-}
+import type { Message } from "@/lib/types/message";
+import type { ProductForm, ProductErrors } from "@/lib/types/product";
+import type { BlogForm } from "@/lib/types/blog";
+import type { AdminForm, AdminFormErrors } from "@/lib/types/admin";
+import type { Tab } from "@/lib/types/admin";
+import type { Role } from "@/lib/types/admin";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers

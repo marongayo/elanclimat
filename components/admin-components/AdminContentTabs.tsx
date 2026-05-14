@@ -17,41 +17,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
-
-type Tab = "dashboard" | "blog" | "products" | "admins";
-type Role = "admin" | "superadmin";
-
-interface BlogForm {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  image: string;
-  author: string;
-  date: string;
-  readTime: string;
-}
-
-interface ProductForm {
-  id: string;
-  name: string;
-  price: string;
-  category: string;
-  images: string[];
-  description: string;
-  inStock: boolean;
-  badge: string;
-}
-
-interface ProductErrors {
-  name?: string;
-  price?: string;
-  category?: string;
-  description?: string;
-  images?: string;
-}
+import type { BlogForm } from "@/lib/types/blog";
+import type { ProductForm, ProductErrors } from "@/lib/types/product";
+import type { Tab } from "@/lib/types/admin";
+import type { Role } from "@/lib/types/admin";
 
 const INPUT_STYLE: React.CSSProperties = {
   width: "100%",

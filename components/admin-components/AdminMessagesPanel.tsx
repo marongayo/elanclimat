@@ -1,17 +1,7 @@
 "use client";
 import { X, Trash2, Mail, Archive, Inbox, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Message {
-  _id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  service?: string;
-  message?: string;
-  createdAt: string;
-  read: boolean;
-}
+import type { Message } from "@/lib/types/message";
 
 const formatMessageDate = (raw: string | undefined): string => {
   if (!raw) return "—";
