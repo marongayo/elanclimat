@@ -217,7 +217,7 @@ export default async function BlogPage() {
           >
             {rest.map((post) => (
               <Link
-                key={post.id}
+                key={post._id}
                 href={`/blog/${post.slug}`}
                 style={{
                   textDecoration: "none",
