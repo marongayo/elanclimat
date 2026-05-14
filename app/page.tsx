@@ -989,7 +989,7 @@ export default async function HomePage() {
           >
             {posts.map((post) => (
               <Link
-                key={post.id}
+                key={post._id}
                 href={`/blog/${post.slug}`}
                 style={{ textDecoration: "none", display: "block" }}
                 className="blog-card"
