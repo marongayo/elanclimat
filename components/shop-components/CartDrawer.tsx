@@ -185,6 +185,7 @@ export function CartDrawer({
                         }}
                       >
                         {item.name}
+                        {/* <span> */}
                       </div>
                       <div
                         style={{
