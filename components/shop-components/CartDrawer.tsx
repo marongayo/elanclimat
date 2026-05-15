@@ -10,7 +10,7 @@ interface CartDrawerProps {
   products: Product[];
   onOpen: () => void;
   onClose: () => void;
-  onRemove: (id: string) => void;
+  onRemove: (_id: string) => void;
 }
 
 export function CartDrawer({
@@ -198,7 +198,7 @@ export function CartDrawer({
                         {item.price.toLocaleString()}
                       </div>
                       <button
-                        onClick={() => onRemove(item.id)}
+                        onClick={() => onRemove(item._id)}
                         style={{
                           fontFamily: "DM Sans",
                           fontSize: "0.72rem",
@@ -268,7 +268,7 @@ export function CartDrawer({
                   fontWeight: 600,
                 }}
               >
-                Proceed to Checkout →
+                Proceed to Checkout
               </button>
               <p
                 style={{
