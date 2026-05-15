@@ -21,7 +21,7 @@ export function CartDrawer({
   onClose,
   onRemove,
 }: CartDrawerProps) {
-  const cartItems = products.filter((p) => cart.includes(p.id));
+  const cartItems = products.filter((p) => cart.includes(p._id));
   const total = cartItems.reduce((sum, p) => sum + p.price, 0);
 
   return (
@@ -149,7 +149,7 @@ export function CartDrawer({
               ) : (
                 cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     style={{
                       display: "flex",
                       gap: 14,

@@ -43,7 +43,7 @@ export default function ShopHero({
   const visible = sorted.slice(0, visibleCount);
   const hasMore = visibleCount < sorted.length;
 
-  const cartItems = products.filter((p) => cart.includes(p.id));
+  const cartItems = products.filter((p) => cart.includes(p._id));
   const total = cartItems.reduce((sum, p) => sum + p.price, 0);
 
   const addToCart = (id: string) => setCart((prev) => [...prev, id]);
@@ -597,7 +597,7 @@ export default function ShopHero({
               ) : (
                 cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     style={{
                       display: "flex",
                       gap: 14,
@@ -648,7 +648,7 @@ export default function ShopHero({
                         ${item.price.toLocaleString()}
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item._id)}
                         style={{
                           fontFamily: "'DM Sans', sans-serif",
                           fontSize: "0.7rem",
