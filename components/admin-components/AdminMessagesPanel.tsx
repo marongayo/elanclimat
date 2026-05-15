@@ -287,7 +287,7 @@ export default function AdminMessagesPanel({
                     </div>
                     {archivedMessages.map((m) => (
                       <div
-                        key={m.id}
+                        key={m._id}
                         style={{
                           padding: "12px 16px",
                           borderBottom: "1px solid var(--off-white)",
