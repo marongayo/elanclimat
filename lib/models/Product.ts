@@ -4,7 +4,6 @@ const ProductSchema = new Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   category: { type: String, default: "HVAC" },
-  image: { type: String, default: "" }, // legacy field
   images: { type: [String], default: [] },
   description: { type: String, default: "" },
   inStock: { type: Boolean, default: true },

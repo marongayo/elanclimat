@@ -48,6 +48,7 @@ export async function deleteBlogPost(id: string): Promise<void> {
 export async function getProducts(): Promise<Product[]> {
   await connectDB();
   const products = await ProductModel.find().lean();
+
   return products.map(({ _id, __v, ...rest }) => ({
     ...rest,
     _id: _id.toString(), // ← convert ObjectId to plain string

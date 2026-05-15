@@ -4,7 +4,13 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function CardCarousel({ images, name }: { images: string[]; name: string }) {
+export function CardCarousel({
+  images = [],
+  name,
+}: {
+  images?: string[];
+  name: string;
+}) {
   const [idx, setIdx] = useState(0);
 
   if (images.length <= 1) {
