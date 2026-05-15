@@ -6,6 +6,7 @@ export interface ProductForm {
   description: string;
   inStock: boolean;
   badge: string;
+_id?:string;
 }
 
 export interface ProductErrors {
@@ -14,4 +15,6 @@ export interface ProductErrors {
   category?: string;
   description?: string;
   images?: string;
+_id?:string;
+
 }
