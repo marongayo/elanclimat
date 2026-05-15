@@ -316,7 +316,7 @@ export default function AdminContentTabs({
             <Modal
               open={!!blogForm}
               onClose={() => setBlogForm(null)}
-              title={blogForm.id ? "Edit Blog Post" : "New Blog Post"}
+              title={blogForm._id ? "Edit Blog Post" : "New Blog Post"}
               maxWidth={800}
             >
               <div style={{ display: "grid", gap: 18 }}>
@@ -655,7 +655,7 @@ export default function AdminContentTabs({
                       color: "var(--charcoal)",
                     }}
                   >
-                    {productForm.id ? "Edit" : "New"} Product
+                    {productForm._id ? "Edit" : "New"} Product
                   </h2>
                   <button
                     onClick={() => {
