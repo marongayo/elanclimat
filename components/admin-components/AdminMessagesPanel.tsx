@@ -357,7 +357,7 @@ export default function AdminMessagesPanel({
                               {formatMessageDate(m.createdAt)}
                             </span>
                             <button
-                              onClick={() => deleteMessage(m.id, true)}
+                              onClick={() => deleteMessage(m._id, true)}
                               style={{
                                 padding: "3px 5px",
                                 background: "#fef2f2",
@@ -430,7 +430,7 @@ export default function AdminMessagesPanel({
                   ) : (
                     messages.map((m) => (
                       <div
-                        key={m.id}
+                        key={m._id}
                         className="msg-item"
                         style={{
                           padding: "14px 16px",
@@ -575,7 +575,7 @@ export default function AdminMessagesPanel({
                         >
                           {!m.read && (
                             <button
-                              onClick={() => markRead(m.id)}
+                              onClick={() => markRead(m._id)}
                               style={{
                                 padding: "4px 10px",
                                 background: "var(--sage-pale)",
@@ -594,7 +594,7 @@ export default function AdminMessagesPanel({
                             </button>
                           )}
                           <button
-                            onClick={() => deleteMessage(m.id)}
+                            onClick={() => deleteMessage(m._id)}
                             style={{
                               padding: "4px 8px",
                               background: "#fef2f2",
