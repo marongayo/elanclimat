@@ -1,6 +1,6 @@
 //app/api/seed/route.ts
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import { createUser } from "@/lib/db";
 //app / api / seed / route.ts;
 
@@ -8,11 +8,11 @@ import { connectDB } from "@/lib/mongodb";
 import { ProductModel } from "@/lib/models/Product";
 
 export async function GET() {
-  const password = await bcrypt.hash("superadmin2024", 10);
+  // const password = await bcrypt.hash("superadmin2024", 10);
   await createUser({
     name: "Super Admin",
     email: "superadmin@elanclimat.co.ke",
-    password,
+    password: "superadmin2024",
     role: "superadmin",
   });
   return NextResponse.json({ ok: true });

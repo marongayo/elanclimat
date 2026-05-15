@@ -6,7 +6,6 @@ import { BlogPostModel } from "./models/BlogPost";
 import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import { UserModel } from "./models/User";
-import bcrypt from "bcryptjs";
 import type { BlogPost, Product, Message, User } from "./data";
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
@@ -131,7 +130,7 @@ export async function createUser(user: {
 }): Promise<void> {
   await connectDB();
   user.role = user.role;
-  user.password = await bcrypt.hash(user.password, 10);
+  user.password = user.password;
   await UserModel.create(user);
 }
 
