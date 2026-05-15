@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 // import bcrypt from "bcryptjs";
 import { createUser } from "@/lib/db";
-//app / api / seed / route.ts;
 
 import { connectDB } from "@/lib/mongodb";
 import { ProductModel } from "@/lib/models/Product";
