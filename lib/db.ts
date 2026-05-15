@@ -29,9 +29,9 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
 
 export async function saveBlogPost(post: BlogPost): Promise<void> {
   await connectDB();
-  const { id, ...data } = post;
-  if (id) {
-    await BlogPostModel.findByIdAndUpdate(new Types.ObjectId(id), data, {
+  const { _id, ...data } = post;
+  if (_id) {
+    await BlogPostModel.findByIdAndUpdate(new Types.ObjectId(_id), data, {
       upsert: false,
     });
   } else {
