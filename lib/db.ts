@@ -69,9 +69,9 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 export async function saveProduct(product: Product): Promise<void> {
   await connectDB();
-  const { id, ...data } = product;
-  if (id) {
-    await ProductModel.findByIdAndUpdate(new Types.ObjectId(id), data, {
+  const { _id, ...data } = product;
+  if (_id) {
+    await ProductModel.findByIdAndUpdate(new Types.ObjectId(_id), data, {
       upsert: false,
     });
   } else {
@@ -101,17 +101,17 @@ export async function getArchivedMessages(): Promise<Message[]> {
   const messages = await MessageModel.find({ archived: true })
     .sort({ _id: -1 })
     .lean();
-  return messages.map((m) => ({
-    ...m,
-    id: m._id.toString(),
+  return messages.map(({ _id, __v, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(),
   })) as unknown as Message[];
 }
 
 export async function saveMessage(msg: Message): Promise<void> {
   await connectDB();
-  const { id, ...data } = msg;
-  if (id) {
-    await MessageModel.findByIdAndUpdate(new Types.ObjectId(id), data);
+  const { _id, ...data } = msg;
+  if (_id) {
+    await MessageModel.findByIdAndUpdate(new Types.ObjectId(_id), data);
   } else {
     await MessageModel.create(data);
   }
@@ -135,9 +135,9 @@ export async function createUser(user: {
   await UserModel.create(user);
 }
 
-export async function getUserById(id: string): Promise<User | null> {
+export async function getUserById(_id: string): Promise<User | null> {
   await connectDB();
-  const user = await UserModel.findById(new Types.ObjectId(id)).lean();
+  const user = await UserModel.findById(new Types.ObjectId(_id)).lean();
   return user
     ? ({ ...user, id: user._id.toString() } as unknown as User)
     : null;
@@ -151,9 +151,9 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     : null;
 }
 
-export async function deleteUser(id: string): Promise<void> {
+export async function deleteUser(_id: string): Promise<void> {
   await connectDB();
-  await UserModel.findByIdAndDelete(new Types.ObjectId(id));
+  await UserModel.findByIdAndDelete(new Types.ObjectId(_id));
 }
 
 export async function getAllUsers(): Promise<User[]> {

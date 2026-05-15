@@ -7,13 +7,15 @@ import { Product } from "@/lib/data";
 
 import Navbar from "@/components/Navbar";
 import ShopHero from "@/components/shop-components/ShopHero";
-import { CardCarousel } from "@/components/shop-components/CardCarousel";
-
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import Image from "next/image";
+import AboutCollections from "@/components/shop-components/AboutCollections";
 
-const CATEGORIES = ["All", "HVAC", "Solar", "Batteries"];
+import ImageStrip from "@/components/shop-components/ImageStrip";
 
 export default function ShopClient({ products = [] }: { products: Product[] }) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<string[]>([]);
@@ -65,24 +67,44 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
       >
         <Navbar />
       </motion.div>
-
       {/* Hero Section */}
-      <ShopHero products={products} />
-
-      {/* Example Product Section */}
-      <section
+      <ShopHero
+        products={products}
+        onClearFilters={() => {
+          setCat("All");
+          setSearch("");
+          setSelectedProduct(null);
+        }}
+        onSelectProduct={setSelectedProduct}
+      />
+      <div
         style={{
-          padding: "4rem 2rem",
-          maxWidth: "1400px",
-          margin: "0 auto",
+          position: "sticky",
+          top: 0,
+          height: "60vh",
+          width: "100%",
+          zIndex: 0,
         }}
       >
-        <CardCarousel
-          products={filtered}
-          title="Featured Products"
-          addToCart={addToCart}
-        />
-      </section>
+        {/* Inner — gives next/image a valid fill parent */}
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <Image
+            src="/everett.jpg"
+            alt="Interior scene"
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "center" }}
+          />
+        </div>
+      </div>
+      <AboutCollections
+        products={products}
+        cart={cart}
+        onAddToCart={addToCart}
+        selectedProduct={selectedProduct} // ← new
+        onSelectProduct={setSelectedProduct} // ← new
+      />
+      <ImageStrip />
     </main>
   );
 }

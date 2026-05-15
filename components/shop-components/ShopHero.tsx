@@ -2,25 +2,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/lib/data";
-import {
-  ShoppingBag,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  X,
-} from "lucide-react";
+import { ShoppingBag, ChevronDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ProductCard from "./ProductCard";
 
-// ─── Hero categories ────────────────────────────────────────────────────────
-const HERO_CATEGORIES = [
-  { num: "01", label: "Chair" },
-  { num: "02", label: "Furniture" },
-  { num: "03", label: "3d Design" },
-  { num: "04", label: "Architecture" },
-  { num: "05", label: "Interior" },
-  { num: "06", label: "Refinery" },
-  { num: "07", label: "Commission" },
-];
+// ─── Sort Options ────────────────────────────────────────────────────────
 
 const SORT_OPTIONS = [
   "Popular Products",
@@ -29,294 +15,17 @@ const SORT_OPTIONS = [
   "Price: High–Low",
 ];
 
-const UNSPLASH_FALLBACKS: Record<string, string> = {
-  HVAC: "https://images.unsplash.com/photo-1581275233838-4c24e11c7c79?w=600&q=80",
-  Solar:
-    "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
-  Batteries:
-    "https://images.unsplash.com/photo-1620714223084-8fcacc2dfd4d?w=600&q=80",
-  default:
-    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80",
-};
+// ─── Main component ──────────────────────────────────────────────────────────
 
-// ─── Card Carousel ──────────────────────────────────────────────────────────
-function CardCarousel({
-  images,
-  name,
-  category,
+export default function ShopHero({
+  products,
+  onClearFilters,
+  onSelectProduct, // ← new
 }: {
-  images: string[];
-  name: string;
-  category?: string;
+  products: Product[];
+  onClearFilters?: () => void;
+  onSelectProduct?: (product: Product) => void; // ← new
 }) {
-  const resolvedImages = images?.length
-    ? images
-    : [UNSPLASH_FALLBACKS[category ?? ""] ?? UNSPLASH_FALLBACKS.default];
-  const [idx, setIdx] = useState(0);
-
-  if (resolvedImages.length <= 1) {
-    return (
-      <Image
-        src={resolvedImages[0] ?? ""}
-        alt={name}
-        fill
-        sizes="(max-width: 768px) 100vw, 33vw"
-        style={{ objectFit: "cover" }}
-      />
-    );
-  }
-
-  const prev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIdx((i) => (i - 1 + resolvedImages.length) % resolvedImages.length);
-  };
-  const next = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIdx((i) => (i + 1) % resolvedImages.length);
-  };
-
-  return (
-    <>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={idx}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          style={{ position: "absolute", inset: 0 }}
-        >
-          <Image
-            src={resolvedImages[idx]}
-            alt={`${name} ${idx + 1}`}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            style={{ objectFit: "cover" }}
-          />
-        </motion.div>
-      </AnimatePresence>
-      <button
-        onClick={prev}
-        className="carousel-arrow carousel-arrow-left"
-        aria-label="Previous"
-      >
-        <ChevronLeft size={14} />
-      </button>
-      <button
-        onClick={next}
-        className="carousel-arrow carousel-arrow-right"
-        aria-label="Next"
-      >
-        <ChevronRight size={14} />
-      </button>
-      <div
-        style={{
-          position: "absolute",
-          bottom: 8,
-          left: 0,
-          right: 0,
-          display: "flex",
-          justifyContent: "center",
-          gap: 4,
-          zIndex: 2,
-        }}
-      >
-        {resolvedImages.map((_, i) => (
-          <button
-            key={i}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIdx(i);
-            }}
-            style={{
-              width: i === idx ? 14 : 5,
-              height: 5,
-              borderRadius: 9999,
-              background: i === idx ? "white" : "rgba(255,255,255,0.45)",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
-              transition: "all 0.2s",
-            }}
-          />
-        ))}
-      </div>
-    </>
-  );
-}
-
-// ─── Product Card ───────────────────────────────────────────────────────────
-function ProductCard({
-  product,
-  inCart,
-  onAddToCart,
-}: {
-  product: Product;
-  inCart: boolean;
-  onAddToCart: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <div
-      className="product-card"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: "#f7f5f0",
-        position: "relative",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {product.badge && (
-        <span
-          style={{
-            position: "absolute",
-            top: 12,
-            left: 12,
-            zIndex: 2,
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.58rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            padding: "3px 9px",
-            background:
-              product.badge === "New"
-                ? "var(--sage)"
-                : product.badge === "Best Seller"
-                  ? "var(--accent)"
-                  : "var(--charcoal)",
-            color: "white",
-          }}
-        >
-          {product.badge}
-        </span>
-      )}
-      {!product.inStock && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(247,245,240,0.75)",
-            zIndex: 3,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.72rem",
-              fontWeight: 600,
-              color: "var(--text-muted)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            Out of Stock
-          </span>
-        </div>
-      )}
-      <div
-        style={{
-          overflow: "hidden",
-          aspectRatio: "4/3",
-          background: "#ede9e2",
-          position: "relative",
-        }}
-      >
-        <CardCarousel
-          images={product.images}
-          name={product.name}
-          category={product.category}
-        />
-      </div>
-      <div
-        style={{
-          padding: "14px 16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "#f7f5f0",
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.6rem",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "var(--sage-dark)",
-              marginBottom: 3,
-            }}
-          >
-            {product.category}
-          </div>
-          <div
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "0.95rem",
-              fontWeight: 600,
-              color: "var(--charcoal)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {product.name}
-          </div>
-        </div>
-        {product.inStock && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!inCart) onAddToCart();
-            }}
-            disabled={inCart}
-            style={{
-              marginLeft: 12,
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              height: 32,
-              width: hovered ? 36 : "auto",
-              padding: hovered ? "0" : "0 12px",
-              borderRadius: 9999,
-              border: "none",
-              cursor: inCart ? "default" : "pointer",
-              background: inCart ? "var(--sage)" : "var(--charcoal)",
-              color: "white",
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.72rem",
-              fontWeight: 500,
-              transition: "width 0.3s ease, padding 0.3s ease, background 0.2s",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {hovered ? (
-              <ShoppingBag size={14} />
-            ) : inCart ? (
-              <ShoppingBag size={14} />
-            ) : (
-              <span style={{ letterSpacing: "0.01em" }}>
-                KES {product.price.toLocaleString()}
-              </span>
-            )}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Main component ─────────────────────────────────────────────────────────
-export default function ShopHero({ products = [] }: { products: Product[] }) {
   const [heroHovered, setHeroHovered] = useState<string | null>(null);
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState("Popular Products");
@@ -341,6 +50,30 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
   const removeFromCart = (id: string) =>
     setCart((prev) => prev.filter((c) => c !== id));
 
+  const handleCategoryClick = (label: string, isActive: boolean) => {
+    if (label === "All") {
+      setCat("All");
+      onClearFilters?.();
+    } else {
+      setCat(isActive ? "All" : label);
+    }
+    setVisibleCount(6);
+  };
+  const HERO_CATEGORIES = [
+    ...Array.from(new Set(products.map((p) => p.category))).map(
+      (category, index) => ({
+        num: String(index + 1).padStart(2, "0"),
+        label: category,
+      }),
+    ),
+    {
+      num: String(new Set(products.map((p) => p.category)).size + 1).padStart(
+        2,
+        "0",
+      ),
+      label: "All",
+    },
+  ];
   return (
     <div style={{ background: "var(--warm-white)", width: "100%" }}>
       <style>{`
@@ -356,31 +89,17 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
           --text-muted: #888580;
         }
 
-        /* Active/hover category: underline, NOT strikethrough */
         .hero-cat-item:hover .hero-cat-label,
         .hero-cat-item.active .hero-cat-label {
           color: #fff;
           text-decoration: underline;
-          text-decoration-color: rgba(255, 255, 255, 0.5);
+          text-decoration-color: rgba(255,255,255,0.5);
           text-underline-offset: 4px;
         }
         .hero-cat-item:hover .hero-cat-num,
         .hero-cat-item.active .hero-cat-num {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255,255,255,0.5);
         }
-
-        /* Carousel arrows */
-        .product-card:hover .carousel-arrow { opacity: 1; }
-        .carousel-arrow {
-          position: absolute; top: 50%; transform: translateY(-50%);
-          z-index: 3; background: rgba(0,0,0,0.4); border: none; color: white;
-          width: 26px; height: 26px; border-radius: 50%;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; opacity: 0; transition: opacity 0.2s;
-        }
-        .carousel-arrow-left { left: 8px; }
-        .carousel-arrow-right { right: 8px; }
-        .carousel-arrow:hover { background: rgba(0,0,0,0.65); }
 
         .sort-option:hover { background: var(--off-white); }
 
@@ -388,7 +107,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
           .shop-hero-grid { grid-template-columns: 1fr !important; }
           .shop-hero-image-col { display: none !important; }
           .shop-hero-content { padding: 48px 28px 40px !important; }
-          .collections-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1px !important; }
+          .collections-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 480px) {
           .collections-grid { grid-template-columns: 1fr !important; }
@@ -408,7 +127,6 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
           overflow: "hidden",
         }}
       >
-        {/* Left: content */}
         <div
           className="shop-hero-content"
           style={{
@@ -476,7 +194,6 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
             </p>
           </div>
 
-          {/* Hero category list — clicking filters the grid */}
           <div
             style={{
               display: "grid",
@@ -493,10 +210,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
                   className={`hero-cat-item${isActive ? " active" : ""}`}
                   onMouseEnter={() => setHeroHovered(hcat.label)}
                   onMouseLeave={() => setHeroHovered(null)}
-                  onClick={() => {
-                    setCat(isActive ? "All" : hcat.label);
-                    setVisibleCount(6);
-                  }}
+                  onClick={() => handleCategoryClick(hcat.label, isActive)}
                   style={{
                     background: "none",
                     border: "none",
@@ -544,8 +258,6 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
           </div>
         </div>
 
-        {/* Right: HVAC image — NO gradient fade, both corners fully visible */}
-        {/* Right: image inset within dark section */}
         <div
           className="shop-hero-image-col"
           style={{
@@ -553,7 +265,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "40px 40px 40px 40px",
+            padding: "40px",
           }}
         >
           <div
@@ -582,7 +294,6 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
 
       {/* ── Collections ── */}
       <section style={{ width: "100%" }}>
-        {/* Header */}
         <div style={{ textAlign: "center", padding: "72px 32px 0" }}>
           <h2
             style={{
@@ -610,7 +321,6 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
             built for performance, installed with precision.
           </p>
 
-          {/* Sort dropdown — centered, matching the reference UI */}
           <div
             style={{
               display: "flex",
@@ -695,7 +405,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
 
         {/* Products grid */}
         <div
-          style={{ maxWidth: 1280, margin: "0 auto", padding: "32px 32px 0" }}
+          style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 64px 0" }}
         >
           {sorted.length === 0 ? (
             <div
@@ -714,7 +424,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 2,
+                gap: "10px",
               }}
             >
               {visible.map((p) => (
@@ -723,6 +433,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
                   product={p}
                   inCart={cart.includes(p._id)}
                   onAddToCart={() => addToCart(p._id)}
+                  onSelect={() => onSelectProduct?.(p)} // ← new
                 />
               ))}
             </div>
@@ -901,22 +612,25 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
                         width: 64,
                         height: 64,
                         flexShrink: 0,
+                        background: "#f2f1ee",
                       }}
                     >
-                      <Image
-                        src={item.images?.[0] ?? ""}
-                        alt={item.name}
-                        fill
-                        sizes="64px"
-                        style={{ objectFit: "cover" }}
-                      />
+                      {item.images?.[0] && (
+                        <Image
+                          src={item.images[0]}
+                          alt={item.name}
+                          fill
+                          sizes="64px"
+                          style={{ objectFit: "contain", padding: "6px" }}
+                        />
+                      )}
                     </div>
                     <div style={{ flex: 1 }}>
                       <div
                         style={{
-                          fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: "1rem",
-                          fontWeight: 600,
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.85rem",
+                          fontWeight: 400,
                           color: "var(--charcoal)",
                           marginBottom: 4,
                         }}
@@ -926,12 +640,12 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
                       <div
                         style={{
                           fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.82rem",
-                          color: "var(--sage-dark)",
+                          fontSize: "0.8rem",
+                          color: "var(--text-muted)",
                           marginBottom: 8,
                         }}
                       >
-                        KES {item.price.toLocaleString()}
+                        ${item.price.toLocaleString()}
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -982,7 +696,7 @@ export default function ShopHero({ products = [] }: { products: Product[] }) {
                     color: "var(--charcoal)",
                   }}
                 >
-                  KES {total.toLocaleString()}
+                  ${total.toLocaleString()}
                 </span>
               </div>
               <button

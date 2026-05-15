@@ -22,7 +22,7 @@ export async function connectDB() {
       dbName: process.env.MONGODB_DB_NAME ?? "elan",
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,
-      family: 4, // Force IPv4 — avoids IPv6 resolution failures
+      family: 4,
     });
   }
 
