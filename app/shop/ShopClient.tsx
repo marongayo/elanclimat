@@ -8,10 +8,12 @@ import ShopHero from "@/components/shop-components/ShopHero";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
 import AboutCollections from "@/components/shop-components/AboutCollections";
+
 import ImageStrip from "@/components/shop-components/ImageStrip";
 
 export default function ShopClient({ products = [] }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<string[]>([]);
@@ -23,6 +25,13 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
   useMotionValueEvent(scrollY, "change", (latest) => {
     setShowNav(latest > 80);
   });
+
+  const filtered = products.filter(
+    (p) =>
+      (cat === "All" || p.category === cat) &&
+      (p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.description.toLowerCase().includes(search.toLowerCase())),
+  );
 
   const addToCart = (id: string) => {
     setCart((prev) => [...prev, id]);
@@ -57,7 +66,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         <Navbar />
       </motion.div>
 
-      {/* About / Hero Section */}
+      {/* Hero Section */}
       <AboutCollections
         products={products}
         cart={cart}
@@ -66,53 +75,36 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         onSelectProduct={setSelectedProduct}
       />
 
-      {/* 
-        Sticky image + ShopHero share a parent.
-        Parent height = 40vh (image) + 420px (dark section height).
-        This means the sticky image runs out of scroll room exactly
-        when the dark section's bottom has passed it.
-      */}
-      <div style={{ position: "relative", height: "calc(40vh + 420px)" }}>
-        {/* Sticky image */}
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "40vh",
-            width: "100%",
-            zIndex: 0,
-          }}
-        >
-          <div style={{ position: "relative", width: "100%", height: "100%" }}>
-            <Image
-              src="/everett.jpg"
-              alt="Interior scene"
-              fill
-              priority
-              style={{ objectFit: "cover", objectPosition: "center" }}
-            />
-          </div>
-        </div>
-
-        {/* ShopHero overlaps the sticky image and scrolls over it */}
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            marginTop: "-40vh",
-          }}
-        >
-          <ShopHero
-            products={products}
-            onClearFilters={() => {
-              setCat("All");
-              setSearch("");
-              setSelectedProduct(null);
-            }}
-            onSelectProduct={setSelectedProduct}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          height: "40vh",
+          width: "100%",
+          zIndex: 0,
+        }}
+      >
+        {/* Inner — gives next/image a valid fill parent */}
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <Image
+            src="/everett.jpg"
+            alt="Interior scene"
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "center" }}
           />
         </div>
       </div>
+
+      <ShopHero
+        products={products}
+        onClearFilters={() => {
+          setCat("All");
+          setSearch("");
+          setSelectedProduct(null);
+        }}
+        onSelectProduct={setSelectedProduct}
+      />
 
       <ImageStrip />
     </main>
