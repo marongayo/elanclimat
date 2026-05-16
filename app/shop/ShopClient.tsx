@@ -68,15 +68,14 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         <Navbar />
       </motion.div>
       {/* Hero Section */}
-      <ShopHero
+<AboutCollections
         products={products}
-        onClearFilters={() => {
-          setCat("All");
-          setSearch("");
-          setSelectedProduct(null);
-        }}
-        onSelectProduct={setSelectedProduct}
+        cart={cart}
+        onAddToCart={addToCart}
+        selectedProduct={selectedProduct} // ← new
+        onSelectProduct={setSelectedProduct} // ← new
       />
+      
       <div
         style={{
           position: "sticky",
@@ -97,13 +96,18 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
           />
         </div>
       </div>
-      <AboutCollections
+      
+<ShopHero
         products={products}
-        cart={cart}
-        onAddToCart={addToCart}
-        selectedProduct={selectedProduct} // ← new
-        onSelectProduct={setSelectedProduct} // ← new
+        onClearFilters={() => {
+          setCat("All");
+          setSearch("");
+          setSelectedProduct(null);
+        }}
+        onSelectProduct={setSelectedProduct}
       />
+
+
       <ImageStrip />
     </main>
   );
