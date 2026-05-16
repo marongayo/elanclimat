@@ -78,7 +78,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
       
       <div
         style={{
-          
+          position: "sticky",
           top: 0,
           height: "40vh",
           width: "100%",
