@@ -80,7 +80,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         style={{
           position: "sticky",
           top: 0,
-          height: "60vh",
+          height: "40vh",
           width: "100%",
           zIndex: 0,
         }}
