@@ -1,5 +1,3 @@
-// shop/ShopClient.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -10,12 +8,10 @@ import ShopHero from "@/components/shop-components/ShopHero";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
 import AboutCollections from "@/components/shop-components/AboutCollections";
-
 import ImageStrip from "@/components/shop-components/ImageStrip";
 
 export default function ShopClient({ products = [] }: { products: Product[] }) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState<string[]>([]);
@@ -67,86 +63,58 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
       >
         <Navbar />
       </motion.div>
-      {/* Hero Section */}
-<AboutCollections
+
+      {/* About / Hero Section */}
+      <AboutCollections
         products={products}
         cart={cart}
         onAddToCart={addToCart}
-        selectedProduct={selectedProduct} // ← new
-        onSelectProduct={setSelectedProduct} // ← new
-      />
-      <div style={{ position: "relative" }}>
-  {/* Sticky image */}
-  <div
-    style={{
-      position: "sticky",
-      top: 0,
-      height: "40vh",
-      width: "100%",
-      zIndex: 0,
-    }}
-  >
-    <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <Image
-        src="/everett.jpg"
-        alt="Interior scene"
-        fill
-        priority
-        style={{ objectFit: "cover", objectPosition: "center" }}
-      />
-    </div>
-  </div>
-
-  {/* ShopHero sits on top, overlapping the sticky image */}
-  <div
-    style={{
-      position: "relative",
-      zIndex: 1,
-      marginTop: "-40vh", // pulls it up to overlap the sticky image
-    }}
-  >
-    <ShopHero
-      products={products}
-      onClearFilters={() => {
-        setCat("All");
-        setSearch("");
-        setSelectedProduct(null);
-      }}
-      onSelectProduct={setSelectedProduct}
-    />
-  </div>
-</div>
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "40vh",
-          width: "100%",
-          zIndex: 0,
-        }}
-      >
-        {/* Inner — gives next/image a valid fill parent */}
-        <div style={{ position: "relative", width: "100%", height: "100%" }}>
-          <Image
-            src="/everett.jpg"
-            alt="Interior scene"
-            fill
-            priority
-            style={{ objectFit: "cover", objectPosition: "center" }}
-          />
-        </div>
-      </div>
-      
-<ShopHero
-        products={products}
-        onClearFilters={() => {
-          setCat("All");
-          setSearch("");
-          setSelectedProduct(null);
-        }}
+        selectedProduct={selectedProduct}
         onSelectProduct={setSelectedProduct}
       />
 
+      {/* Sticky image + ShopHero */}
+      <div style={{ position: "relative" }}>
+        {/* Sticky image — sticks until parent is scrolled past */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "40vh",
+            width: "100%",
+            zIndex: 0,
+          }}
+        >
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <Image
+              src="/everett.jpg"
+              alt="Interior scene"
+              fill
+              priority
+              style={{ objectFit: "cover", objectPosition: "center" }}
+            />
+          </div>
+        </div>
+
+        {/* ShopHero overlaps the sticky image and scrolls over it */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            marginTop: "-40vh",
+          }}
+        >
+          <ShopHero
+            products={products}
+            onClearFilters={() => {
+              setCat("All");
+              setSearch("");
+              setSelectedProduct(null);
+            }}
+            onSelectProduct={setSelectedProduct}
+          />
+        </div>
+      </div>
 
       <ImageStrip />
     </main>
