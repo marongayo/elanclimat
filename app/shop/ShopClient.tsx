@@ -75,7 +75,47 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         selectedProduct={selectedProduct} // ← new
         onSelectProduct={setSelectedProduct} // ← new
       />
-      
+      <div style={{ position: "relative" }}>
+  {/* Sticky image */}
+  <div
+    style={{
+      position: "sticky",
+      top: 0,
+      height: "40vh",
+      width: "100%",
+      zIndex: 0,
+    }}
+  >
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <Image
+        src="/everett.jpg"
+        alt="Interior scene"
+        fill
+        priority
+        style={{ objectFit: "cover", objectPosition: "center" }}
+      />
+    </div>
+  </div>
+
+  {/* ShopHero sits on top, overlapping the sticky image */}
+  <div
+    style={{
+      position: "relative",
+      zIndex: 1,
+      marginTop: "-40vh", // pulls it up to overlap the sticky image
+    }}
+  >
+    <ShopHero
+      products={products}
+      onClearFilters={() => {
+        setCat("All");
+        setSearch("");
+        setSelectedProduct(null);
+      }}
+      onSelectProduct={setSelectedProduct}
+    />
+  </div>
+</div>
       <div
         style={{
           position: "sticky",
