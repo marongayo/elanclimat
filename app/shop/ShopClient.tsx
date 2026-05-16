@@ -73,9 +73,8 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         onSelectProduct={setSelectedProduct}
       />
 
-      {/* Sticky image + ShopHero */}
-      <div style={{ position: "relative" }}>
-        {/* Sticky image — sticks until parent is scrolled past */}
+      {/* Sticky image separator — 80vh container gives 40vh of visible scroll time */}
+      <div style={{ position: "relative", height: "80vh" }}>
         <div
           style={{
             position: "sticky",
@@ -95,26 +94,18 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
             />
           </div>
         </div>
-
-        {/* ShopHero overlaps the sticky image and scrolls over it */}
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            marginTop: "-40vh",
-          }}
-        >
-          <ShopHero
-            products={products}
-            onClearFilters={() => {
-              setCat("All");
-              setSearch("");
-              setSelectedProduct(null);
-            }}
-            onSelectProduct={setSelectedProduct}
-          />
-        </div>
       </div>
+
+      {/* ShopHero */}
+      <ShopHero
+        products={products}
+        onClearFilters={() => {
+          setCat("All");
+          setSearch("");
+          setSelectedProduct(null);
+        }}
+        onSelectProduct={setSelectedProduct}
+      />
 
       <ImageStrip />
     </main>
