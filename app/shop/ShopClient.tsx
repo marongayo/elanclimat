@@ -24,13 +24,6 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
     setShowNav(latest > 80);
   });
 
-  const filtered = products.filter(
-    (p) =>
-      (cat === "All" || p.category === cat) &&
-      (p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.description.toLowerCase().includes(search.toLowerCase())),
-  );
-
   const addToCart = (id: string) => {
     setCart((prev) => [...prev, id]);
   };
@@ -73,8 +66,14 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         onSelectProduct={setSelectedProduct}
       />
 
-      {/* Sticky image separator — 80vh container gives 40vh of visible scroll time */}
-      <div style={{ position: "relative", height: "80vh" }}>
+      {/* 
+        Sticky image + ShopHero share a parent.
+        Parent height = 40vh (image) + 420px (dark section height).
+        This means the sticky image runs out of scroll room exactly
+        when the dark section's bottom has passed it.
+      */}
+      <div style={{ position: "relative", height: "calc(40vh + 420px)" }}>
+        {/* Sticky image */}
         <div
           style={{
             position: "sticky",
@@ -94,18 +93,26 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
             />
           </div>
         </div>
-      </div>
 
-      {/* ShopHero */}
-      <ShopHero
-        products={products}
-        onClearFilters={() => {
-          setCat("All");
-          setSearch("");
-          setSelectedProduct(null);
-        }}
-        onSelectProduct={setSelectedProduct}
-      />
+        {/* ShopHero overlaps the sticky image and scrolls over it */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            marginTop: "-40vh",
+          }}
+        >
+          <ShopHero
+            products={products}
+            onClearFilters={() => {
+              setCat("All");
+              setSearch("");
+              setSelectedProduct(null);
+            }}
+            onSelectProduct={setSelectedProduct}
+          />
+        </div>
+      </div>
 
       <ImageStrip />
     </main>
