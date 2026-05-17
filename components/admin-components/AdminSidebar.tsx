@@ -12,9 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-type Tab = "dashboard" | "blog" | "products" | "admins";
-type Role = "admin" | "superadmin";
+import type { Role, Tab } from "@/lib/types/admin";
 
 // ── Nav primitives ────────────────────────────────────────────────────────────
 
@@ -129,8 +127,10 @@ const SidebarContent = ({
   onBell,
   role,
   onLogout,
+  userName,
 }: {
   tab: Tab;
+  userName: string;
   unread: number;
   navTo: (t: Tab) => void;
   onBell: () => void;
@@ -309,7 +309,7 @@ const SidebarContent = ({
             textOverflow: "ellipsis",
           }}
         >
-          {role === "superadmin" ? "Super Admin" : "Admin"}
+          {userName}
         </div>
         <div
           style={{
@@ -363,11 +363,13 @@ export default function AdminSidebar({
   onLogout,
   sidebarOpen,
   setSidebarOpen,
+  userName,
 }: {
   tab: Tab;
   unread: number;
   navTo: (t: Tab) => void;
   onBell: () => void;
+  userName: string;
   role: Role;
   onLogout: () => void;
   sidebarOpen: boolean;
@@ -396,6 +398,7 @@ export default function AdminSidebar({
           navTo={navTo}
           onBell={onBell}
           role={role}
+          userName={userName}
           onLogout={onLogout}
         />
       </aside>
@@ -530,6 +533,7 @@ export default function AdminSidebar({
               <SidebarContent
                 tab={tab}
                 unread={unread}
+                userName={userName}
                 navTo={(t) => {
                   setSidebarOpen(false);
                   navTo(t);

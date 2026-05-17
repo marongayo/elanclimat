@@ -14,7 +14,6 @@ if (!cached) {
 export async function connectDB() {
   if (cached.conn) return cached.conn;
 
-  // ✅ moved inside the function — only runs in Node.js runtime, never at build time
   const { setServers } = await import("node:dns/promises");
   setServers(["1.1.1.1", "8.8.8.8"]);
 

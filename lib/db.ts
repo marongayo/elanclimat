@@ -6,6 +6,7 @@ import { BlogPostModel } from "./models/BlogPost";
 import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import { UserModel } from "./models/User";
+import bcrypt from "bcryptjs";
 import type { BlogPost, Product, Message, User } from "./data";
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
@@ -129,9 +130,8 @@ export async function createUser(user: {
   role: string;
 }): Promise<void> {
   await connectDB();
-  user.role = user.role;
-  user.password = user.password;
-  await UserModel.create(user);
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+  await UserModel.create({ ...user, password: hashedPassword });
 }
 
 export async function getUserById(_id: string): Promise<User | null> {
@@ -158,7 +158,7 @@ export async function deleteUser(_id: string): Promise<void> {
 export async function getAllUsers(): Promise<User[]> {
   await connectDB();
   const users = await UserModel.find().lean();
-  return users.map(({ _id, __v, password, ...rest }) => ({
+  return users.map(({ _id, ...rest }) => ({
     ...rest,
     _id: _id.toString(),
   })) as unknown as User[];
@@ -169,5 +169,8 @@ export async function updateUserPassword(
   password: string,
 ): Promise<void> {
   await connectDB();
-  await UserModel.findByIdAndUpdate(new Types.ObjectId(id), { password });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await UserModel.findByIdAndUpdate(new Types.ObjectId(id), {
+    password: hashedPassword,
+  });
 }

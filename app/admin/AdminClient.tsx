@@ -70,7 +70,7 @@ const validateAdmin = (af: AdminForm): AdminFormErrors => {
   return errs;
 };
 
-// ─── Shared style tokens ──────────────────────────────────────────────────────
+// ── Shared style tokens ──────────────────────────────────────────────────────
 
 const INPUT_STYLE: React.CSSProperties = {
   width: "100%",
@@ -189,7 +189,6 @@ export default function AdminClient({
     return () => clearInterval(interval);
   }, []);
 
-  // Load admins once session confirms superadmin
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role === "superadmin") {
       loadAdmins();
@@ -219,7 +218,7 @@ export default function AdminClient({
   const role = session.user?.role as Role;
   const currentUserId = session.user?.id as string;
 
-  // ─── Handlers ────────────────────────────────────────────────────────────
+  // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const toast = (m: string) => {
     setMsg(m);
@@ -230,9 +229,11 @@ export default function AdminClient({
     }, 3100);
   };
 
+  // FIX 1: absolute URL so redirect works on any domain, not just localhost
   const logout = async () => {
-    await signOut({ callbackUrl: "/login" });
+    await signOut({ callbackUrl: `${window.location.origin}/login` });
   };
+
   const saveBlog = async () => {
     if (!blogForm) return;
     setSaving(true);
@@ -338,7 +339,6 @@ export default function AdminClient({
       }
       setAdminForm(null);
       toast(`${adminForm.name}'s admin account has been created!`);
-      // Refresh admins list
       await loadAdmins();
     } catch (err: any) {
       setAdminErrors({ email: err.message });
@@ -440,7 +440,6 @@ export default function AdminClient({
     loadMessages();
   };
 
-  // FAB handlers
   const handleNewBlog = () => {
     setTab("blog");
     setBlogForm(emptyBlog());
@@ -538,15 +537,17 @@ export default function AdminClient({
         .msg-item:hover { background: #f9fafb !important; }
       `}</style>
 
+      {/* FIX 2: onLogout opens the modal instead of signing out directly */}
       <AdminSidebar
         tab={tab}
         unread={unread}
         navTo={navTo}
         onBell={openBell}
         role={role}
-        onLogout={logout}
+        onLogout={() => setShowLogoutModal(true)}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        userName={session.user?.name || "Admin"}
       />
 
       <AdminMessagesPanel
@@ -671,105 +672,6 @@ export default function AdminClient({
                 </button>
               </div>
 
-              {/* Signout Modal */}
-
-              <AnimatePresence>
-                {showLogoutModal && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setShowLogoutModal(false)}
-                    style={{
-                      position: "fixed",
-                      inset: 0,
-                      background: "rgba(0,0,0,0.4)",
-                      zIndex: 400,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: "20px 16px",
-                    }}
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 12 }}
-                      transition={{
-                        type: "spring",
-                        damping: 28,
-                        stiffness: 300,
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{
-                        background: "white",
-                        width: "100%",
-                        maxWidth: 380,
-                        padding: "32px 28px",
-                        boxShadow: "0 20px 80px rgba(0,0,0,0.2)",
-                      }}
-                    >
-                      <h2
-                        style={{
-                          fontFamily: "Cormorant Garamond, serif",
-                          fontSize: "1.6rem",
-                          fontWeight: 600,
-                          color: "var(--charcoal)",
-                          margin: "0 0 8px",
-                        }}
-                      >
-                        Sign out?
-                      </h2>
-                      <p
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.85rem",
-                          color: "var(--text-muted)",
-                          margin: "0 0 28px",
-                        }}
-                      >
-                        You'll be redirected to the login page.
-                      </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: 10,
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <button
-                          onClick={() => setShowLogoutModal(false)}
-                          style={{
-                            padding: "10px 20px",
-                            background: "none",
-                            border: "1px solid var(--off-white)",
-                            cursor: "pointer",
-                            fontFamily: "DM Sans",
-                            fontSize: "0.85rem",
-                            color: "var(--text-muted)",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={logout}
-                          style={{
-                            padding: "10px 24px",
-                            background: "#c0392b",
-                            color: "white",
-                            border: "none",
-                            cursor: "pointer",
-                            fontFamily: "DM Sans",
-                            fontSize: "0.85rem",
-                          }}
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
               {/* Fields */}
               <div style={{ display: "grid", gap: 18 }}>
                 {/* Name */}
@@ -905,6 +807,104 @@ export default function AdminClient({
         )}
       </AnimatePresence>
 
+      {/* ── Logout Modal ───────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <motion.div
+            key="logout-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLogoutModal(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.4)",
+              zIndex: 400,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px 16px",
+            }}
+          >
+            <motion.div
+              key="logout-modal"
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "white",
+                width: "100%",
+                maxWidth: 380,
+                padding: "32px 28px",
+                boxShadow: "0 20px 80px rgba(0,0,0,0.2)",
+              }}
+            >
+              <h2
+                style={{
+                  fontFamily: "Cormorant Garamond, serif",
+                  fontSize: "1.6rem",
+                  fontWeight: 600,
+                  color: "var(--charcoal)",
+                  margin: "0 0 8px",
+                }}
+              >
+                Sign out?
+              </h2>
+              <p
+                style={{
+                  fontFamily: "DM Sans",
+                  fontSize: "0.85rem",
+                  color: "var(--text-muted)",
+                  margin: "0 0 28px",
+                }}
+              >
+                Log out <strong>{session.user?.name}</strong> from this session?
+                You'll be redirected to the login page.
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    background: "none",
+                    border: "1px solid var(--off-white)",
+                    cursor: "pointer",
+                    fontFamily: "DM Sans",
+                    fontSize: "0.85rem",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={logout}
+                  style={{
+                    padding: "10px 24px",
+                    background: "#c0392b",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                    fontFamily: "DM Sans",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── FAB + Toast ────────────────────────────────────────────────────── */}
       <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 999 }}>
         <motion.div
@@ -922,7 +922,6 @@ export default function AdminClient({
           }}
         >
           <AnimatePresence mode="wait" initial={false}>
-            {/* Default: + button */}
             {!open && !toastVisible && (
               <motion.button
                 key="fab"
@@ -950,7 +949,6 @@ export default function AdminClient({
               </motion.button>
             )}
 
-            {/* Expanded actions */}
             {open && (
               <motion.div
                 key="actions"
@@ -997,7 +995,6 @@ export default function AdminClient({
               </motion.div>
             )}
 
-            {/* Toast */}
             {!open && toastVisible && (
               <motion.div
                 key="toast"

@@ -4,7 +4,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 
 const LABEL_STYLE: React.CSSProperties = {
   display: "block",
@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function login() {
     setError("");
@@ -39,11 +40,9 @@ export default function LoginPage() {
       password,
       redirect: false,
     });
-    console.log("Login response:", res);
     if (res?.error) {
       setError("Invalid email or password.");
     } else {
-      console.log("Login successful, redirecting...");
       window.location.href = "/admin";
     }
   }
@@ -107,14 +106,36 @@ export default function LoginPage() {
           />
 
           <label style={LABEL_STYLE}>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && login()}
-            placeholder="Enter admin password"
-            style={INPUT_STYLE}
-          />
+          <div style={{ position: "relative", marginBottom: 16 }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && login()}
+              placeholder="Enter admin password"
+              style={{ ...INPUT_STYLE, marginBottom: 0, paddingRight: 40 }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: 10,
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                color: "var(--text-muted)",
+              }}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         {/* Error */}

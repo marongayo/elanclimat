@@ -732,9 +732,11 @@ export default async function HomePage() {
                   marginBottom: 24,
                 }}
               >
-                Engineering comfort <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
-                  &amp; sustainability, 
-                </em> since 2007
+                Engineering comfort{" "}
+                <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
+                  &amp; sustainability,
+                </em>{" "}
+                since 2007
               </h2>
               <p
                 style={{
@@ -748,7 +750,15 @@ export default async function HomePage() {
                 Founded on the belief that comfort and responsibility are not
                 trade-offs, Élan Climat &amp; Énergie has grown from a
                 two-person HVAC firm into a full-spectrum climate and energy
-                company trusted by over a thousand households and businesses.
+                company trusted by over a thousand households and businesses.{" "}
+                <br />
+                We are a professionalized company for the sale, project design,
+                installation and maintenance of ventilation, heating and cooling
+                systems. Although it is a newly established company, E-Clima
+                always provides highest quality to customers with qualified
+                personnel with upto 20 years of experience in this field,
+                successfully demonstrating its quality with project design,
+                installation and technical service in many important projects.
               </p>
               <p
                 style={{
@@ -956,11 +966,11 @@ export default async function HomePage() {
                   lineHeight: 1.2,
                 }}
               >
-                From {""} 
+                From {""}
                 <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
-                   the Élan Blog, {""} 
+                  the Élan Blog, {""}
                 </em>
-                  about the industry 
+                about the industry
               </h2>
             </div>
             <Link
