@@ -39,9 +39,11 @@ export default function LoginPage() {
       password,
       redirect: false,
     });
+    console.log("Login response:", res);
     if (res?.error) {
       setError("Invalid email or password.");
     } else {
+      console.log("Login successful, redirecting...");
       window.location.href = "/admin";
     }
   }

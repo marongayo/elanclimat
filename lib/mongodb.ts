@@ -1,9 +1,6 @@
 // lib/mongodb.ts
 import mongoose from "mongoose";
 
-import { setServers } from "node:dns/promises";
-setServers(["1.1.1.1", "8.8.8.8"]);
-
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) throw new Error("Please define MONGODB_URI in .env.local");
@@ -16,6 +13,10 @@ if (!cached) {
 
 export async function connectDB() {
   if (cached.conn) return cached.conn;
+
+  // ✅ moved inside the function — only runs in Node.js runtime, never at build time
+  const { setServers } = await import("node:dns/promises");
+  setServers(["1.1.1.1", "8.8.8.8"]);
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
