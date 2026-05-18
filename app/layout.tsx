@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Élan Climat & Énergie",
 
   description:
-    "Professional solutions for solar panel installation, HVAC systems, refrigeration, cold rooms, electrical services, lithium battery storage, lift & elevator installation, and backup generator maintenance for homes and businesses, within East and central Africa",
+  "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",
 
   keywords: [
     "solar panels",
