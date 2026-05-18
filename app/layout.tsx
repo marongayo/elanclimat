@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import Schema from "./seo/Schema";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://elanclimat.co.ke"),
@@ -66,6 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+<Schema/>
         <Providers>{children}</Providers>
       </body>
     </html>
