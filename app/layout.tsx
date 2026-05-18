@@ -5,11 +5,12 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title:
-    "Élan Climat & Énergie",
+  metadataBase: new URL("https://elanclimat.co.ke"),
+
+  title: "Élan Climat & Énergie",
 
   description:
-  "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",
+    "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",
 
   keywords: [
     "solar panels",
@@ -38,12 +39,18 @@ export const metadata: Metadata = {
 
   creator: "Élan Climat & Énergie",
 
+  alternates: {
+    canonical: "/",
+  },
+
   openGraph: {
     title:
       "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
 
     description:
       "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators.",
+
+    url: "https://elanclimat.co.ke",
 
     siteName: "Élan Climat & Énergie",
     locale: "en_US",
