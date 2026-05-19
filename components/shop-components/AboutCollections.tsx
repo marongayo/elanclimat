@@ -88,7 +88,7 @@ function ProductCard({
         </div>
       )}
 
-      {/* Image area — clicking triggers selection */}
+      {/* Image area */}
       <div
         onClick={onSelect}
         style={{
@@ -254,12 +254,18 @@ export default function AboutCollections({
   const bottomLabel = selectedProduct
     ? "Related Products"
     : "Featured Products";
+
   const aboutTitle = selectedProduct
     ? selectedProduct.name
     : "About Our Elan Store.";
   const aboutBody = selectedProduct
     ? selectedProduct.description
     : "A destination for the unexpected and rare. Our designers bring you handcrafted furniture and objects for every room. We stand behind premium materiality, durability, and artistic vision.";
+
+  const highlights: string[] =
+    selectedProduct && Array.isArray((selectedProduct as any).highlights)
+      ? (selectedProduct as any).highlights
+      : [];
 
   return (
     <div
@@ -268,19 +274,68 @@ export default function AboutCollections({
       style={{ position: "relative", zIndex: 2 }}
     >
       <style>{`
-        /* ── About section wrapper — white background ── */
+        /* ══════════════════════════════════════════
+           ABOUT SECTION
+        ══════════════════════════════════════════ */
         .about-section {
           background: #ffffff;
-          padding: 80px 60px 80px;
+          padding: 80px 60px;
         }
         @media (max-width: 768px) {
-          .about-section { padding: 52px 24px 52px !important; }
+          .about-section { padding: 52px 24px !important; }
         }
         @media (max-width: 480px) {
-          .about-section { padding: 40px 18px 40px !important; }
+          .about-section { padding: 40px 18px !important; }
         }
 
-        /* ── Collections section wrapper — off-white background ── */
+        /*
+          LAYOUT:
+          ┌──────────────────────────────────────────────┐
+          │  [Headline — full width]                      │  row 1
+          ├────────────────┬─────────────────────────────┤
+          │  [Portrait img]│  [Description + CTA]        │  row 2
+          │  (smaller)     │  [Landscape img — wider]    │
+          └────────────────┴─────────────────────────────┘
+          │  [Highlights + price — full width below]      │  row 3
+          └──────────────────────────────────────────────┘
+
+          Right column (col 2) is split into two sub-rows:
+          top = description+CTA, bottom = landscape image.
+          Portrait image (col 1) spans both of those sub-rows but
+          is capped shorter than the landscape to keep proportions.
+        */
+        .about-grid {
+          display: grid;
+          grid-template-columns: 5fr 7fr;
+          grid-template-rows: auto auto auto auto;
+          column-gap: 40px;
+          row-gap: 0;
+          align-items: start;
+        }
+
+        .about-grid-headline   { grid-column: 1 / -1; grid-row: 1; }
+        .about-grid-portrait   { grid-column: 1;      grid-row: 2 / 4; align-self: start; }
+        .about-grid-body       { grid-column: 2;      grid-row: 2;     padding-bottom: 28px; }
+        .about-grid-landscape  { grid-column: 2;      grid-row: 3; }
+        .about-grid-highlights { grid-column: 1 / -1; grid-row: 4;     padding-top: 32px; }
+
+        @media (max-width: 768px) {
+          .about-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: unset !important;
+            row-gap: 20px !important;
+            column-gap: 0 !important;
+          }
+          .about-grid-headline  { grid-column: 1 !important; grid-row: 1 !important; }
+          .about-grid-portrait  { grid-column: 1 !important; grid-row: 2 !important; }
+          .about-grid-body      { grid-column: 1 !important; grid-row: 3 !important; padding-bottom: 0 !important; }
+          .about-grid-landscape { grid-column: 1 !important; grid-row: 4 !important; }
+          .about-grid-highlights{ grid-column: 1 !important; grid-row: 5 !important; padding-top: 20px !important; }
+        }
+
+        /* ══════════════════════════════════════════
+           COLLECTIONS SECTION
+        ══════════════════════════════════════════ */
         .collections-section {
           background: #f2f1ee;
           padding: 60px 60px 80px;
@@ -292,51 +347,6 @@ export default function AboutCollections({
           .collections-section { padding: 36px 18px 48px !important; }
         }
 
-        /* ── Desktop: 2-col grid ── */
-        .about-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          grid-template-rows: auto auto;
-          row-gap: 28px;
-          column-gap: 20px;
-          align-items: start;
-        }
-
-        /* Desktop explicit placement */
-        .about-grid-heading   { grid-column: 1; grid-row: 1; }
-        .about-grid-body      { grid-column: 2; grid-row: 1; }
-        .about-grid-portrait  { grid-column: 1; grid-row: 2; }
-        .about-grid-landscape { grid-column: 2; grid-row: 2; }
-
-        /* ── Mobile: single column, strict order ── */
-        @media (max-width: 768px) {
-          .about-grid {
-            grid-template-columns: 1fr !important;
-            grid-template-rows: unset !important;
-            row-gap: 20px !important;
-            column-gap: 0 !important;
-          }
-          .about-grid-heading {
-            grid-column: 1 !important;
-            grid-row: 1 !important;
-          }
-          .about-grid-body {
-            grid-column: 1 !important;
-            grid-row: 2 !important;
-          }
-          .about-grid-portrait {
-            grid-column: 1 !important;
-            grid-row: 3 !important;
-            max-width: 100% !important;
-            aspect-ratio: 3 / 2 !important;
-          }
-          /* Hide landscape on mobile — restore original behaviour */
-          .about-grid-landscape {
-            display: none !important;
-          }
-        }
-
-        /* ── Collections grid ── */
         .collections-grid { grid-template-columns: repeat(3, 1fr); }
         @media (max-width: 900px) {
           .collections-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -344,45 +354,136 @@ export default function AboutCollections({
         @media (max-width: 480px) {
           .collections-grid { grid-template-columns: 1fr !important; }
         }
+
+        /* Highlights list */
+        .highlights-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .highlights-list li {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.84rem;
+          color: #4a4a47;
+          line-height: 1.5;
+        }
+        .highlights-list li::before {
+          content: '';
+          display: block;
+          flex-shrink: 0;
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: #1a1a18;
+          margin-top: 7px;
+        }
       `}</style>
 
-      {/* ── About section (white) ────────────────────────────────────────────── */}
+      {/* ════════════════════════════════════════════════
+          ABOUT SECTION
+      ════════════════════════════════════════════════ */}
       <div className="about-section">
         <div className="about-grid">
-          {/* Heading — top-left desktop, row-1 mobile */}
-          <h2
-            className="about-grid-heading"
+          {/* ── Row 1: Full-width headline ── */}
+          <div className="about-grid-headline">
+            <div
+              style={{
+                width: "100%",
+                height: 1,
+                background: "#e8e8e4",
+                marginBottom: 28,
+              }}
+            />
+            <h2
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(2rem, 4.5vw, 3.4rem)",
+                fontWeight: 400,
+                color: "#1a1a18",
+                margin: "0 0 28px",
+                lineHeight: 1.12,
+                letterSpacing: "-0.015em",
+                overflow: "hidden",
+              }}
+            >
+              <FadeText text={aboutTitle} />
+            </h2>
+          </div>
+
+          {/* ── Col 1: Portrait image (spans body + landscape rows) ── */}
+          <div
+            className="about-grid-portrait"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(2rem, 4vw, 3rem)",
-              fontWeight: 400,
-              color: "#1a1a18",
-              margin: 0,
-              lineHeight: 1.15,
-              letterSpacing: "-0.01em",
+              position: "relative",
+              aspectRatio: "3 / 4",
               overflow: "hidden",
             }}
           >
-            <FadeText text={aboutTitle} />
-          </h2>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedProduct?._id ?? "default-portrait"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                style={{ position: "absolute", inset: 0 }}
+              >
+                <Image
+                  src={
+                    selectedProduct
+                      ? selectedProduct.images[0]
+                      : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
+                  }
+                  alt={
+                    selectedProduct ? selectedProduct.name : "Store interior"
+                  }
+                  fill
+                  style={{
+                    objectFit: selectedProduct ? "contain" : "cover",
+                    padding: selectedProduct ? "24px" : 0,
+                  }}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-          {/* Body + CTA — top-right desktop, row-2 mobile */}
+          {/* ── Col 2 / Row 2: Description + CTA ── */}
           <div
             className="about-grid-body"
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 20,
-              paddingTop: 6,
+              gap: 24,
+              paddingTop: 8,
             }}
           >
+            {/* Label */}
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.65rem",
+                fontWeight: 500,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "#b0b0a8",
+              }}
+            >
+              {selectedProduct ? selectedProduct.category : "Our Story"}
+            </span>
+
+            {/* Body */}
             <div
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.88rem",
+                fontSize: "0.9rem",
                 color: "#6b6b68",
-                lineHeight: 1.75,
-                maxWidth: 420,
+                lineHeight: 1.8,
                 minHeight: "5rem",
               }}
             >
@@ -417,9 +518,7 @@ export default function AboutCollections({
                     gap: 6,
                     width: "fit-content",
                     background: "none",
-                    borderTop: "none",
-                    borderLeft: "none",
-                    borderRight: "none",
+                    border: "none",
                     borderBottom: cart.includes(selectedProduct._id)
                       ? "1px solid #8fa68e"
                       : "1px solid #1a1a18",
@@ -466,53 +565,13 @@ export default function AboutCollections({
             </AnimatePresence>
           </div>
 
-          {/* Portrait image — bottom-left desktop, row-3 mobile */}
-          <div
-            className="about-grid-portrait"
-            style={{
-              position: "relative",
-              aspectRatio: "4 / 5",
-              overflow: "hidden",
-              maxWidth: 340,
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedProduct?._id ?? "default-portrait"}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{ position: "absolute", inset: 0 }}
-              >
-                <Image
-                  src={
-                    selectedProduct
-                      ? selectedProduct.images[0]
-                      : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
-                  }
-                  alt={
-                    selectedProduct ? selectedProduct.name : "Store interior"
-                  }
-                  fill
-                  style={{
-                    objectFit: selectedProduct ? "contain" : "cover",
-                    padding: selectedProduct ? "24px" : 0,
-                    background: selectedProduct ? "#ffffff" : "transparent",
-                  }}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Landscape image — bottom-right desktop, row-4 mobile */}
+          {/* ── Col 2 / Row 3: Landscape image (immediately after description) ── */}
           <div
             className="about-grid-landscape"
             style={{
               position: "relative",
               aspectRatio: "16 / 10",
               overflow: "hidden",
-              alignSelf: "end",
             }}
           >
             <AnimatePresence mode="wait">
@@ -527,7 +586,7 @@ export default function AboutCollections({
                 <Image
                   src={
                     selectedProduct
-                      ? selectedProduct.images[1]
+                      ? (selectedProduct.images[1] ?? selectedProduct.images[0])
                       : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80"
                   }
                   alt={
@@ -537,17 +596,117 @@ export default function AboutCollections({
                   style={{
                     objectFit: selectedProduct ? "contain" : "cover",
                     padding: selectedProduct ? "24px" : 0,
-                    background: selectedProduct ? "#ffffff" : "transparent",
                   }}
                 />
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* ── Row 4: Highlights + price (full width, only when product selected) ── */}
+          {selectedProduct && (
+            <div className="about-grid-highlights">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedProduct._id + "-highlights"}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 20,
+                      borderTop: "1px solid #e8e8e4",
+                      paddingTop: 32,
+                    }}
+                  >
+                    {highlights.length > 0 && (
+                      <>
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "0.65rem",
+                            fontWeight: 500,
+                            letterSpacing: "0.18em",
+                            textTransform: "uppercase",
+                            color: "#b0b0a8",
+                          }}
+                        >
+                          Key Features
+                        </span>
+                        <ul className="highlights-list">
+                          {highlights.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {/* Price */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 4,
+                        paddingTop: highlights.length > 0 ? 8 : 0,
+                        borderTop:
+                          highlights.length > 0 ? "1px solid #e8e8e4" : "none",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.65rem",
+                          fontWeight: 500,
+                          letterSpacing: "0.18em",
+                          textTransform: "uppercase",
+                          color: "#b0b0a8",
+                        }}
+                      >
+                        Price
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: "clamp(1.6rem, 2.5vw, 2rem)",
+                          fontWeight: 500,
+                          color: selectedProduct.inStock
+                            ? "#1a1a18"
+                            : "#c0c0c0",
+                          letterSpacing: "-0.01em",
+                          lineHeight: 1.1,
+                        }}
+                      >
+                        {selectedProduct.price.toLocaleString()}/=
+                      </span>
+                      {!selectedProduct.inStock && (
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "0.7rem",
+                            color: "#c0c0c0",
+                            letterSpacing: "0.1em",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Currently out of stock
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </div>
       {/* end .about-section */}
 
-      {/* ── Featured / Related Products (off-white) ──────────────────────────── */}
+      {/* ════════════════════════════════════════════════
+          FEATURED / RELATED PRODUCTS
+      ════════════════════════════════════════════════ */}
       <div className="collections-section">
         <div
           style={{
@@ -602,7 +761,6 @@ export default function AboutCollections({
           </AnimatePresence>
         </div>
       </div>
-      {/* end .collections-section */}
     </div>
   );
 }
