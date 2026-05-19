@@ -29,6 +29,8 @@ const config: Config = {
       fontFamily: {
         serif: ["'Cormorant Garamond'", "Georgia", "serif"],
         sans: ["'DM Sans'", "sans-serif"],
+        caveat: ["'Caveat'", "cursive"],
+        inter: ["'Inter'", "sans-serif"],
       },
       keyframes: {
         fadeUp: {
