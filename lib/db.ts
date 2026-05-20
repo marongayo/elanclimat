@@ -7,13 +7,16 @@ import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import { UserModel } from "./models/User";
 import bcrypt from "bcryptjs";
-import type { BlogPost, Product, Message, User } from "./data";
+import { BlogPost } from "@/lib/types/blog";
+import { Product } from "@/lib/types/product";
+import { Message } from "@/lib/types/message";
+import { User } from "@/lib/types/admin";
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
   await connectDB();
   const posts = await BlogPostModel.find().sort({ date: -1 }).lean();
-  return posts.map(({ _id, __v, ...rest }) => ({
+  return posts.map(({ _id, ...rest }) => ({
     ...rest,
     _id: _id.toString(),
   })) as unknown as BlogPost[];
@@ -23,7 +26,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   await connectDB();
   const post = await BlogPostModel.findOne({ slug }).lean();
   return post
-    ? ({ ...post, id: post._id.toString() } as unknown as BlogPost)
+    ? ({ ...post, _id: post._id.toString() } as unknown as BlogPost)
     : undefined;
 }
 
@@ -47,13 +50,13 @@ export async function deleteBlogPost(id: string): Promise<void> {
 // ─── Products ─────────────────────────────────────────────────────────────────
 export async function getProducts(): Promise<Product[]> {
   await connectDB();
-  const products = await ProductModel.find().lean();
 
-  return products.map(({ _id, __v, ...rest }) => ({
+  const products = JSON.parse(JSON.stringify(await ProductModel.find().lean()));
+
+  return products.map(({ __v, ...rest }: any) => ({
     ...rest,
-    _id: _id.toString(), // ← convert ObjectId to plain string
     images: rest.images?.length ? rest.images : rest.image ? [rest.image] : [],
-  })) as unknown as Product[];
+  }));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -62,7 +65,7 @@ export async function getProductById(id: string): Promise<Product | null> {
   if (!p) return null;
   return {
     ...p,
-    id: p._id.toString(),
+    _id: p._id.toString(),
     images: p.images?.length ? p.images : p.image ? [p.image] : [],
   } as unknown as Product;
 }
@@ -85,12 +88,13 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
+
 export async function getMessages(): Promise<Message[]> {
   await connectDB();
   const messages = await MessageModel.find({ archived: { $ne: true } })
     .sort({ _id: -1 })
     .lean();
-  return messages.map(({ _id, __v, ...rest }) => ({
+  return messages.map(({ _id, ...rest }) => ({
     ...rest,
     _id: _id.toString(),
   })) as unknown as Message[];
@@ -101,7 +105,7 @@ export async function getArchivedMessages(): Promise<Message[]> {
   const messages = await MessageModel.find({ archived: true })
     .sort({ _id: -1 })
     .lean();
-  return messages.map(({ _id, __v, ...rest }) => ({
+  return messages.map(({ _id, ...rest }) => ({
     ...rest,
     _id: _id.toString(),
   })) as unknown as Message[];
@@ -138,7 +142,7 @@ export async function getUserById(_id: string): Promise<User | null> {
   await connectDB();
   const user = await UserModel.findById(new Types.ObjectId(_id)).lean();
   return user
-    ? ({ ...user, id: user._id.toString() } as unknown as User)
+    ? ({ ...user, _id: user._id.toString() } as unknown as User)
     : null;
 }
 
@@ -146,7 +150,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   await connectDB();
   const user = await UserModel.findOne({ email }).lean();
   return user
-    ? ({ ...user, id: user._id.toString() } as unknown as User)
+    ? ({ ...user, _id: user._id.toString() } as unknown as User)
     : null;
 }
 

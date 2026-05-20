@@ -1,14 +1,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
-import { Product } from "@/lib/data";
+import { Product } from "@/lib/types/product";
 import { ShoppingBag } from "lucide-react";
 
 const UNSPLASH_FALLBACKS: Record<string, string> = {
   HVAC: "https://images.unsplash.com/photo-1581275233838-4c24e11c7c79?w=600&q=80",
-  Solar: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
-  Batteries: "https://images.unsplash.com/photo-1620714223084-8fcacc2dfd4d?w=600&q=80",
-  default: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80",
+  Solar:
+    "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
+  Batteries:
+    "https://images.unsplash.com/photo-1620714223084-8fcacc2dfd4d?w=600&q=80",
+  default:
+    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80",
 };
 
 export default function ProductCard({
@@ -20,7 +23,7 @@ export default function ProductCard({
   product: Product;
   inCart: boolean;
   onAddToCart: () => void;
-  onSelect?: () => void; // optional — only passed from ShopHero
+  onSelect?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -31,7 +34,6 @@ export default function ProductCard({
 
   function handleImageClick() {
     onSelect?.();
-    // Scroll to #collections smoothly
     const el = document.getElementById("collections");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }
@@ -40,64 +42,38 @@ export default function ProductCard({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        background: "#f2f1ee",
-        position: "relative",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        border: "1px solid #e8e8e8",
-      }}
+      className="relative min-h-110 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200"
     >
       {/* Out of stock overlay */}
       {!product.inStock && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(255,255,255,0.72)",
-            zIndex: 3,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.65rem",
-              fontWeight: 500,
-              color: "#b0b0b0",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-            }}
-          >
+        <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-2xl">
+          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">
             Out of Stock
           </span>
         </div>
       )}
 
-      {/* Image area — click selects product and scrolls to #collections */}
       <div
         onClick={handleImageClick}
-        style={{
-          background: "#f2f1ee",
-          position: "relative",
-          aspectRatio: "4 / 3",
-        }}
+        className="cursor-pointer relative p-4 pt-6 h-75 md:h-80 flex items-center justify-center bg-white"
       >
         <Image
           src={src}
           alt={product.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          style={{
-            objectFit: "contain",
-            padding: "20px",
-            transition: "transform 0.4s ease",
-            transform: hovered ? "scale(1.04)" : "scale(1)",
-          }}
+          width={250}
+          height={350}
+          className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
         />
+      </div>
+
+      {/* Bottom info section */}
+      <div className="p-3 md:p-4 flex flex-col grow text-center">
+        <h3
+          onClick={handleImageClick}
+          className="cursor-pointer text-xs sm:text-sm font-medium text-gray-800 line-clamp-2 min-h-9 md:min-h-10 mb-2"
+        >
+          {product.name}
+        </h3>
 
         {/* Floating pill info bar */}
         <div
@@ -129,7 +105,7 @@ export default function ProductCard({
               letterSpacing: "0.005em",
             }}
           >
-            {product.name}
+            {product.category}
           </span>
 
           {product.inStock ? (

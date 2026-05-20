@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { ShoppingBag, X } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product } from "@/lib/data";
+import { Product } from "@/lib/types/product";
 
 interface CartDrawerProps {
   cart: string[];
@@ -167,7 +167,7 @@ export function CartDrawer({
                       }}
                     >
                       <Image
-                        src={item.images?.[0] ?? item.image ?? ""}
+                        src={item.images?.[0]}
                         alt={item.name}
                         fill
                         sizes="64px"

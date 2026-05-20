@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { BlogPost, Product, User } from "@/lib/data";
+
+import { BlogPost } from "@/lib/types/blog";
+import { Product } from "@/lib/types/product";
+import { User } from "@/lib/types/admin";
 import { SquareCheckBig, X, Save, UserPlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "@/components/admin-components/AdminSidebar";
@@ -33,10 +36,13 @@ const emptyBlog = (): BlogForm => ({
 
 const emptyProduct = (): ProductForm => ({
   name: "",
+  fullName: "",
   price: "",
   category: "HVAC",
   images: [],
   description: "",
+  keyFeatures: [],
+  specifications: [],
   inStock: true,
   badge: "",
 });

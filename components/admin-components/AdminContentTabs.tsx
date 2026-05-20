@@ -1,7 +1,9 @@
 "use client";
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { BlogPost, Product, User } from "@/lib/data";
+import { BlogPost } from "@/lib/types/blog";
+import { User } from "@/lib/types/admin";
+import { Product } from "@/lib/types/product";
 import {
   Trash2,
   Edit3,
@@ -712,8 +714,9 @@ export default function AdminContentTabs({
                 )}
 
                 <div style={{ display: "grid", gap: 18 }}>
+                  {/* Short Name */}
                   <div>
-                    <label style={LABEL_STYLE}>Product Name *</label>
+                    <label style={LABEL_STYLE}>Short Name *</label>
                     <input
                       value={productForm.name}
                       onChange={(e) => {
@@ -726,11 +729,27 @@ export default function AdminContentTabs({
                       style={
                         productErrors.name ? INPUT_ERROR_STYLE : INPUT_STYLE
                       }
-                      placeholder="EcoBreeze 3.5kW Heat Pump"
+                      placeholder="EcoBreeze Heat Pump"
                     />
                     {productErrors.name && (
                       <span style={ERROR_TEXT}>{productErrors.name}</span>
                     )}
+                  </div>
+
+                  {/* Full Name */}
+                  <div>
+                    <label style={LABEL_STYLE}>Full Product Name</label>
+                    <input
+                      value={productForm.fullName}
+                      onChange={(e) =>
+                        setProductForm({
+                          ...productForm,
+                          fullName: e.target.value,
+                        })
+                      }
+                      style={INPUT_STYLE}
+                      placeholder="LG 3.5kW Inverter Split Air Conditioner S3-W12JA3AA"
+                    />
                   </div>
 
                   <div
@@ -790,6 +809,7 @@ export default function AdminContentTabs({
                     </div>
                   </div>
 
+                  {/* Description */}
                   <div>
                     <label style={LABEL_STYLE}>Description *</label>
                     <textarea
@@ -817,6 +837,165 @@ export default function AdminContentTabs({
                     )}
                   </div>
 
+                  {/* Key Features / Highlights */}
+                  {/* Key Features */}
+                  <div>
+                    <label style={LABEL_STYLE}>Key Features</label>
+                    {productForm.keyFeatures.map((item, i) => (
+                      <div
+                        key={i}
+                        style={{ display: "flex", gap: 6, marginBottom: 6 }}
+                      >
+                        <input
+                          value={item}
+                          onChange={(e) => {
+                            const updated = [...productForm.keyFeatures];
+                            updated[i] = e.target.value;
+                            setProductForm({
+                              ...productForm,
+                              keyFeatures: updated,
+                            });
+                          }}
+                          style={{ ...INPUT_STYLE, flex: 1 }}
+                          placeholder={`e.g. Inverter compressor for energy efficiency`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setProductForm({
+                              ...productForm,
+                              keyFeatures: productForm.keyFeatures.filter(
+                                (_, j) => j !== i,
+                              ),
+                            })
+                          }
+                          style={{
+                            padding: "0 10px",
+                            background: "#fef2f2",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#c0392b",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProductForm({
+                          ...productForm,
+                          keyFeatures: [...productForm.keyFeatures, ""],
+                        })
+                      }
+                      style={{
+                        marginTop: 4,
+                        padding: "8px 14px",
+                        background: "none",
+                        border: "1px dashed var(--off-white)",
+                        cursor: "pointer",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.78rem",
+                        color: "var(--text-muted)",
+                        width: "100%",
+                      }}
+                    >
+                      + Add Feature
+                    </button>
+                  </div>
+
+                  {/* Technical Specifications */}
+                  <div>
+                    <label style={LABEL_STYLE}>Technical Specifications</label>
+                    {productForm.specifications.map((spec, i) => (
+                      <div
+                        key={i}
+                        style={{ display: "flex", gap: 6, marginBottom: 6 }}
+                      >
+                        <input
+                          value={spec.key}
+                          onChange={(e) => {
+                            const updated = [...productForm.specifications];
+                            updated[i] = { ...updated[i], key: e.target.value };
+                            setProductForm({
+                              ...productForm,
+                              specifications: updated,
+                            });
+                          }}
+                          style={{ ...INPUT_STYLE, flex: 1 }}
+                          placeholder="e.g. Cooling Capacity"
+                        />
+                        <input
+                          value={spec.value}
+                          onChange={(e) => {
+                            const updated = [...productForm.specifications];
+                            updated[i] = {
+                              ...updated[i],
+                              value: e.target.value,
+                            };
+                            setProductForm({
+                              ...productForm,
+                              specifications: updated,
+                            });
+                          }}
+                          style={{ ...INPUT_STYLE, flex: 2 }}
+                          placeholder="e.g. 12,000 BTU"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setProductForm({
+                              ...productForm,
+                              specifications: productForm.specifications.filter(
+                                (_, j) => j !== i,
+                              ),
+                            })
+                          }
+                          style={{
+                            padding: "0 10px",
+                            background: "#fef2f2",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#c0392b",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProductForm({
+                          ...productForm,
+                          specifications: [
+                            ...productForm.specifications,
+                            { key: "", value: "" },
+                          ],
+                        })
+                      }
+                      style={{
+                        marginTop: 4,
+                        padding: "8px 14px",
+                        background: "none",
+                        border: "1px dashed var(--off-white)",
+                        cursor: "pointer",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.78rem",
+                        color: "var(--text-muted)",
+                        width: "100%",
+                      }}
+                    >
+                      + Add Specification
+                    </button>
+                  </div>
+
+                  {/* Images */}
                   <div>
                     <label style={LABEL_STYLE}>
                       Product Images *{" "}
@@ -1261,7 +1440,7 @@ export default function AdminContentTabs({
                       fontSize: "0.95rem",
                       fontWeight: 600,
                       color: "var(--charcoal)",
-                      marginBottom: 4,
+                      marginBottom: 2,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -1269,6 +1448,21 @@ export default function AdminContentTabs({
                   >
                     {p.name}
                   </div>
+                  {p.fullName && (
+                    <div
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.68rem",
+                        color: "var(--text-muted)",
+                        marginBottom: 4,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {p.fullName}
+                    </div>
+                  )}
                   <div
                     style={{
                       fontFamily: "DM Sans",
@@ -1283,9 +1477,17 @@ export default function AdminContentTabs({
                     <button
                       onClick={() =>
                         setProductForm({
-                          ...p,
+                          _id: p._id,
+                          name: p.name,
+                          fullName: p.fullName ?? "",
                           price: String(p.price),
+                          category: p.category,
                           images: p.images ?? [],
+                          description: p.description,
+                          keyFeatures: p.keyFeatures ?? [],
+                          specifications: p.specifications ?? [],
+                          inStock: p.inStock,
+                          badge: p.badge ?? "",
                         })
                       }
                       style={{
@@ -1354,7 +1556,6 @@ export default function AdminContentTabs({
             </p>
           </div>
 
-          {/* Password change modal */}
           {pwTarget && (
             <Modal
               open={!!pwTarget}
@@ -1458,7 +1659,6 @@ export default function AdminContentTabs({
                       : "3px solid transparent",
                   }}
                 >
-                  {/* Avatar */}
                   <div
                     style={{
                       width: 40,
@@ -1479,7 +1679,6 @@ export default function AdminContentTabs({
                     )}
                   </div>
 
-                  {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
@@ -1546,13 +1745,7 @@ export default function AdminContentTabs({
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                    {/*
-                      Change password:
-                      - superadmin can change anyone's password
-                      - admin can only change their own
-                    */}
                     {(role === "superadmin" || isSelf) && (
                       <button
                         onClick={() => openPasswordModal(a)}
@@ -1574,10 +1767,6 @@ export default function AdminContentTabs({
                       </button>
                     )}
 
-                    {/*
-                      Delete: superadmin only, cannot delete themselves
-                      or another superadmin
-                    */}
                     {role === "superadmin" && !isSelf && !isSuperadmin && (
                       <button
                         onClick={() => deleteAdmin(a._id)}

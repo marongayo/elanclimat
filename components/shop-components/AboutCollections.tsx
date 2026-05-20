@@ -2,9 +2,17 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { Product } from "@/lib/data";
-import { ShoppingBag } from "lucide-react";
+import { Product } from "@/lib/types/product";
+import { ShoppingBag, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ProductCard from "@/components/shop-components/ProductCard";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface Specification {
+  key: string;
+  value: string;
+  _id?: string;
+}
 
 // ─── Animated text swap ───────────────────────────────────────────────────────
 function FadeText({
@@ -30,191 +38,273 @@ function FadeText({
   );
 }
 
-// ─── Product Card ─────────────────────────────────────────────────────────────
-function ProductCard({
+// ─── Frosted Glass Specs Modal ────────────────────────────────────────────────
+function SpecsModal({
+  open,
+  onClose,
   product,
-  inCart,
-  onAddToCart,
-  onSelect,
-  isSelected,
 }: {
+  open: boolean;
+  onClose: () => void;
   product: Product;
-  inCart: boolean;
-  onAddToCart: () => void;
-  onSelect: () => void;
-  isSelected: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
+  const specs: Specification[] = Array.isArray((product as any).specifications)
+    ? (product as any).specifications
+    : [];
 
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: "#f2f1ee",
-        position: "relative",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        border: "none",
-        transition: "border-color 0.2s ease",
-      }}
-    >
-      {/* Out of stock overlay */}
-      {!product.inStock && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(255,255,255,0.72)",
-            zIndex: 3,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Frosted glass backdrop */}
+          <motion.div
+            key="specs-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={onClose}
             style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.65rem",
-              fontWeight: 500,
-              color: "#b0b0b0",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
+              position: "fixed",
+              inset: 0,
+              zIndex: 100,
+              backdropFilter: "blur(18px) saturate(0.7)",
+              WebkitBackdropFilter: "blur(18px) saturate(0.7)",
+              background: "rgba(240, 239, 236, 0.55)",
+            }}
+          />
+
+          {/* Modal panel */}
+          <motion.div
+            key="specs-panel"
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 101,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px",
+              pointerEvents: "none",
             }}
           >
-            Out of Stock
-          </span>
-        </div>
-      )}
-
-      {/* Image area */}
-      <div
-        onClick={onSelect}
-        style={{
-          background: "#f2f1ee",
-          position: "relative",
-          aspectRatio: "4 / 3",
-        }}
-      >
-        <Image
-          src={product.images[0]}
-          alt={product.name}
-          fill
-          sizes="(max-width: 768px) 50vw, 25vw"
-          style={{
-            objectFit: "contain",
-            padding: "32px",
-            transition: "transform 0.4s ease",
-            transform: hovered ? "scale(1.04)" : "scale(1)",
-          }}
-        />
-
-        {/* Info bar */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 12,
-            left: 20,
-            right: 20,
-            background: "#ffffff",
-            borderRadius: "5px",
-            padding: "3px 3px 3px 12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 8,
-            boxShadow: "0 1px 6px rgba(0,0,0,0.07)",
-            zIndex: 2,
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.78rem",
-              fontWeight: 400,
-              color: "#1a1a18",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              letterSpacing: "0.005em",
-            }}
-          >
-            {product.name}
-          </span>
-
-          {product.inStock ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!inCart) onAddToCart();
-              }}
-              disabled={inCart}
+            <div
+              onClick={(e) => e.stopPropagation()}
               style={{
-                flexShrink: 0,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.72rem",
-                fontWeight: 400,
-                color: inCart ? "#8fa68e" : "#1a1a18",
-                background: "none",
-                border: "1px solid #d8d8d8",
-                borderRadius: "9999px",
-                cursor: inCart ? "default" : "pointer",
-                padding: "5px 13px",
-                whiteSpace: "nowrap",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                overflow: "hidden",
+                pointerEvents: "auto",
+                background: "#ffffff",
+                width: "100%",
+                maxWidth: 780,
+                maxHeight: "90vh",
+                overflowY: "auto",
+                padding: "40px 48px",
+                position: "relative",
+                boxShadow:
+                  "0 32px 80px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06)",
               }}
             >
-              {inCart ? (
-                <ShoppingBag size={13} strokeWidth={1.5} />
-              ) : (
-                <>
-                  <AnimatePresence>
-                    {hovered && (
-                      <motion.span
-                        key="bag"
-                        initial={{ width: 0, opacity: 0, marginRight: -6 }}
-                        animate={{ width: 13, opacity: 1, marginRight: 0 }}
-                        exit={{ width: 0, opacity: 0, marginRight: -6 }}
-                        transition={{ duration: 0.22, ease: "easeOut" }}
+              {/* Close button */}
+              <button
+                onClick={onClose}
+                aria-label="Close"
+                style={{
+                  position: "absolute",
+                  top: 20,
+                  right: 20,
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 6,
+                  color: "#b0b0a8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={(e) =>
+                  ((e.currentTarget as HTMLButtonElement).style.color =
+                    "#1a1a18")
+                }
+                onMouseLeave={(e) =>
+                  ((e.currentTarget as HTMLButtonElement).style.color =
+                    "#b0b0a8")
+                }
+              >
+                <X size={18} strokeWidth={1.5} />
+              </button>
+
+              {/* Modal header */}
+              <div style={{ marginBottom: 32 }}>
+                <span
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.6rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: "#b0b0a8",
+                    display: "block",
+                    marginBottom: 8,
+                  }}
+                >
+                  Technical Specifications
+                </span>
+                <h2
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "1.6rem",
+                    fontWeight: 400,
+                    color: "#1a1a18",
+                    margin: 0,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {(product as any).fullName ?? product.name}
+                </h2>
+              </div>
+
+              {/* Images — clean, no background */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 16,
+                  marginBottom: 36,
+                }}
+              >
+                {[
+                  product.images[0],
+                  product.images[1] ?? product.images[0],
+                ].map((src, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "relative",
+                      aspectRatio: i === 0 ? "3/4" : "16/10",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${product.name} view ${i + 1}`}
+                      fill
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Category + price row */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  paddingBottom: 20,
+                  marginBottom: 24,
+                  borderBottom: "1px solid #e8e8e4",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.65rem",
+                    fontWeight: 500,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: "#b0b0a8",
+                  }}
+                >
+                  {(product as any).category ?? "Product"}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "1.4rem",
+                    fontWeight: 500,
+                    color: product.inStock ? "#1a1a18" : "#c0c0c0",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {product.price.toLocaleString()}/=
+                </span>
+              </div>
+
+              {/* Specs — plain rows, no backgrounds, no borders */}
+              {specs.length > 0 ? (
+                <div>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.6rem",
+                      fontWeight: 500,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: "#b0b0a8",
+                      display: "block",
+                      marginBottom: 16,
+                    }}
+                  >
+                    Details
+                  </span>
+                  <div
+                    style={{ display: "flex", flexDirection: "column", gap: 0 }}
+                  >
+                    {specs.map((spec, i) => (
+                      <div
+                        key={spec._id ?? i}
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          overflow: "hidden",
-                          flexShrink: 0,
+                          display: "grid",
+                          gridTemplateColumns: "180px 1fr",
+                          padding: "11px 0",
                         }}
                       >
-                        <ShoppingBag size={13} strokeWidth={1.5} />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                  {`${product.price.toLocaleString()}/=`}
-                </>
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "0.75rem",
+                            fontWeight: 500,
+                            color: "#6b6b68",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {spec.key}
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "0.75rem",
+                            color: "#1a1a18",
+                            letterSpacing: "0.01em",
+                          }}
+                        >
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.85rem",
+                    color: "#b0b0a8",
+                    margin: 0,
+                  }}
+                >
+                  No technical specifications available for this product.
+                </p>
               )}
-            </button>
-          ) : (
-            <span
-              style={{
-                flexShrink: 0,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.72rem",
-                fontWeight: 400,
-                color: "#c0c0c0",
-                border: "1px solid #e8e8e8",
-                borderRadius: "9999px",
-                padding: "5px 13px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {product.price.toLocaleString()}/=
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -232,6 +322,8 @@ export default function AboutCollections({
   selectedProduct: Product | null;
   onSelectProduct: (p: Product | null) => void;
 }) {
+  const [specsOpen, setSpecsOpen] = useState(false);
+
   const featured = useMemo(() => products.slice(0, 3), [products]);
 
   const related = useMemo(() => {
@@ -256,15 +348,15 @@ export default function AboutCollections({
     : "Featured Products";
 
   const aboutTitle = selectedProduct
-    ? selectedProduct.name
+    ? selectedProduct.fullName
     : "About Our Elan Store.";
   const aboutBody = selectedProduct
     ? selectedProduct.description
     : "A destination for the unexpected and rare. Our designers bring you handcrafted furniture and objects for every room. We stand behind premium materiality, durability, and artistic vision.";
 
-  const highlights: string[] =
-    selectedProduct && Array.isArray((selectedProduct as any).highlights)
-      ? (selectedProduct as any).highlights
+  const keyFeatures: string[] =
+    selectedProduct && Array.isArray((selectedProduct as any).keyFeatures)
+      ? (selectedProduct as any).keyFeatures
       : [];
 
   return (
@@ -274,9 +366,6 @@ export default function AboutCollections({
       style={{ position: "relative", zIndex: 2 }}
     >
       <style>{`
-        /* ══════════════════════════════════════════
-           ABOUT SECTION
-        ══════════════════════════════════════════ */
         .about-section {
           background: #ffffff;
           padding: 80px 60px;
@@ -288,54 +377,27 @@ export default function AboutCollections({
           .about-section { padding: 40px 18px !important; }
         }
 
-        /*
-          LAYOUT:
-          ┌──────────────────────────────────────────────┐
-          │  [Headline — full width]                      │  row 1
-          ├────────────────┬─────────────────────────────┤
-          │  [Portrait img]│  [Description + CTA]        │  row 2
-          │  (smaller)     │  [Landscape img — wider]    │
-          └────────────────┴─────────────────────────────┘
-          │  [Highlights + price — full width below]      │  row 3
-          └──────────────────────────────────────────────┘
-
-          Right column (col 2) is split into two sub-rows:
-          top = description+CTA, bottom = landscape image.
-          Portrait image (col 1) spans both of those sub-rows but
-          is capped shorter than the landscape to keep proportions.
-        */
         .about-grid {
           display: grid;
           grid-template-columns: 5fr 7fr;
-          grid-template-rows: auto auto auto auto;
           column-gap: 40px;
-          row-gap: 0;
           align-items: start;
         }
-
-        .about-grid-headline   { grid-column: 1 / -1; grid-row: 1; }
-        .about-grid-portrait   { grid-column: 1;      grid-row: 2 / 4; align-self: start; }
-        .about-grid-body       { grid-column: 2;      grid-row: 2;     padding-bottom: 28px; }
-        .about-grid-landscape  { grid-column: 2;      grid-row: 3; }
-        .about-grid-highlights { grid-column: 1 / -1; grid-row: 4;     padding-top: 32px; }
+        .about-grid-headline { grid-column: 1 / -1; grid-row: 1; }
+        .about-grid-left     { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 0; }
+        .about-grid-right    { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 0; }
 
         @media (max-width: 768px) {
           .about-grid {
             grid-template-columns: 1fr !important;
-            grid-template-rows: unset !important;
             row-gap: 20px !important;
             column-gap: 0 !important;
           }
-          .about-grid-headline  { grid-column: 1 !important; grid-row: 1 !important; }
-          .about-grid-portrait  { grid-column: 1 !important; grid-row: 2 !important; }
-          .about-grid-body      { grid-column: 1 !important; grid-row: 3 !important; padding-bottom: 0 !important; }
-          .about-grid-landscape { grid-column: 1 !important; grid-row: 4 !important; }
-          .about-grid-highlights{ grid-column: 1 !important; grid-row: 5 !important; padding-top: 20px !important; }
+          .about-grid-headline { grid-column: 1 !important; grid-row: 1 !important; }
+          .about-grid-left     { grid-column: 1 !important; grid-row: 2 !important; }
+          .about-grid-right    { grid-column: 1 !important; grid-row: 3 !important; }
         }
 
-        /* ══════════════════════════════════════════
-           COLLECTIONS SECTION
-        ══════════════════════════════════════════ */
         .collections-section {
           background: #f2f1ee;
           padding: 60px 60px 80px;
@@ -355,7 +417,6 @@ export default function AboutCollections({
           .collections-grid { grid-template-columns: 1fr !important; }
         }
 
-        /* Highlights list */
         .highlights-list {
           list-style: none;
           margin: 0;
@@ -385,12 +446,10 @@ export default function AboutCollections({
         }
       `}</style>
 
-      {/* ════════════════════════════════════════════════
-          ABOUT SECTION
-      ════════════════════════════════════════════════ */}
+      {/* ── ABOUT SECTION ── */}
       <div className="about-section">
         <div className="about-grid">
-          {/* ── Row 1: Full-width headline ── */}
+          {/* Row 1: full-width headline */}
           <div className="about-grid-headline">
             <div
               style={{
@@ -416,297 +475,347 @@ export default function AboutCollections({
             </h2>
           </div>
 
-          {/* ── Col 1: Portrait image (spans body + landscape rows) ── */}
-          <div
-            className="about-grid-portrait"
-            style={{
-              position: "relative",
-              aspectRatio: "3 / 4",
-              overflow: "hidden",
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedProduct?._id ?? "default-portrait"}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{ position: "absolute", inset: 0 }}
-              >
-                <Image
-                  src={
-                    selectedProduct
-                      ? selectedProduct.images[0]
-                      : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
-                  }
-                  alt={
-                    selectedProduct ? selectedProduct.name : "Store interior"
-                  }
-                  fill
-                  style={{
-                    objectFit: selectedProduct ? "contain" : "cover",
-                    padding: selectedProduct ? "24px" : 0,
-                  }}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* ── Col 2 / Row 2: Description + CTA ── */}
-          <div
-            className="about-grid-body"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 24,
-              paddingTop: 8,
-            }}
-          >
-            {/* Label */}
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.65rem",
-                fontWeight: 500,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "#b0b0a8",
-              }}
-            >
-              {selectedProduct ? selectedProduct.category : "Our Story"}
-            </span>
-
-            {/* Body */}
+          {/* Left column */}
+          <div className="about-grid-left">
+            {/* Portrait image */}
             <div
               style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.9rem",
-                color: "#6b6b68",
-                lineHeight: 1.8,
-                minHeight: "5rem",
+                position: "relative",
+                aspectRatio: "3 / 4",
+                overflow: "hidden",
               }}
             >
-              <FadeText text={aboutBody} />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedProduct?._id ?? "default-portrait"}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ position: "absolute", inset: 0 }}
+                >
+                  <Image
+                    src={
+                      selectedProduct
+                        ? selectedProduct.images[0]
+                        : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
+                    }
+                    alt={
+                      selectedProduct ? selectedProduct.name : "Store interior"
+                    }
+                    fill
+                    style={{
+                      objectFit: selectedProduct ? "contain" : "cover",
+                      padding: selectedProduct ? "24px" : 0,
+                    }}
+                  />
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            {/* CTA */}
+            {/* Key Features */}
+            <AnimatePresence>
+              {selectedProduct && keyFeatures.length > 0 && (
+                <motion.div
+                  key={selectedProduct._id + "-features"}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    borderTop: "1px solid #e8e8e4",
+                    paddingTop: 24,
+                    marginTop: 24,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 14,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.6rem",
+                      fontWeight: 500,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: "#b0b0a8",
+                    }}
+                  >
+                    Key Features
+                  </span>
+                  <ul className="highlights-list">
+                    {keyFeatures.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Buttons */}
             <AnimatePresence mode="wait">
               {selectedProduct ? (
-                <motion.button
-                  key="add-to-cart"
+                <motion.div
+                  key="product-buttons"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.25 }}
-                  onClick={() => {
-                    if (!cart.includes(selectedProduct._id))
-                      onAddToCart(selectedProduct._id);
-                  }}
-                  disabled={cart.includes(selectedProduct._id)}
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                    color: cart.includes(selectedProduct._id)
-                      ? "#8fa68e"
-                      : "#1a1a18",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    display: "inline-flex",
+                    display: "flex",
+                    gap: 20,
                     alignItems: "center",
-                    gap: 6,
-                    width: "fit-content",
-                    background: "none",
-                    border: "none",
-                    borderBottom: cart.includes(selectedProduct._id)
-                      ? "1px solid #8fa68e"
-                      : "1px solid #1a1a18",
-                    borderRadius: 0,
-                    cursor: cart.includes(selectedProduct._id)
-                      ? "default"
-                      : "pointer",
-                    padding: 0,
-                    paddingBottom: 2,
+                    marginTop: 24,
+                    paddingTop: 20,
+                    borderTop: "1px solid #e8e8e4",
+                    flexWrap: "wrap",
                   }}
                 >
-                  <ShoppingBag size={13} strokeWidth={1.5} />
-                  {cart.includes(selectedProduct._id)
-                    ? "In Cart"
-                    : "Add to Cart"}
-                </motion.button>
+                  <button
+                    onClick={() => {
+                      if (!cart.includes(selectedProduct._id))
+                        onAddToCart(selectedProduct._id);
+                    }}
+                    disabled={cart.includes(selectedProduct._id)}
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: cart.includes(selectedProduct._id)
+                        ? "#8fa68e"
+                        : "#1a1a18",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      background: "none",
+                      border: "none",
+                      borderBottom: cart.includes(selectedProduct._id)
+                        ? "1px solid #8fa68e"
+                        : "1px solid #1a1a18",
+                      borderRadius: 0,
+                      cursor: cart.includes(selectedProduct._id)
+                        ? "default"
+                        : "pointer",
+                      padding: 0,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    <ShoppingBag size={13} strokeWidth={1.5} />
+                    {cart.includes(selectedProduct._id)
+                      ? "In Cart"
+                      : "Add to Cart"}
+                  </button>
+
+                  <span
+                    style={{
+                      display: "block",
+                      width: 1,
+                      height: 16,
+                      background: "#d8d8d4",
+                      flexShrink: 0,
+                    }}
+                  />
+
+                  <button
+                    onClick={() => setSpecsOpen(true)}
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "#6b6b68",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      background: "none",
+                      border: "none",
+                      borderBottom: "1px solid #c8c8c4",
+                      borderRadius: 0,
+                      cursor: "pointer",
+                      padding: 0,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    <SlidersHorizontal size={13} strokeWidth={1.5} />
+                    Technical Specifications
+                  </button>
+                </motion.div>
               ) : (
-                <motion.a
+                <motion.div
                   key="shop-now"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.25 }}
-                  href="#"
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.75rem",
-                    fontWeight: 500,
-                    color: "#1a1a18",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    textDecoration: "none",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    borderBottom: "1px solid #1a1a18",
-                    paddingBottom: 2,
-                    width: "fit-content",
-                  }}
+                  style={{ marginTop: 24 }}
                 >
-                  Shop Now
-                </motion.a>
+                  <a
+                    href="#"
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "#1a1a18",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      borderBottom: "1px solid #1a1a18",
+                      paddingBottom: 2,
+                    }}
+                  >
+                    Shop Now
+                  </a>
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* ── Col 2 / Row 3: Landscape image (immediately after description) ── */}
-          <div
-            className="about-grid-landscape"
-            style={{
-              position: "relative",
-              aspectRatio: "16 / 10",
-              overflow: "hidden",
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={(selectedProduct?._id ?? "default") + "-landscape"}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{ position: "absolute", inset: 0 }}
+          {/* Right column */}
+          <div className="about-grid-right">
+            {/* Description */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                paddingTop: 8,
+                paddingBottom: 28,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.65rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "#b0b0a8",
+                }}
               >
-                <Image
-                  src={
-                    selectedProduct
-                      ? (selectedProduct.images[1] ?? selectedProduct.images[0])
-                      : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80"
-                  }
-                  alt={
-                    selectedProduct ? selectedProduct.name : "Store collection"
-                  }
-                  fill
-                  style={{
-                    objectFit: selectedProduct ? "contain" : "cover",
-                    padding: selectedProduct ? "24px" : 0,
-                  }}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                {selectedProduct
+                  ? (selectedProduct as any).category
+                  : "Our Story"}
+              </span>
 
-          {/* ── Row 4: Highlights + price (full width, only when product selected) ── */}
-          {selectedProduct && (
-            <div className="about-grid-highlights">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedProduct._id + "-highlights"}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div
+              <div
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.9rem",
+                  color: "#6b6b68",
+                  lineHeight: 1.8,
+                  minHeight: "5rem",
+                }}
+              >
+                <FadeText text={aboutBody} />
+              </div>
+
+              <AnimatePresence>
+                {selectedProduct && (
+                  <motion.div
+                    key={selectedProduct._id + "-price"}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: 20,
+                      gap: 4,
+                      paddingTop: 16,
                       borderTop: "1px solid #e8e8e4",
-                      paddingTop: 32,
                     }}
                   >
-                    {highlights.length > 0 && (
-                      <>
-                        <span
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: "0.65rem",
-                            fontWeight: 500,
-                            letterSpacing: "0.18em",
-                            textTransform: "uppercase",
-                            color: "#b0b0a8",
-                          }}
-                        >
-                          Key Features
-                        </span>
-                        <ul className="highlights-list">
-                          {highlights.map((item, i) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-
-                    {/* Price */}
-                    <div
+                    <span
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 4,
-                        paddingTop: highlights.length > 0 ? 8 : 0,
-                        borderTop:
-                          highlights.length > 0 ? "1px solid #e8e8e4" : "none",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.65rem",
+                        fontWeight: 500,
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        color: "#b0b0a8",
                       }}
                     >
+                      Price
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "clamp(1.6rem, 2.5vw, 2rem)",
+                        fontWeight: 500,
+                        color: selectedProduct.inStock ? "#1a1a18" : "#c0c0c0",
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      {selectedProduct.price.toLocaleString()}/=
+                    </span>
+                    {!selectedProduct.inStock && (
                       <span
                         style={{
                           fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.65rem",
-                          fontWeight: 500,
-                          letterSpacing: "0.18em",
+                          fontSize: "0.7rem",
+                          color: "#c0c0c0",
+                          letterSpacing: "0.1em",
                           textTransform: "uppercase",
-                          color: "#b0b0a8",
                         }}
                       >
-                        Price
+                        Currently out of stock
                       </span>
-                      <span
-                        style={{
-                          fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: "clamp(1.6rem, 2.5vw, 2rem)",
-                          fontWeight: 500,
-                          color: selectedProduct.inStock
-                            ? "#1a1a18"
-                            : "#c0c0c0",
-                          letterSpacing: "-0.01em",
-                          lineHeight: 1.1,
-                        }}
-                      >
-                        {selectedProduct.price.toLocaleString()}/=
-                      </span>
-                      {!selectedProduct.inStock && (
-                        <span
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: "0.7rem",
-                            color: "#c0c0c0",
-                            letterSpacing: "0.1em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Currently out of stock
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Landscape image */}
+            <div
+              style={{
+                position: "relative",
+                aspectRatio: "16 / 10",
+                overflow: "hidden",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={(selectedProduct?._id ?? "default") + "-landscape"}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ position: "absolute", inset: 0 }}
+                >
+                  <Image
+                    src={
+                      selectedProduct
+                        ? (selectedProduct.images[1] ??
+                          selectedProduct.images[0])
+                        : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80"
+                    }
+                    alt={
+                      selectedProduct
+                        ? selectedProduct.name
+                        : "Store collection"
+                    }
+                    fill
+                    style={{
+                      objectFit: selectedProduct ? "contain" : "cover",
+                      padding: selectedProduct ? "24px" : 0,
+                    }}
+                  />
                 </motion.div>
               </AnimatePresence>
             </div>
-          )}
+          </div>
         </div>
       </div>
-      {/* end .about-section */}
 
-      {/* ════════════════════════════════════════════════
-          FEATURED / RELATED PRODUCTS
-      ════════════════════════════════════════════════ */}
+      {/* ── FEATURED / RELATED PRODUCTS ── */}
       <div className="collections-section">
         <div
           style={{
@@ -741,6 +850,7 @@ export default function AboutCollections({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3, delay: i * 0.06 }}
+                style={{ pointerEvents: "auto" }}
               >
                 <ProductCard
                   product={product}
@@ -754,13 +864,21 @@ export default function AboutCollections({
                       .getElementById("collections")
                       ?.scrollIntoView({ behavior: "smooth", block: "start" });
                   }}
-                  isSelected={selectedProduct?._id === product._id}
                 />
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
       </div>
+
+      {/* ── SPECS MODAL ── */}
+      {selectedProduct && (
+        <SpecsModal
+          open={specsOpen}
+          onClose={() => setSpecsOpen(false)}
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 }

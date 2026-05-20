@@ -5,6 +5,8 @@ export interface Message {
   phone?: string;
   service?: string;
   message?: string;
-  createdAt: string;
+  date: string;
   read: boolean;
+  createdAt: string;
+  archived: boolean;
 }

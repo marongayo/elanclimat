@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/lib/data";
-
+import { Product } from "@/lib/types/product";
 import Navbar from "@/components/Navbar";
 import ShopHero from "@/components/shop-components/ShopHero";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -65,7 +64,6 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
       >
         <Navbar />
       </motion.div>
-
       {/* Hero Section */}
       <AboutCollections
         products={products}
@@ -74,38 +72,47 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         selectedProduct={selectedProduct}
         onSelectProduct={setSelectedProduct}
       />
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "40vh",
+            width: "100%",
+            zIndex: 0,
+          }}
+        >
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
+            <Image
+              src="/sticky.png"
+              alt="Interior scene"
+              fill
+              priority
+              style={{ objectFit: "cover", objectPosition: "70% 20%" }}
+            />
+          </div>
+        </div>
 
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "40vh",
-          width: "100%",
-          zIndex: 0,
-        }}
-      >
-        {/* Inner — gives next/image a valid fill parent */}
-        <div style={{ position: "relative", width: "100%", height: "100%" }}>
-          <Image
-            src="/everett.jpg"
-            alt="Interior scene"
-            fill
-            priority
-            style={{ objectFit: "cover", objectPosition: "center" }}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            marginTop: "-40vh",
+          }}
+        >
+          {/* Transparent spacer so ShopHero starts below the image */}
+          <div style={{ height: "40vh" }} />
+          <ShopHero
+            products={products}
+            onClearFilters={() => {
+              setCat("All");
+              setSearch("");
+              setSelectedProduct(null);
+            }}
+            onSelectProduct={setSelectedProduct}
           />
         </div>
-      </div>
-
-      <ShopHero
-        products={products}
-        onClearFilters={() => {
-          setCat("All");
-          setSearch("");
-          setSelectedProduct(null);
-        }}
-        onSelectProduct={setSelectedProduct}
-      />
-
+      </div>{" "}
       <ImageStrip />
     </main>
   );

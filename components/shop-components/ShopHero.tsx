@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Product } from "@/lib/data";
+import { Product } from "@/lib/types/product";
 import { ShoppingBag, ChevronDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "./ProductCard";
@@ -151,7 +151,7 @@ export default function ShopHero({
                 style={{
                   width: 24,
                   height: 1,
-                  background: "rgba(255,255,255,0.3)",
+                  background: "rgba(255,255,255,255)",
                 }}
               />
               <span
@@ -160,7 +160,7 @@ export default function ShopHero({
                   fontSize: "0.62rem",
                   letterSpacing: "0.22em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.45)",
+                  color: "rgba(255,255,255,255)",
                 }}
               >
                 Browse Category
@@ -171,7 +171,7 @@ export default function ShopHero({
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: "clamp(2rem, 3.5vw, 2.8rem)",
                 fontWeight: 500,
-                color: "#fff",
+                color: "#ffff",
                 lineHeight: 1.15,
                 marginBottom: 14,
                 letterSpacing: "-0.01em",
@@ -183,14 +183,15 @@ export default function ShopHero({
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "0.78rem",
-                color: "rgba(255,255,255,0.38)",
+                color: "rgba(255,255,255,255)",
                 lineHeight: 1.7,
                 maxWidth: 280,
                 marginBottom: 40,
               }}
             >
-              Premium HVAC systems engineered for efficiency — designed to keep
-              your space perfectly comfortable, year-round.
+              Premium systems engineered for efficiency, designed to keep your
+              home and workspace perfectly comfortable, reasonably sustainable,
+              and relatively economical year-round.
             </p>
           </div>
 
@@ -433,7 +434,7 @@ export default function ShopHero({
                   product={p}
                   inCart={cart.includes(p._id)}
                   onAddToCart={() => addToCart(p._id)}
-                  onSelect={() => onSelectProduct?.(p)} // ← new
+                  onSelect={() => onSelectProduct?.(p)}
                 />
               ))}
             </div>
