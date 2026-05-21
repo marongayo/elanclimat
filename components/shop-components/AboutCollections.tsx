@@ -349,11 +349,10 @@ export default function AboutCollections({
 
   const aboutTitle = selectedProduct
     ? selectedProduct.fullName
-    : "About Our Elan Store.";
+    : "About The Élan Store.";
   const aboutBody = selectedProduct
     ? selectedProduct.description
-    : "A destination for the unexpected and rare. Our designers bring you handcrafted furniture and objects for every room. We stand behind premium materiality, durability, and artistic vision.";
-
+    : "A destination for engineered excellence and sustainable power. Élan Climat & Énergie brings the latest in energy and structural systems to suit uniquely into your building or project. We stand behind premium efficiency, lifetime durability, and precise technical vision. Whether optimizing indoor comfort, harnessing clean energy, or securing uninterrupted facility operations, we deliver integrated engineering solutions that power modern living. From precision climate architecture to resilient power backups and vertical mobility, our work ensures your infrastructure performs at its absolute peak, safely, sustainably, and without compromise.";
   const keyFeatures: string[] =
     selectedProduct && Array.isArray((selectedProduct as any).keyFeatures)
       ? (selectedProduct as any).keyFeatures

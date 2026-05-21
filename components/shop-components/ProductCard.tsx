@@ -25,7 +25,8 @@ export default function ProductCard({
   onAddToCart: () => void;
   onSelect?: () => void;
 }) {
-  const [hovered, setHovered] = useState(false);
+  // Separate state: one for the whole card (scale), one for the pill (bag icon)
+  const [pillHovered, setPillHovered] = useState(false);
 
   const src =
     product.images?.filter(Boolean)[0] ??
@@ -40,9 +41,8 @@ export default function ProductCard({
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="relative min-h-110 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-200"
+      className="relative min-h-110 bg-white border border-gray-200 rounded-2xl overflow-hidden flex flex-col
+                 hover:shadow-lg transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
     >
       {/* Out of stock overlay */}
       {!product.inStock && (
@@ -57,12 +57,13 @@ export default function ProductCard({
         onClick={handleImageClick}
         className="cursor-pointer relative p-4 pt-6 h-75 md:h-80 flex items-center justify-center bg-white"
       >
+        {/* Image no longer scales independently — the whole card does */}
         <Image
           src={src}
           alt={product.name}
           width={250}
           height={350}
-          className="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
+          className="max-h-full max-w-full object-contain"
         />
       </div>
 
@@ -75,8 +76,10 @@ export default function ProductCard({
           {product.name}
         </h3>
 
-        {/* Floating pill info bar */}
+        {/* Floating pill info bar — bag icon triggers on pill hover, not card hover */}
         <div
+          onMouseEnter={() => setPillHovered(true)}
+          onMouseLeave={() => setPillHovered(false)}
           style={{
             position: "absolute",
             bottom: 12,
@@ -138,7 +141,8 @@ export default function ProductCard({
               ) : (
                 <>
                   <AnimatePresence>
-                    {hovered && (
+                    {/* Now triggers on pill hover, not card hover */}
+                    {pillHovered && (
                       <motion.span
                         key="bag"
                         initial={{ width: 0, opacity: 0, marginRight: -6 }}

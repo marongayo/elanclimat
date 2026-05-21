@@ -1,13 +1,14 @@
+// components/shop-components/ShopHero.tsx
+
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/lib/types/product";
-import { ShoppingBag, ChevronDown, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import ProductCard from "./ProductCard";
 
-// ─── Sort Options ────────────────────────────────────────────────────────
-
+// ─── Sort Options ─────────────────────────────────────────────────────────────
 const SORT_OPTIONS = [
   "Popular Products",
   "Newest First",
@@ -15,40 +16,41 @@ const SORT_OPTIONS = [
   "Price: High–Low",
 ];
 
-// ─── Main component ──────────────────────────────────────────────────────────
+// ─── Props ────────────────────────────────────────────────────────────────────
+interface ShopHeroProps {
+  products: Product[];
+  cart: string[];
+  onAddToCart: (id: string) => void;
+  onClearFilters?: () => void;
+  onSelectProduct?: (product: Product) => void;
+}
 
+// ─── Main component ───────────────────────────────────────────────────────────
 export default function ShopHero({
   products,
+  cart,
+  onAddToCart,
   onClearFilters,
-  onSelectProduct, // ← new
-}: {
-  products: Product[];
-  onClearFilters?: () => void;
-  onSelectProduct?: (product: Product) => void; // ← new
-}) {
+  onSelectProduct,
+}: ShopHeroProps) {
   const [heroHovered, setHeroHovered] = useState<string | null>(null);
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState("Popular Products");
   const [sortOpen, setSortOpen] = useState(false);
-  const [cart, setCart] = useState<string[]>([]);
-  const [cartOpen, setCartOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const filtered = products.filter((p) => cat === "All" || p.category === cat);
-  const sorted = [...filtered].sort((a, b) => {
+  const filtered = products.filter(
+    (p) => cat === "All" || p.category === p.category,
+  );
+  const sorted = [
+    ...products.filter((p) => cat === "All" || p.category === cat),
+  ].sort((a, b) => {
     if (sort === "Price: Low–High") return a.price - b.price;
     if (sort === "Price: High–Low") return b.price - a.price;
     return 0;
   });
   const visible = sorted.slice(0, visibleCount);
   const hasMore = visibleCount < sorted.length;
-
-  const cartItems = products.filter((p) => cart.includes(p._id));
-  const total = cartItems.reduce((sum, p) => sum + p.price, 0);
-
-  const addToCart = (id: string) => setCart((prev) => [...prev, id]);
-  const removeFromCart = (id: string) =>
-    setCart((prev) => prev.filter((c) => c !== id));
 
   const handleCategoryClick = (label: string, isActive: boolean) => {
     if (label === "All") {
@@ -59,6 +61,7 @@ export default function ShopHero({
     }
     setVisibleCount(6);
   };
+
   const HERO_CATEGORIES = [
     ...Array.from(new Set(products.map((p) => p.category))).map(
       (category, index) => ({
@@ -74,6 +77,7 @@ export default function ShopHero({
       label: "All",
     },
   ];
+
   return (
     <div style={{ background: "var(--warm-white)", width: "100%" }}>
       <style>{`
@@ -151,7 +155,7 @@ export default function ShopHero({
                 style={{
                   width: 24,
                   height: 1,
-                  background: "rgba(255,255,255,255)",
+                  background: "rgba(255,255,255,1)",
                 }}
               />
               <span
@@ -160,7 +164,7 @@ export default function ShopHero({
                   fontSize: "0.62rem",
                   letterSpacing: "0.22em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,255)",
+                  color: "rgba(255,255,255,1)",
                 }}
               >
                 Browse Category
@@ -171,7 +175,7 @@ export default function ShopHero({
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: "clamp(2rem, 3.5vw, 2.8rem)",
                 fontWeight: 500,
-                color: "#ffff",
+                color: "#fff",
                 lineHeight: 1.15,
                 marginBottom: 14,
                 letterSpacing: "-0.01em",
@@ -183,7 +187,7 @@ export default function ShopHero({
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "0.78rem",
-                color: "rgba(255,255,255,255)",
+                color: "rgba(255,255,255,1)",
                 lineHeight: 1.7,
                 maxWidth: 280,
                 marginBottom: 40,
@@ -433,7 +437,7 @@ export default function ShopHero({
                   key={p._id}
                   product={p}
                   inCart={cart.includes(p._id)}
-                  onAddToCart={() => addToCart(p._id)}
+                  onAddToCart={() => onAddToCart(p._id)}
                   onSelect={() => onSelectProduct?.(p)}
                 />
               ))}
@@ -476,266 +480,6 @@ export default function ShopHero({
           )}
         </div>
       </section>
-
-      {/* ── Cart FAB ── */}
-      {cart.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ position: "fixed", bottom: 28, right: 28, zIndex: 50 }}
-        >
-          <button
-            onClick={() => setCartOpen(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 22px",
-              background: "var(--charcoal)",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.85rem",
-              position: "relative",
-              borderRadius: 9999,
-              boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
-            }}
-          >
-            <ShoppingBag size={16} />
-            Cart
-            <span
-              style={{
-                position: "absolute",
-                top: -8,
-                right: -8,
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                background: "var(--sage)",
-                color: "var(--charcoal)",
-                fontSize: "0.62rem",
-                fontWeight: 700,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {cart.length}
-            </span>
-          </button>
-        </motion.div>
-      )}
-
-      {/* ── Cart Drawer ── */}
-      {cartOpen && (
-        <>
-          <div
-            onClick={() => setCartOpen(false)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.35)",
-              zIndex: 200,
-            }}
-          />
-          <div
-            style={{
-              position: "fixed",
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: 400,
-              background: "white",
-              zIndex: 201,
-              display: "flex",
-              flexDirection: "column",
-              boxShadow: "-4px 0 40px rgba(0,0,0,0.15)",
-            }}
-          >
-            <div
-              style={{
-                padding: "24px",
-                borderBottom: "1px solid var(--off-white)",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <h3
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "1.5rem",
-                  color: "var(--charcoal)",
-                }}
-              >
-                Your Cart ({cart.length})
-              </h3>
-              <button
-                onClick={() => setCartOpen(false)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-muted)",
-                }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
-              {cartItems.length === 0 ? (
-                <div
-                  style={{
-                    textAlign: "center",
-                    padding: "48px 0",
-                    color: "var(--text-muted)",
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}
-                >
-                  Your cart is empty.
-                </div>
-              ) : (
-                cartItems.map((item) => (
-                  <div
-                    key={item._id}
-                    style={{
-                      display: "flex",
-                      gap: 14,
-                      marginBottom: 20,
-                      paddingBottom: 20,
-                      borderBottom: "1px solid var(--off-white)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        width: 64,
-                        height: 64,
-                        flexShrink: 0,
-                        background: "#f2f1ee",
-                      }}
-                    >
-                      {item.images?.[0] && (
-                        <Image
-                          src={item.images[0]}
-                          alt={item.name}
-                          fill
-                          sizes="64px"
-                          style={{ objectFit: "contain", padding: "6px" }}
-                        />
-                      )}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.85rem",
-                          fontWeight: 400,
-                          color: "var(--charcoal)",
-                          marginBottom: 4,
-                        }}
-                      >
-                        {item.name}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.8rem",
-                          color: "var(--text-muted)",
-                          marginBottom: 8,
-                        }}
-                      >
-                        ${item.price.toLocaleString()}
-                      </div>
-                      <button
-                        onClick={() => removeFromCart(item._id)}
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.7rem",
-                          color: "var(--text-muted)",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <div
-              style={{
-                padding: "20px 24px",
-                borderTop: "1px solid var(--off-white)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: 20,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.9rem",
-                    color: "var(--text-muted)",
-                  }}
-                >
-                  Total (excl. tax)
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.3rem",
-                    fontWeight: 600,
-                    color: "var(--charcoal)",
-                  }}
-                >
-                  ${total.toLocaleString()}
-                </span>
-              </div>
-              <button
-                onClick={() =>
-                  alert(
-                    "Checkout coming soon! Please contact us for purchase orders.",
-                  )
-                }
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "var(--charcoal)",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.88rem",
-                  fontWeight: 600,
-                }}
-              >
-                Proceed to Checkout →
-              </button>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.72rem",
-                  color: "var(--text-muted)",
-                  textAlign: "center",
-                  marginTop: 12,
-                }}
-              >
-                Professional installation available — contact us for a full
-                project quote.
-              </p>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }

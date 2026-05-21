@@ -1,3 +1,4 @@
+//components/Navbar.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -73,7 +74,8 @@ export default function Navbar() {
         right: 0,
         zIndex: 100,
         // NO transition on transform — must follow scroll 1:1
-        transition: "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
+        transition:
+          "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
         willChange: "transform",
         background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
@@ -118,7 +120,9 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none" }}>
-          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}
+          >
             <span
               style={{
                 fontFamily: "Cormorant Garamond, serif",
@@ -146,7 +150,10 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden-mobile" style={{ display: "flex", gap: 36, alignItems: "center" }}>
+        <div
+          className="hidden-mobile"
+          style={{ display: "flex", gap: 36, alignItems: "center" }}
+        >
           {NAV_LINKS.map((l) => (
             <Link
               key={l.label}
@@ -200,8 +207,12 @@ export default function Navbar() {
               letterSpacing: "0.03em",
               transition: "background 0.2s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--sage-dark)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--charcoal)")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "var(--sage-dark)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "var(--charcoal)")
+            }
           >
             Get a Quote
           </Link>
