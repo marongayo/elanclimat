@@ -1,8 +1,8 @@
-// app/shop/ShopClient.tsx
+// components/shop-components/ShopClient.tsx
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   motion,
   useScroll,
@@ -17,12 +17,20 @@ import AboutCollections from "@/components/shop-components/AboutCollections";
 import ImageStrip from "@/components/shop-components/ImageStrip";
 import { ShoppingBag, X } from "lucide-react";
 
-export default function ShopClient({ products = [] }: { products: Product[] }) {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+export default function ShopClient({
+  products = [],
+  initialProduct = null,
+}: {
+  products: Product[];
+  initialProduct?: Product | null;
+}) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+    initialProduct,
+  );
   const [cat, setCat] = useState("All");
   const [search, setSearch] = useState("");
 
-  // ── Single source of truth for cart ──────────────────────────────────────
+  // ── Cart ─────────────────────────────────────────────────────────────────────
   const [cart, setCart] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -32,6 +40,33 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
   useMotionValueEvent(scrollY, "change", (latest) => {
     setShowNav(latest > 80);
   });
+
+  // ── On load: if a product was pre-selected via URL, scroll to it ─────────────
+  useEffect(() => {
+    if (initialProduct) {
+      // Small delay so the DOM is ready
+      const t = setTimeout(() => {
+        document
+          .getElementById("collections")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+      return () => clearTimeout(t);
+    }
+  }, [initialProduct]);
+
+  // ── Sync URL whenever selectedProduct changes ────────────────────────────────
+  // We use window.history.pushState directly — NOT router.push — because
+  // router.push triggers a Next.js navigation that remounts the page and
+  // wipes all client state (selected product, cart, etc.).
+  // pushState updates only the address bar with zero routing side effects.
+  function handleSelectProduct(product: Product | null) {
+    setSelectedProduct(product);
+    const url = product ? `/shop/${product._id}` : "/shop";
+    window.history.pushState({ productId: product?._id ?? null }, "", url);
+    document.title = product
+      ? `${product.name} | Élan Climat & Énergie`
+      : "Shop | Élan Climat & Énergie";
+  }
 
   const addToCart = (id: string) =>
     setCart((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -67,7 +102,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
           cart={cart}
           onAddToCart={addToCart}
           selectedProduct={selectedProduct}
-          onSelectProduct={setSelectedProduct}
+          onSelectProduct={handleSelectProduct}
         />
       </div>
 
@@ -102,16 +137,16 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
             onClearFilters={() => {
               setCat("All");
               setSearch("");
-              setSelectedProduct(null);
+              handleSelectProduct(null);
             }}
-            onSelectProduct={setSelectedProduct}
+            onSelectProduct={handleSelectProduct}
           />
         </div>
       </div>
 
       <ImageStrip />
 
-      {/* ── Cart FAB — at root level, outside all stacking contexts ── */}
+      {/* ── Cart FAB ── */}
       <AnimatePresence>
         {cart.length > 0 && (
           <motion.button
@@ -165,7 +200,7 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
         )}
       </AnimatePresence>
 
-      {/* ── Cart Drawer — also at root level ── */}
+      {/* ── Cart Drawer ── */}
       <AnimatePresence>
         {cartOpen && (
           <>
@@ -320,7 +355,10 @@ export default function ShopClient({ products = [] }: { products: Product[] }) {
               </div>
 
               <div
-                style={{ padding: "20px 24px", borderTop: "1px solid #ede9e2" }}
+                style={{
+                  padding: "20px 24px",
+                  borderTop: "1px solid #ede9e2",
+                }}
               >
                 <div
                   style={{

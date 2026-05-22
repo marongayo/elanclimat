@@ -1,3 +1,5 @@
+// components/shop-components/ProductCard.tsx
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
@@ -25,7 +27,6 @@ export default function ProductCard({
   onAddToCart: () => void;
   onSelect?: () => void;
 }) {
-  // Separate state: one for the whole card (scale), one for the pill (bag icon)
   const [pillHovered, setPillHovered] = useState(false);
 
   const src =
@@ -33,10 +34,13 @@ export default function ProductCard({
     UNSPLASH_FALLBACKS[product.category] ??
     UNSPLASH_FALLBACKS.default;
 
+  // URL update is handled upstream by handleSelectProduct in ShopClient.
+  // This component just calls onSelect() and scrolls to the panel.
   function handleImageClick() {
     onSelect?.();
-    const el = document.getElementById("collections");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("collections")
+      ?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -57,7 +61,6 @@ export default function ProductCard({
         onClick={handleImageClick}
         className="cursor-pointer relative p-4 pt-6 h-75 md:h-80 flex items-center justify-center bg-white"
       >
-        {/* Image no longer scales independently — the whole card does */}
         <Image
           src={src}
           alt={product.name}
@@ -76,7 +79,7 @@ export default function ProductCard({
           {product.name}
         </h3>
 
-        {/* Floating pill info bar — bag icon triggers on pill hover, not card hover */}
+        {/* Floating pill info bar */}
         <div
           onMouseEnter={() => setPillHovered(true)}
           onMouseLeave={() => setPillHovered(false)}
@@ -141,7 +144,6 @@ export default function ProductCard({
               ) : (
                 <>
                   <AnimatePresence>
-                    {/* Now triggers on pill hover, not card hover */}
                     {pillHovered && (
                       <motion.span
                         key="bag"

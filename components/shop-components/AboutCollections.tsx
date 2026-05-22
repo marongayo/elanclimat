@@ -1,3 +1,5 @@
+// components/shop-components/AboutCollections.tsx
+
 "use client";
 
 import { useState, useMemo } from "react";

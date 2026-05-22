@@ -12,6 +12,24 @@ import { Product } from "@/lib/types/product";
 import { Message } from "@/lib/types/message";
 import { User } from "@/lib/types/admin";
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// Fully serializes a raw Mongoose product document into a plain Product object.
+// Handles top-level _id and any nested ObjectIds in sub-document arrays.
+function serializeProduct(raw: any): Product {
+  return {
+    ...raw,
+    _id: raw._id.toString(),
+    images: raw.images?.length ? raw.images : raw.image ? [raw.image] : [],
+    specifications: (raw.specifications ?? []).map(
+      ({ _id: sid, ...spec }: any) => ({
+        ...spec,
+        ...(sid !== undefined ? { _id: sid.toString() } : {}),
+      }),
+    ),
+  };
+}
+
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
   await connectDB();
@@ -50,24 +68,16 @@ export async function deleteBlogPost(id: string): Promise<void> {
 // ─── Products ─────────────────────────────────────────────────────────────────
 export async function getProducts(): Promise<Product[]> {
   await connectDB();
-
-  const products = JSON.parse(JSON.stringify(await ProductModel.find().lean()));
-
-  return products.map(({ __v, ...rest }: any) => ({
-    ...rest,
-    images: rest.images?.length ? rest.images : rest.image ? [rest.image] : [],
-  }));
+  const products = await ProductModel.find().lean();
+  return products.map(({ __v, ...raw }: any) => serializeProduct(raw));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   await connectDB();
-  const p = await ProductModel.findById(new Types.ObjectId(id)).lean();
-  if (!p) return null;
-  return {
-    ...p,
-    _id: p._id.toString(),
-    images: p.images?.length ? p.images : p.image ? [p.image] : [],
-  } as unknown as Product;
+  const raw = await ProductModel.findById(new Types.ObjectId(id)).lean();
+  if (!raw) return null;
+  const { __v, ...rest } = raw as any;
+  return serializeProduct(rest);
 }
 
 export async function saveProduct(product: Product): Promise<void> {
@@ -88,7 +98,6 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
-
 export async function getMessages(): Promise<Message[]> {
   await connectDB();
   const messages = await MessageModel.find({ archived: { $ne: true } })

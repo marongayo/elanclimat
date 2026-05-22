@@ -6,7 +6,10 @@ import Schema from "./seo/Schema";
 export const metadata: Metadata = {
   metadataBase: new URL("https://elanclimat.co.ke"),
 
-  title: "Élan Climat & Énergie",
+  title: {
+    default: "Élan Climat & Énergie ",
+    template: "%s | Élan Climat & Énergie",
+  },
 
   description:
     "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",

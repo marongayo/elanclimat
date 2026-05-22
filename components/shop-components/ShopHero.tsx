@@ -39,9 +39,6 @@ export default function ShopHero({
   const [sortOpen, setSortOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const filtered = products.filter(
-    (p) => cat === "All" || p.category === p.category,
-  );
   const sorted = [
     ...products.filter((p) => cat === "All" || p.category === cat),
   ].sort((a, b) => {

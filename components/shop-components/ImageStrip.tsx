@@ -11,7 +11,7 @@ const IMAGES = [
   { src: "/everett.jpg", alt: "Interior shot 5" },
 ];
 
-const HANDLE = "elan climat | shop the look of home";
+const HANDLE = "elan climat & energy || shop the look of energy sustainability";
 
 export default function ImageStrip() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
