@@ -16,6 +16,8 @@ import {
   KeyRound,
   ShieldCheck,
   Shield,
+  UserCircle,
+  UserPen,
 } from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
@@ -64,6 +66,7 @@ export default function AdminContentTabs({
   tab,
   role,
   currentUserId,
+  isTrueSuperadmin,
   posts,
   products,
   admins,
@@ -84,12 +87,15 @@ export default function AdminContentTabs({
   deleteProduct,
   deleteAdmin,
   changeAdminPassword,
+  changeAdminUsername,
   clearError,
   toast,
+  onOpenCreateAdmin,
 }: {
   tab: Tab;
   role: Role;
   currentUserId: string;
+  isTrueSuperadmin: boolean;
   posts: BlogPost[];
   products: Product[];
   admins: User[];
@@ -112,12 +118,19 @@ export default function AdminContentTabs({
   deleteProduct: (id: string) => void;
   deleteAdmin: (id: string) => void;
   changeAdminPassword: (id: string, newPassword: string) => Promise<void>;
+  changeAdminUsername: (id: string, newName: string) => Promise<void>;
   clearError: (field: keyof ProductErrors) => void;
   toast: (msg: string) => void;
+  onOpenCreateAdmin: (admin?: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  }) => void;
 }) {
   const imgUrlRef = useRef<HTMLInputElement>(null);
 
-  // ── Password change modal state ──────────────────────────────────────────
+  // ── Password modal ──────────────────────────────────────────────────────────
   const [pwTarget, setPwTarget] = useState<User | null>(null);
   const [pwValue, setPwValue] = useState("");
   const [pwConfirm, setPwConfirm] = useState("");
@@ -130,14 +143,12 @@ export default function AdminContentTabs({
     setPwConfirm("");
     setPwError("");
   };
-
   const closePasswordModal = () => {
     setPwTarget(null);
     setPwValue("");
     setPwConfirm("");
     setPwError("");
   };
-
   const submitPassword = async () => {
     if (pwValue.length < 8) {
       setPwError("Password must be at least 8 characters.");
@@ -156,6 +167,76 @@ export default function AdminContentTabs({
       setPwError("Failed to update password. Please try again.");
     } finally {
       setPwSaving(false);
+    }
+  };
+
+  // ── Username modal ──────────────────────────────────────────────────────────
+  const [unTarget, setUnTarget] = useState<User | null>(null);
+  const [unValue, setUnValue] = useState("");
+  const [unError, setUnError] = useState("");
+  const [unSaving, setUnSaving] = useState(false);
+
+  const openUsernameModal = (admin: User) => {
+    setUnTarget(admin);
+    setUnValue(admin.name ?? "");
+    setUnError("");
+  };
+  const closeUsernameModal = () => {
+    setUnTarget(null);
+    setUnValue("");
+    setUnError("");
+  };
+  const submitUsername = async () => {
+    if (!unValue.trim()) {
+      setUnError("Name cannot be empty.");
+      return;
+    }
+    setUnSaving(true);
+    try {
+      await changeAdminUsername(unTarget!._id, unValue.trim());
+      toast("Username updated successfully.");
+      closeUsernameModal();
+    } catch {
+      setUnError("Failed to update username. Please try again.");
+    } finally {
+      setUnSaving(false);
+    }
+  };
+
+  // ── Superadmin editing another admin's full details ─────────────────────────
+  const [editTarget, setEditTarget] = useState<User | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
+
+  const openEditModal = (admin: User) => {
+    setEditTarget(admin);
+    setEditName(admin.name ?? "");
+    setEditEmail(admin.email ?? "");
+    setEditError("");
+  };
+  const closeEditModal = () => {
+    setEditTarget(null);
+    setEditName("");
+    setEditEmail("");
+    setEditError("");
+  };
+  const submitEdit = async () => {
+    if (!editName.trim()) {
+      setEditError("Name cannot be empty.");
+      return;
+    }
+    setEditSaving(true);
+    try {
+      await changeAdminUsername(editTarget!._id, editName.trim());
+      // if you add changeAdminEmail later, call it here too
+      toast("Admin details updated.");
+      closeEditModal();
+    } catch {
+      setEditError("Failed to update. Please try again.");
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -180,6 +261,9 @@ export default function AdminContentTabs({
     }
   };
 
+  // Current user record (for My Account tab)
+  const currentAdmin = admins.find((a) => a._id === currentUserId);
+
   return (
     <main
       className="admin-main"
@@ -190,7 +274,7 @@ export default function AdminContentTabs({
         minHeight: "100vh",
       }}
     >
-      {/* ── DASHBOARD ────────────────────────────────────────────────────── */}
+      {/* ── DASHBOARD ──────────────────────────────────────────────────────── */}
       {tab === "dashboard" && (
         <div>
           <h1
@@ -288,7 +372,7 @@ export default function AdminContentTabs({
         </div>
       )}
 
-      {/* ── BLOG ─────────────────────────────────────────────────────────── */}
+      {/* ── BLOG ───────────────────────────────────────────────────────────── */}
       {tab === "blog" && (
         <div>
           <div style={{ marginBottom: 32 }}>
@@ -596,7 +680,7 @@ export default function AdminContentTabs({
         </div>
       )}
 
-      {/* ── PRODUCTS ─────────────────────────────────────────────────────── */}
+      {/* ── PRODUCTS ───────────────────────────────────────────────────────── */}
       {tab === "products" && (
         <div>
           <div style={{ marginBottom: 32 }}>
@@ -714,7 +798,6 @@ export default function AdminContentTabs({
                 )}
 
                 <div style={{ display: "grid", gap: 18 }}>
-                  {/* Short Name */}
                   <div>
                     <label style={LABEL_STYLE}>Short Name *</label>
                     <input
@@ -735,8 +818,6 @@ export default function AdminContentTabs({
                       <span style={ERROR_TEXT}>{productErrors.name}</span>
                     )}
                   </div>
-
-                  {/* Full Name */}
                   <div>
                     <label style={LABEL_STYLE}>Full Product Name</label>
                     <input
@@ -751,7 +832,6 @@ export default function AdminContentTabs({
                       placeholder="LG 3.5kW Inverter Split Air Conditioner S3-W12JA3AA"
                     />
                   </div>
-
                   <div
                     style={{
                       display: "grid",
@@ -808,8 +888,6 @@ export default function AdminContentTabs({
                       )}
                     </div>
                   </div>
-
-                  {/* Description */}
                   <div>
                     <label style={LABEL_STYLE}>Description *</label>
                     <textarea
@@ -836,9 +914,6 @@ export default function AdminContentTabs({
                       </span>
                     )}
                   </div>
-
-                  {/* Key Features / Highlights */}
-                  {/* Key Features */}
                   <div>
                     <label style={LABEL_STYLE}>Key Features</label>
                     {productForm.keyFeatures.map((item, i) => (
@@ -857,7 +932,7 @@ export default function AdminContentTabs({
                             });
                           }}
                           style={{ ...INPUT_STYLE, flex: 1 }}
-                          placeholder={`e.g. Inverter compressor for energy efficiency`}
+                          placeholder="e.g. Inverter compressor for energy efficiency"
                         />
                         <button
                           type="button"
@@ -906,8 +981,6 @@ export default function AdminContentTabs({
                       + Add Feature
                     </button>
                   </div>
-
-                  {/* Technical Specifications */}
                   <div>
                     <label style={LABEL_STYLE}>Technical Specifications</label>
                     {productForm.specifications.map((spec, i) => (
@@ -1011,7 +1084,6 @@ export default function AdminContentTabs({
                         ({productForm.images.length}/2 minimum)
                       </span>
                     </label>
-
                     <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
                       {[0, 1].map((i) => (
                         <div
@@ -1041,7 +1113,6 @@ export default function AdminContentTabs({
                         }}
                       />
                     </div>
-
                     <input
                       type="file"
                       accept="image/*"
@@ -1078,7 +1149,6 @@ export default function AdminContentTabs({
                       }}
                       style={{ width: "100%", marginBottom: 8 }}
                     />
-
                     {uploadingProduct && (
                       <div
                         style={{
@@ -1109,7 +1179,6 @@ export default function AdminContentTabs({
                         </span>
                       </div>
                     )}
-
                     <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                       <input
                         ref={imgUrlRef}
@@ -1147,13 +1216,11 @@ export default function AdminContentTabs({
                         Add
                       </button>
                     </div>
-
                     {productErrors.images && (
                       <span style={{ ...ERROR_TEXT, marginTop: 8 }}>
                         {productErrors.images}
                       </span>
                     )}
-
                     {productForm.images.length > 0 && (
                       <div
                         style={{
@@ -1231,7 +1298,6 @@ export default function AdminContentTabs({
                         ))}
                       </div>
                     )}
-
                     <p
                       style={{
                         fontFamily: "DM Sans",
@@ -1299,7 +1365,6 @@ export default function AdminContentTabs({
                       </label>
                     </div>
                   </div>
-
                   <div
                     style={{
                       display: "flex",
@@ -1529,8 +1594,8 @@ export default function AdminContentTabs({
         </div>
       )}
 
-      {/* ── ADMINS ───────────────────────────────────────────────────────── */}
-      {tab === "admins" && (
+      {/* ── ADMINS (superadmin only) ────────────────────────────────────────── */}
+      {tab === "admins" && role === "superadmin" && (
         <div>
           <div style={{ marginBottom: 32 }}>
             <h1
@@ -1556,6 +1621,7 @@ export default function AdminContentTabs({
             </p>
           </div>
 
+          {/* Password modal */}
           {pwTarget && (
             <Modal
               open={!!pwTarget}
@@ -1640,6 +1706,86 @@ export default function AdminContentTabs({
             </Modal>
           )}
 
+          {/* Username/details edit modal (superadmin editing another admin) */}
+          {editTarget && (
+            <Modal
+              open={!!editTarget}
+              onClose={closeEditModal}
+              title={`Edit Admin — ${editTarget.name}`}
+              maxWidth={440}
+            >
+              <div style={{ display: "grid", gap: 16 }}>
+                <div>
+                  <label style={LABEL_STYLE}>Name *</label>
+                  <input
+                    value={editName}
+                    onChange={(e) => {
+                      setEditName(e.target.value);
+                      setEditError("");
+                    }}
+                    style={editError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Full name"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Email</label>
+                  <input
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    style={INPUT_STYLE}
+                    placeholder="admin@example.com"
+                  />
+                </div>
+                {editError && <span style={ERROR_TEXT}>{editError}</span>}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "flex-end",
+                    paddingTop: 4,
+                  }}
+                >
+                  <button
+                    onClick={closeEditModal}
+                    style={{
+                      padding: "10px 20px",
+                      background: "none",
+                      border: "1px solid var(--off-white)",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitEdit}
+                    disabled={editSaving}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "10px 24px",
+                      background: editSaving
+                        ? "var(--text-muted)"
+                        : "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: editSaving ? "not-allowed" : "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    <Save size={14} />
+                    {editSaving ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </div>
+            </Modal>
+          )}
+
           <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
             {admins.map((a) => {
               const isSelf = a._id === currentUserId;
@@ -1659,6 +1805,7 @@ export default function AdminContentTabs({
                       : "3px solid transparent",
                   }}
                 >
+                  {/* Avatar */}
                   <div
                     style={{
                       width: 40,
@@ -1679,6 +1826,7 @@ export default function AdminContentTabs({
                     )}
                   </div>
 
+                  {/* Name + email */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
@@ -1715,23 +1863,6 @@ export default function AdminContentTabs({
                           You
                         </span>
                       )}
-                      <span
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.6rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          background: isSuperadmin
-                            ? "#111"
-                            : "var(--off-white)",
-                          color: isSuperadmin ? "white" : "var(--text-muted)",
-                          padding: "2px 8px",
-                          borderRadius: 9999,
-                        }}
-                      >
-                        {isSuperadmin ? "Super Admin" : "Admin"}
-                      </span>
                     </div>
                     <div
                       style={{
@@ -1745,49 +1876,423 @@ export default function AdminContentTabs({
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                    {(role === "superadmin" || isSelf) && (
-                      <button
-                        onClick={() => openPasswordModal(a)}
-                        style={{
-                          padding: "7px 10px",
-                          background: "var(--off-white)",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "var(--charcoal)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                          fontFamily: "DM Sans",
-                          fontSize: "0.75rem",
-                        }}
-                      >
-                        <KeyRound size={13} />
-                        Password
-                      </button>
-                    )}
+                  {/* Role badge — fixed width so they all align */}
+                  <div style={{ width: 96, flexShrink: 0 }}>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.6rem",
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        background: isSuperadmin ? "#111" : "var(--off-white)",
+                        color: isSuperadmin ? "white" : "var(--text-muted)",
+                        padding: "3px 10px",
+                        borderRadius: 9999,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {isSuperadmin ? "Super Admin" : "Admin"}
+                    </span>
+                  </div>
 
-                    {role === "superadmin" && !isSelf && !isSuperadmin && (
+                  {/* Actions — fixed width, always aligned */}
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 6,
+                      flexShrink: 0,
+                      alignItems: "center",
+                      width: 160,
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    {/* Delete — only the designated superadmin, not self, not other superadmins */}
+                    {isTrueSuperadmin && !isSelf && !isSuperadmin ? (
                       <button
                         onClick={() => deleteAdmin(a._id)}
                         style={{
+                          display: "flex",
+                          alignItems: "center",
                           padding: "7px 10px",
                           background: "#fef2f2",
                           border: "none",
                           cursor: "pointer",
                           color: "#c0392b",
-                          display: "flex",
-                          alignItems: "center",
                         }}
                       >
                         <Trash2 size={13} />
                       </button>
+                    ) : (
+                      /* placeholder to keep layout stable */
+                      <div style={{ width: 36 }} />
                     )}
+                    {/* Single Edit button — opens the unified Create/Edit Admin modal */}
+                    <button
+                      onClick={() =>
+                        onOpenCreateAdmin({
+                          _id: a._id,
+                          name: a.name ?? "",
+                          email: a.email ?? "",
+                          role: a.role ?? "admin",
+                        })
+                      }
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        padding: "7px 10px",
+                        background: "var(--off-white)",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "var(--charcoal)",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      <UserPen size={13} /> Edit
+                    </button>
                   </div>
                 </div>
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* ── MY ACCOUNT ─────────────────────────────────────────────────────── */}
+      {tab === "myaccount" && (
+        <div>
+          <div style={{ marginBottom: 32 }}>
+            <h1
+              style={{
+                fontFamily: "Cormorant Garamond, serif",
+                fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+              }}
+            >
+              My Account
+            </h1>
+            <p
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                color: "var(--text-muted)",
+                marginTop: 4,
+              }}
+            >
+              Manage your personal admin details
+            </p>
+          </div>
+
+          {/* Username modal */}
+          {unTarget && (
+            <Modal
+              open={!!unTarget}
+              onClose={closeUsernameModal}
+              title="Change Username"
+              maxWidth={440}
+            >
+              <div style={{ display: "grid", gap: 16 }}>
+                <div>
+                  <label style={LABEL_STYLE}>New Name *</label>
+                  <input
+                    value={unValue}
+                    onChange={(e) => {
+                      setUnValue(e.target.value);
+                      setUnError("");
+                    }}
+                    style={unError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Your full name"
+                    autoFocus
+                  />
+                </div>
+                {unError && <span style={ERROR_TEXT}>{unError}</span>}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "flex-end",
+                    paddingTop: 4,
+                  }}
+                >
+                  <button
+                    onClick={closeUsernameModal}
+                    style={{
+                      padding: "10px 20px",
+                      background: "none",
+                      border: "1px solid var(--off-white)",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitUsername}
+                    disabled={unSaving}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "10px 24px",
+                      background: unSaving
+                        ? "var(--text-muted)"
+                        : "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: unSaving ? "not-allowed" : "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    <Save size={14} />
+                    {unSaving ? "Saving..." : "Update Name"}
+                  </button>
+                </div>
+              </div>
+            </Modal>
+          )}
+
+          {/* Password modal (reuse same state, bound to currentAdmin) */}
+          {pwTarget && (
+            <Modal
+              open={!!pwTarget}
+              onClose={closePasswordModal}
+              title="Change Password"
+              maxWidth={440}
+            >
+              <div style={{ display: "grid", gap: 16 }}>
+                <div>
+                  <label style={LABEL_STYLE}>New Password *</label>
+                  <input
+                    type="password"
+                    value={pwValue}
+                    onChange={(e) => {
+                      setPwValue(e.target.value);
+                      setPwError("");
+                    }}
+                    style={pwError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Min. 8 characters"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label style={LABEL_STYLE}>Confirm Password *</label>
+                  <input
+                    type="password"
+                    value={pwConfirm}
+                    onChange={(e) => {
+                      setPwConfirm(e.target.value);
+                      setPwError("");
+                    }}
+                    style={pwError ? INPUT_ERROR_STYLE : INPUT_STYLE}
+                    placeholder="Repeat password"
+                  />
+                </div>
+                {pwError && <span style={ERROR_TEXT}>{pwError}</span>}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "flex-end",
+                    paddingTop: 4,
+                  }}
+                >
+                  <button
+                    onClick={closePasswordModal}
+                    style={{
+                      padding: "10px 20px",
+                      background: "none",
+                      border: "1px solid var(--off-white)",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitPassword}
+                    disabled={pwSaving}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "10px 24px",
+                      background: pwSaving
+                        ? "var(--text-muted)"
+                        : "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: pwSaving ? "not-allowed" : "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    <KeyRound size={14} />
+                    {pwSaving ? "Saving..." : "Update Password"}
+                  </button>
+                </div>
+              </div>
+            </Modal>
+          )}
+
+          {currentAdmin && (
+            <div style={{ maxWidth: 540 }}>
+              {/* Profile card */}
+              <div
+                style={{
+                  background: "white",
+                  padding: "28px 24px",
+                  marginBottom: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 20,
+                }}
+              >
+                <div
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: "50%",
+                    background:
+                      role === "superadmin" ? "#111" : "var(--off-white)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    color:
+                      role === "superadmin" ? "white" : "var(--text-muted)",
+                  }}
+                >
+                  {role === "superadmin" ? (
+                    <ShieldCheck size={24} />
+                  ) : (
+                    <UserCircle size={24} />
+                  )}
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontFamily: "Cormorant Garamond, serif",
+                      fontSize: "1.4rem",
+                      fontWeight: 600,
+                      color: "var(--charcoal)",
+                    }}
+                  >
+                    {currentAdmin.name}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "DM Sans",
+                      fontSize: "0.78rem",
+                      color: "var(--text-muted)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {currentAdmin.email}
+                  </div>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      marginTop: 8,
+                      fontFamily: "DM Sans",
+                      fontSize: "0.6rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      background:
+                        role === "superadmin" ? "#111" : "var(--off-white)",
+                      color:
+                        role === "superadmin" ? "white" : "var(--text-muted)",
+                      padding: "3px 10px",
+                      borderRadius: 9999,
+                    }}
+                  >
+                    {role === "superadmin" ? "Super Admin" : "Admin"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action cards */}
+              {[
+                {
+                  icon: <UserPen size={18} />,
+                  title: "Change Username",
+                  desc: "Update the display name shown across the admin panel.",
+                  action: () => openUsernameModal(currentAdmin),
+                  label: "Change Name",
+                },
+                {
+                  icon: <KeyRound size={18} />,
+                  title: "Change Password",
+                  desc: "Set a new password for your account. Minimum 8 characters.",
+                  action: () => openPasswordModal(currentAdmin),
+                  label: "Change Password",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  style={{
+                    background: "white",
+                    padding: "20px 24px",
+                    marginBottom: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                  }}
+                >
+                  <div style={{ color: "var(--text-muted)", flexShrink: 0 }}>
+                    {item.icon}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        color: "var(--charcoal)",
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "DM Sans",
+                        fontSize: "0.75rem",
+                        color: "var(--text-muted)",
+                        marginTop: 2,
+                      }}
+                    >
+                      {item.desc}
+                    </div>
+                  </div>
+                  <button
+                    onClick={item.action}
+                    style={{
+                      flexShrink: 0,
+                      padding: "8px 18px",
+                      background: "var(--charcoal)",
+                      color: "white",
+                      border: "none",
+                      cursor: "pointer",
+                      fontFamily: "DM Sans",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </main>

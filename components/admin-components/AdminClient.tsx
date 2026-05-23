@@ -69,13 +69,16 @@ const validateProduct = (pf: ProductForm): ProductErrors => {
   return errs;
 };
 
-const validateAdmin = (af: AdminForm): AdminFormErrors => {
+const validateAdmin = (af: AdminForm, isEdit = false): AdminFormErrors => {
   const errs: AdminFormErrors = {};
   if (!af.name.trim()) errs.name = "Name is required.";
   if (!af.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(af.email))
     errs.email = "A valid email is required.";
-  if (!af.password || af.password.length < 8)
+  // In create mode password is required; in edit mode blank = keep existing
+  if (!isEdit && (!af.password || af.password.length < 8))
     errs.password = "Password must be at least 8 characters.";
+  if (isEdit && af.password && af.password.length < 8)
+    errs.password = "New password must be at least 8 characters.";
   return errs;
 };
 
@@ -130,7 +133,7 @@ export default function AdminClient({
 }) {
   // ─── ALL HOOKS FIRST ──────────────────────────────────────────────────────
 
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
 
   const [tab, setTab] = useState<Tab>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -139,12 +142,19 @@ export default function AdminClient({
   const [products, setProducts] = useState(initialProducts);
   const [admins, setAdmins] = useState<User[]>([]);
 
+  // Local display name — kept in sync with the session but updated optimistically
+  // so the sidebar footer reflects changes immediately without a page reload.
+  const [displayName, setDisplayName] = useState<string>("");
+
   const [blogForm, setBlogForm] = useState<BlogForm | null>(null);
   const [productForm, setProductForm] = useState<ProductForm | null>(null);
   const [productErrors, setProductErrors] = useState<ProductErrors>({});
 
-  // Admin create modal
+  // Admin create / edit modal
+  // editAdminId is set when editing an existing admin; null means "create" mode.
+  // Keeping _id out of AdminForm so it stays clean and matches the type definition.
   const [adminForm, setAdminForm] = useState<AdminForm | null>(null);
+  const [editAdminId, setEditAdminId] = useState<string | null>(null);
   const [adminErrors, setAdminErrors] = useState<AdminFormErrors>({});
   const [savingAdmin, setSavingAdmin] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -198,11 +208,32 @@ export default function AdminClient({
     return () => clearInterval(interval);
   }, []);
 
+  // Load admins for ALL roles so that:
+  // (a) superadmin sees the Admins tab
+  // (b) every role can find their own record for the My Account profile card
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.role === "superadmin") {
+    if (status === "authenticated") {
       loadAdmins();
     }
-  }, [status, session]);
+  }, [status]);
+
+  // Seed displayName from session once it arrives, then keep it local.
+  // Also fall back to the admins list (populated after auth) so the sidebar
+  // footer always shows the correct name even if the session token lags.
+  useEffect(() => {
+    if (session?.user?.name) {
+      setDisplayName(session.user.name);
+    }
+  }, [session?.user?.name]);
+
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!displayName && admins.length > 0 && userId) {
+      const me = admins.find((a) => a._id === userId);
+      if (me?.name) setDisplayName(me.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admins]);
 
   // ─── EARLY RETURNS ────────────────────────────────────────────────────────
 
@@ -225,8 +256,22 @@ export default function AdminClient({
 
   if (!session) return null;
 
-  const role = session.user?.role as Role;
+  const role = ((session.user?.role as string) ?? "").trim() as Role;
   const currentUserId = session.user?.id as string;
+  const currentUserEmail = (session.user?.email as string | undefined) ?? "";
+
+  // Only the designated superadmin (name="Super Admin", email="superadmin@elanclimat.co.ke")
+  // may delete admin accounts. Check both the session token AND the loaded admins list
+  // (DB source of truth) with trim()+toLowerCase() so whitespace or session-lag can't
+  // cause false negatives.
+  const dbRecord = admins.find((a) => a._id === currentUserId);
+  const isTrueSuperadmin =
+    role === "superadmin" &&
+    ((session.user?.name ?? "").trim().toLowerCase() === "super admin" ||
+      (dbRecord?.name ?? "").trim().toLowerCase() === "super admin") &&
+    (currentUserEmail.trim().toLowerCase() === "superadmin@elanclinat.co.ke" ||
+      (dbRecord?.email ?? "").trim().toLowerCase() ===
+        "superadmin@elanclinat.co.ke");
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
@@ -239,7 +284,6 @@ export default function AdminClient({
     }, 3100);
   };
 
-  // FIX 1: absolute URL so redirect works on any domain, not just localhost
   const logout = async () => {
     await signOut({ callbackUrl: `${window.location.origin}/login` });
   };
@@ -330,7 +374,9 @@ export default function AdminClient({
 
   const saveAdmin = async () => {
     if (!adminForm) return;
-    const errs = validateAdmin(adminForm);
+    const isEdit = !!editAdminId;
+
+    const errs = validateAdmin(adminForm, isEdit);
     if (Object.keys(errs).length > 0) {
       setAdminErrors(errs);
       return;
@@ -338,18 +384,42 @@ export default function AdminClient({
     setAdminErrors({});
     setSavingAdmin(true);
     try {
-      const res = await fetch("/api/user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(adminForm),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to create admin");
+      if (isEdit) {
+        const patch: Record<string, string> = {
+          id: editAdminId,
+          name: adminForm.name,
+          email: adminForm.email,
+          role: adminForm.role,
+        };
+        if (adminForm.password) patch.password = adminForm.password;
+        const res = await fetch("/api/user", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to update admin");
+        }
+        setAdminForm(null);
+        setEditAdminId(null);
+        toast(`${adminForm.name}'s details have been updated.`);
+        await loadAdmins();
+      } else {
+        const res = await fetch("/api/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(adminForm),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to create admin");
+        }
+        setAdminForm(null);
+        setEditAdminId(null);
+        toast(`${adminForm.name}'s admin account has been created!`);
+        await loadAdmins();
       }
-      setAdminForm(null);
-      toast(`${adminForm.name}'s admin account has been created!`);
-      await loadAdmins();
     } catch (err: any) {
       setAdminErrors({ email: err.message });
     } finally {
@@ -358,6 +428,10 @@ export default function AdminClient({
   };
 
   const deleteAdmin = async (id: string) => {
+    if (!isTrueSuperadmin) {
+      toast("Only the designated Super Admin can delete admin accounts.");
+      return;
+    }
     if (!confirm("Delete this admin account? This cannot be undone.")) return;
     try {
       const res = await fetch("/api/user", {
@@ -384,6 +458,52 @@ export default function AdminClient({
       const data = await res.json();
       throw new Error(data.error || "Failed to update password");
     }
+  };
+
+  // Updates name in the DB, then optimistically refreshes local state so
+  // the sidebar footer and My Account profile card both reflect the new name
+  // without requiring a page reload.
+  const changeAdminUsername = async (id: string, newName: string) => {
+    const res = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, name: newName }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || "Failed to update name");
+    }
+    // Update the admins list so the My Account profile card re-renders
+    setAdmins((prev) =>
+      prev.map((a) => (a._id === id ? { ...a, name: newName } : a)),
+    );
+    // If the changed user is the currently logged-in user, update the sidebar
+    // display name immediately and attempt to refresh the NextAuth session.
+    if (id === currentUserId) {
+      setDisplayName(newName);
+      // updateSession triggers a session refresh so session.user.name stays
+      // accurate across the rest of the session lifecycle.
+      try {
+        await updateSession({ name: newName });
+      } catch {
+        // Non-fatal — displayName is already updated locally.
+      }
+    }
+  };
+
+  // Convenience wrappers for the sidebar footer popover — they always target
+  // the currently logged-in user so no target needs to be passed.
+  const handleSidebarChangePassword = () => {
+    // Navigate to My Account tab and let AdminContentTabs open the modal
+    // by passing a synthetic trigger. Simplest approach: just navigate and
+    // let the user click the button there, OR we expose a ref/callback.
+    // Since AdminContentTabs owns all modal state, the cleanest solution is
+    // to navigate to the myaccount tab — the action cards are right there.
+    setTab("myaccount");
+  };
+
+  const handleSidebarChangeUsername = () => {
+    setTab("myaccount");
   };
 
   const markRead = async (id: string) => {
@@ -464,6 +584,7 @@ export default function AdminClient({
 
   const handleNewAdmin = () => {
     setAdminForm(emptyAdmin());
+    setEditAdminId(null);
     setAdminErrors({});
     setOpen(false);
   };
@@ -547,7 +668,6 @@ export default function AdminClient({
         .msg-item:hover { background: #f9fafb !important; }
       `}</style>
 
-      {/* FIX 2: onLogout opens the modal instead of signing out directly */}
       <AdminSidebar
         tab={tab}
         unread={unread}
@@ -557,7 +677,9 @@ export default function AdminClient({
         onLogout={() => setShowLogoutModal(true)}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
-        userName={session.user?.name || "Admin"}
+        userName={displayName || session.user?.name || ""}
+        onChangePassword={handleSidebarChangePassword}
+        onChangeUsername={handleSidebarChangeUsername}
       />
 
       <AdminMessagesPanel
@@ -578,6 +700,7 @@ export default function AdminClient({
         tab={tab}
         role={role}
         currentUserId={currentUserId}
+        isTrueSuperadmin={isTrueSuperadmin}
         posts={posts}
         products={products}
         admins={admins}
@@ -598,8 +721,26 @@ export default function AdminClient({
         deleteProduct={deleteProduct}
         deleteAdmin={deleteAdmin}
         changeAdminPassword={changeAdminPassword}
+        changeAdminUsername={changeAdminUsername}
         clearError={clearError}
         toast={toast}
+        onOpenCreateAdmin={(admin) => {
+          if (admin) {
+            // Edit mode — populate form fields only (no _id in the form)
+            setAdminForm({
+              name: admin.name,
+              email: admin.email,
+              password: "",
+              role: admin.role as Role,
+            });
+            setEditAdminId(admin._id);
+          } else {
+            // Create mode — blank form
+            setAdminForm(emptyAdmin());
+            setEditAdminId(null);
+          }
+          setAdminErrors({});
+        }}
       />
 
       {/* ── Create Admin Modal ─────────────────────────────────────────────── */}
@@ -623,6 +764,7 @@ export default function AdminClient({
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setAdminForm(null);
+                setEditAdminId(null);
                 setAdminErrors({});
               }
             }}
@@ -641,7 +783,6 @@ export default function AdminClient({
                 boxShadow: "0 20px 80px rgba(0,0,0,0.2)",
               }}
             >
-              {/* Header */}
               <div
                 style={{
                   display: "flex",
@@ -661,12 +802,13 @@ export default function AdminClient({
                       margin: 0,
                     }}
                   >
-                    New Admin
+                    {editAdminId ? "Edit Admin" : "New Admin"}
                   </h2>
                 </div>
                 <button
                   onClick={() => {
                     setAdminForm(null);
+                    setEditAdminId(null);
                     setAdminErrors({});
                   }}
                   style={{
@@ -682,9 +824,7 @@ export default function AdminClient({
                 </button>
               </div>
 
-              {/* Fields */}
               <div style={{ display: "grid", gap: 18 }}>
-                {/* Name */}
                 <div>
                   <label style={LABEL_STYLE}>Full Name *</label>
                   <input
@@ -702,7 +842,6 @@ export default function AdminClient({
                   )}
                 </div>
 
-                {/* Email */}
                 <div>
                   <label style={LABEL_STYLE}>Email Address *</label>
                   <input
@@ -721,9 +860,11 @@ export default function AdminClient({
                   )}
                 </div>
 
-                {/* Password */}
                 <div>
-                  <label style={LABEL_STYLE}>Password *</label>
+                  <label style={LABEL_STYLE}>
+                    Password{" "}
+                    {editAdminId ? "(leave blank to keep current)" : "*"}
+                  </label>
                   <input
                     type="password"
                     value={adminForm.password}
@@ -738,14 +879,17 @@ export default function AdminClient({
                     style={
                       adminErrors.password ? INPUT_ERROR_STYLE : INPUT_STYLE
                     }
-                    placeholder="Minimum 8 characters"
+                    placeholder={
+                      editAdminId
+                        ? "Leave blank to keep unchanged"
+                        : "Minimum 8 characters"
+                    }
                   />
                   {adminErrors.password && (
                     <span style={ERROR_TEXT}>{adminErrors.password}</span>
                   )}
                 </div>
 
-                {/* Role */}
                 <div>
                   <label style={LABEL_STYLE}>Role *</label>
                   <select
@@ -763,7 +907,6 @@ export default function AdminClient({
                   </select>
                 </div>
 
-                {/* Actions */}
                 <div
                   style={{
                     display: "flex",
@@ -775,6 +918,7 @@ export default function AdminClient({
                   <button
                     onClick={() => {
                       setAdminForm(null);
+                      setEditAdminId(null);
                       setAdminErrors({});
                     }}
                     style={{
@@ -808,7 +952,13 @@ export default function AdminClient({
                     }}
                   >
                     <Save size={15} />
-                    {savingAdmin ? "Creating..." : "Create Admin"}
+                    {savingAdmin
+                      ? editAdminId
+                        ? "Saving..."
+                        : "Creating..."
+                      : editAdminId
+                        ? "Save Changes"
+                        : "Create Admin"}
                   </button>
                 </div>
               </div>
@@ -871,15 +1021,11 @@ export default function AdminClient({
                   margin: "0 0 28px",
                 }}
               >
-                Log out <strong>{session.user?.name}</strong> from this session?
-                You'll be redirected to the login page.
+                Log out <strong>{displayName || session.user?.name}</strong>{" "}
+                from this session? You'll be redirected to the login page.
               </p>
               <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  justifyContent: "flex-end",
-                }}
+                style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}
               >
                 <button
                   onClick={() => setShowLogoutModal(false)}

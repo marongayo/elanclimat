@@ -1,3 +1,4 @@
+// components/admin-components/AdminSidebar.tsx
 "use client";
 import {
   Bell,
@@ -10,8 +11,13 @@ import {
   X,
   Menu,
   Users,
+  UserCircle,
+  KeyRound,
+  UserPen,
+  ChevronUp,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import type { Role, Tab } from "@/lib/types/admin";
 
 // ── Nav primitives ────────────────────────────────────────────────────────────
@@ -37,26 +43,26 @@ const NavItem = ({
       gap: 10,
       width: "100%",
       padding: "8px 12px",
-      background: active ? "#f3f4f6" : "transparent",
+      background: active ? "#efefef" : "transparent",
       border: "none",
       borderRadius: 8,
       cursor: "pointer",
       fontFamily: "'DM Sans', sans-serif",
-      fontSize: "0.82rem",
-      color: active ? "#111" : "#6b7280",
+      fontSize: "0.84rem",
+      color: active ? "#111" : "#333",
       textAlign: "left" as React.CSSProperties["textAlign"],
-      fontWeight: active ? 600 : 400,
+      fontWeight: active ? 700 : 500,
       transition: "background 0.15s, color 0.15s",
       position: "relative" as React.CSSProperties["position"],
     }}
     onMouseEnter={(e) => {
-      if (!active) e.currentTarget.style.background = "#f9fafb";
+      if (!active) e.currentTarget.style.background = "#f5f5f5";
       e.currentTarget.style.color = "#111";
     }}
     onMouseLeave={(e) => {
       if (!active) {
         e.currentTarget.style.background = "transparent";
-        e.currentTarget.style.color = "#6b7280";
+        e.currentTarget.style.color = active ? "#111" : "#333";
       }
     }}
   >
@@ -64,7 +70,7 @@ const NavItem = ({
       style={{
         display: "flex",
         alignItems: "center",
-        color: active ? "#111" : "#9ca3af",
+        color: active ? "#111" : "#555",
         flexShrink: 0,
       }}
     >
@@ -104,10 +110,10 @@ const NavSection = ({
       style={{
         fontFamily: "'DM Sans', sans-serif",
         fontSize: "0.6rem",
-        fontWeight: 700,
-        letterSpacing: "0.12em",
+        fontWeight: 800,
+        letterSpacing: "0.14em",
         textTransform: "uppercase",
-        color: "#9ca3af",
+        color: "#666",
         padding: "0 12px",
         marginBottom: 4,
       }}
@@ -117,6 +123,276 @@ const NavSection = ({
     {children}
   </div>
 );
+
+// ── UserFooter with popover ───────────────────────────────────────────────────
+
+const UserFooter = ({
+  userName,
+  role,
+  onLogout,
+  onChangePassword,
+  onChangeUsername,
+}: {
+  userName: string;
+  role: Role;
+  onLogout: () => void;
+  onChangePassword: () => void;
+  onChangeUsername: () => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    if (open) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const initials = userName
+    ? userName
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : role === "superadmin"
+      ? "SA"
+      : "A";
+
+  return (
+    <div ref={ref} style={{ margin: "8px", position: "relative" }}>
+      {/* Popover */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: "absolute",
+              bottom: "calc(100% + 8px)",
+              left: 0,
+              right: 0,
+              background: "white",
+              border: "1px solid #e5e7eb",
+              borderRadius: 10,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+              overflow: "hidden",
+              zIndex: 300,
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                padding: "12px 14px 10px",
+                borderBottom: "1px solid #f3f4f6",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  color: "#111",
+                }}
+              >
+                {userName || "—"}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.68rem",
+                  color: "#888",
+                  marginTop: 1,
+                }}
+              >
+                {role === "superadmin" ? "Super Admin" : "Admin"}
+              </div>
+            </div>
+
+            {/* Actions */}
+            {[
+              {
+                icon: <UserPen size={13} />,
+                label: "Change Username",
+                action: () => {
+                  setOpen(false);
+                  onChangeUsername();
+                },
+              },
+              {
+                icon: <KeyRound size={13} />,
+                label: "Change Password",
+                action: () => {
+                  setOpen(false);
+                  onChangePassword();
+                },
+              },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  width: "100%",
+                  padding: "10px 14px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color: "#222",
+                  textAlign: "left",
+                  transition: "background 0.1s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#f9fafb")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "none")
+                }
+              >
+                <span style={{ color: "#666" }}>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+
+            {/* Divider + Logout */}
+            <div style={{ borderTop: "1px solid #f3f4f6" }}>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  onLogout();
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  width: "100%",
+                  padding: "10px 14px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  fontWeight: 500,
+                  color: "#c0392b",
+                  textAlign: "left",
+                  transition: "background 0.1s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "#fef2f2")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "none")
+                }
+              >
+                <LogIn size={13} style={{ transform: "rotate(180deg)" }} />
+                Sign Out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Footer card */}
+      <div
+        style={{
+          padding: "10px 12px",
+          borderRadius: 10,
+          background: "#f5f5f5",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: role === "superadmin" ? "#111" : "#444",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            color: "white",
+            fontSize: "0.72rem",
+            fontWeight: 800,
+            fontFamily: "'DM Sans', sans-serif",
+            letterSpacing: "0.04em",
+          }}
+        >
+          {initials}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.82rem",
+              fontWeight: 700,
+              color: "#111",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {userName || "—"}
+          </div>
+          <div
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.68rem",
+              color: "#666",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {role === "superadmin" ? "Full Access" : "Content Manager"}
+          </div>
+        </div>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          title="Account options"
+          style={{
+            background: open ? "#e5e7eb" : "none",
+            border: "none",
+            cursor: "pointer",
+            color: "#444",
+            display: "flex",
+            alignItems: "center",
+            padding: "4px 5px",
+            borderRadius: 6,
+            transition: "background 0.15s, color 0.15s, transform 0.2s",
+            flexShrink: 0,
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#e5e7eb";
+            e.currentTarget.style.color = "#111";
+          }}
+          onMouseLeave={(e) => {
+            if (!open) e.currentTarget.style.background = "none";
+            e.currentTarget.style.color = "#444";
+          }}
+        >
+          <ChevronUp size={15} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 // ── SidebarContent ────────────────────────────────────────────────────────────
 
@@ -128,6 +404,8 @@ const SidebarContent = ({
   role,
   onLogout,
   userName,
+  onChangePassword,
+  onChangeUsername,
 }: {
   tab: Tab;
   userName: string;
@@ -136,6 +414,8 @@ const SidebarContent = ({
   onBell: () => void;
   role: Role;
   onLogout: () => void;
+  onChangePassword: () => void;
+  onChangeUsername: () => void;
 }) => (
   <div
     style={{
@@ -173,7 +453,7 @@ const SidebarContent = ({
         <span
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 700,
+            fontWeight: 800,
             fontSize: "0.92rem",
             color: "#111",
             letterSpacing: "-0.01em",
@@ -248,6 +528,14 @@ const SidebarContent = ({
           badge={unread}
         />
 
+        {/* My Account — visible to all roles */}
+        <NavItem
+          active={tab === "myaccount"}
+          onClick={() => navTo("myaccount")}
+          icon={<UserCircle size={15} />}
+          label="My Account"
+        />
+
         {/* Admins tab — superadmin only */}
         {role === "superadmin" && (
           <NavItem
@@ -257,98 +545,17 @@ const SidebarContent = ({
             label="Admins"
           />
         )}
-
-        <NavItem
-          active={false}
-          onClick={onLogout}
-          icon={<LogIn size={15} style={{ transform: "rotate(180deg)" }} />}
-          label="Sign Out"
-        />
       </NavSection>
     </div>
 
-    {/* User footer */}
-    <div
-      style={{
-        margin: "8px",
-        padding: "10px 12px",
-        borderRadius: 10,
-        background: "#f9fafb",
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-      }}
-    >
-      <div
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, #d1d5db, #9ca3af)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          color: "white",
-          fontSize: "0.75rem",
-          fontWeight: 700,
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
-        {role === "superadmin" ? "SA" : "A"}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.8rem",
-            fontWeight: 600,
-            color: "#111",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {userName}
-        </div>
-        <div
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.68rem",
-            color: "#9ca3af",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {role === "superadmin" ? "Full Access" : "Content Manager"}
-        </div>
-      </div>
-      <button
-        onClick={onLogout}
-        title="Sign out"
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          color: "#9ca3af",
-          display: "flex",
-          alignItems: "center",
-          padding: 2,
-          borderRadius: 4,
-          transition: "color 0.15s",
-          flexShrink: 0,
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = "#111")}
-        onMouseLeave={(e) => (e.currentTarget.style.color = "#9ca3af")}
-      >
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-          <circle cx="2" cy="8" r="1.4" />
-          <circle cx="8" cy="8" r="1.4" />
-          <circle cx="14" cy="8" r="1.4" />
-        </svg>
-      </button>
-    </div>
+    {/* User footer with popover */}
+    <UserFooter
+      userName={userName}
+      role={role}
+      onLogout={onLogout}
+      onChangePassword={onChangePassword}
+      onChangeUsername={onChangeUsername}
+    />
   </div>
 );
 
@@ -364,6 +571,8 @@ export default function AdminSidebar({
   sidebarOpen,
   setSidebarOpen,
   userName,
+  onChangePassword,
+  onChangeUsername,
 }: {
   tab: Tab;
   unread: number;
@@ -374,6 +583,8 @@ export default function AdminSidebar({
   onLogout: () => void;
   sidebarOpen: boolean;
   setSidebarOpen: (v: boolean) => void;
+  onChangePassword: () => void;
+  onChangeUsername: () => void;
 }) {
   return (
     <>
@@ -383,7 +594,7 @@ export default function AdminSidebar({
         style={{
           width: 240,
           background: "white",
-          borderRight: "1px solid #f3f4f6",
+          borderRight: "1px solid #e5e7eb",
           flexDirection: "column",
           position: "fixed",
           top: 0,
@@ -400,6 +611,8 @@ export default function AdminSidebar({
           role={role}
           userName={userName}
           onLogout={onLogout}
+          onChangePassword={onChangePassword}
+          onChangeUsername={onChangeUsername}
         />
       </aside>
 
@@ -544,6 +757,14 @@ export default function AdminSidebar({
                 }}
                 role={role}
                 onLogout={onLogout}
+                onChangePassword={() => {
+                  setSidebarOpen(false);
+                  onChangePassword();
+                }}
+                onChangeUsername={() => {
+                  setSidebarOpen(false);
+                  onChangeUsername();
+                }}
               />
             </motion.aside>
           </>
