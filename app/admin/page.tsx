@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import AdminClient from "./AdminClient";
+import AdminClient from "@/components/admin-components/AdminClient";
 import { getBlogPosts, getProducts } from "@/lib/db";
 
 export default async function AdminPage() {

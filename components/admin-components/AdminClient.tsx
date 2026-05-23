@@ -1,4 +1,4 @@
-// app/admin/AdminClient.tsx
+// components/admin-components/AdminClient.tsx
 
 "use client";
 
@@ -19,6 +19,7 @@ import type { BlogForm } from "@/lib/types/blog";
 import type { AdminForm, AdminFormErrors } from "@/lib/types/admin";
 import type { Tab } from "@/lib/types/admin";
 import type { Role } from "@/lib/types/admin";
+import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -216,6 +217,7 @@ export default function AdminClient({
           background: "var(--warm-white)",
         }}
       >
+        <Image src="/Elanlogo.svg" alt="Logo" width={300} height={300} />
         Loading admin dashboard...
       </div>
     );

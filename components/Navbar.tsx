@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { label: "About", href: "/#about" },
   { label: "Blog", href: "/#news" },
   { label: "Contact", href: "/#contact" },
-  { label: "Admin", href: "/admin" },
 ];
 
 export default function Navbar() {
@@ -21,7 +20,6 @@ export default function Navbar() {
 
   const lastScrollY = useRef(0);
   const navRef = useRef<HTMLElement>(null);
-  // Keep a ref in sync with open so the scroll handler always sees current value
   const openRef = useRef(false);
 
   useEffect(() => {
@@ -32,12 +30,10 @@ export default function Navbar() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY.current;
-      // Read the real height of the nav (collapsed or expanded)
       const navHeight = navRef.current?.offsetHeight ?? 72;
 
       setScrolled(currentScrollY > 40);
 
-      // Near top — snap fully visible and reset
       if (currentScrollY < 10) {
         setNavOffset(0);
         lastScrollY.current = currentScrollY;
@@ -45,15 +41,12 @@ export default function Navbar() {
       }
 
       if (delta > 0) {
-        // Scrolling DOWN — push out by delta, capped at full nav height
         setNavOffset((prev) => {
           const next = Math.min(prev + delta, navHeight);
-          // Once fully off-screen, reset open state cleanly
           if (next >= navHeight && openRef.current) setOpen(false);
           return next;
         });
       } else {
-        // Scrolling UP — pull back in by delta, floored at 0
         setNavOffset((prev) => Math.max(prev - Math.abs(delta), 0));
       }
 
@@ -62,7 +55,7 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []); // no deps — openRef keeps it fresh without re-registering
+  }, []);
 
   return (
     <nav
@@ -73,7 +66,6 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        // NO transition on transform — must follow scroll 1:1
         transition:
           "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
         willChange: "transform",
@@ -106,6 +98,25 @@ export default function Navbar() {
           transition: width 0.25s ease;
         }
         .nav-link:hover::after { width: 100%; }
+        .shop-cta {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 9px 22px;
+          border: 1px solid var(--charcoal);
+          color: var(--charcoal);
+          font-family: DM Sans, sans-serif;
+          font-size: 0.8rem;
+          font-weight: 500;
+          text-decoration: none;
+          letter-spacing: 0.03em;
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+        .shop-cta:hover {
+          background: var(--charcoal);
+          color: white;
+        }
+        .shop-cta:hover svg { stroke: white; }
       `}</style>
 
       <div
@@ -174,22 +185,11 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Link
-            href="/shop"
-            className="hidden-mobile"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              textDecoration: "none",
-              fontFamily: "DM Sans",
-              fontSize: "0.82rem",
-              color: "var(--charcoal)",
-            }}
-          >
-            <ShoppingBag size={16} />
-            <span>Shop</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Shop — outlined CTA, same weight as Get a Quote */}
+          <Link href="/shop" className="shop-cta hidden-mobile">
+            <ShoppingBag size={14} />
+            Shop
           </Link>
 
           <Link
@@ -261,38 +261,42 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <Link
-            href="/shop"
-            onClick={() => setOpen(false)}
-            style={{
-              display: "block",
-              padding: "12px 0",
-              fontFamily: "DM Sans",
-              fontSize: "1rem",
-              color: "var(--charcoal)",
-              textDecoration: "none",
-              borderBottom: "1px solid var(--off-white)",
-            }}
-          >
-            Shop
-          </Link>
+          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+            <Link
+              href="/shop"
+              onClick={() => setOpen(false)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "10px 20px",
+                border: "1px solid var(--charcoal)",
+                color: "var(--charcoal)",
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                textDecoration: "none",
+              }}
+            >
+              <ShoppingBag size={14} />
+              Shop
+            </Link>
 
-          <Link
-            href="/#contact"
-            onClick={() => setOpen(false)}
-            style={{
-              display: "inline-block",
-              marginTop: 20,
-              padding: "10px 24px",
-              background: "var(--charcoal)",
-              color: "white",
-              fontFamily: "DM Sans",
-              fontSize: "0.85rem",
-              textDecoration: "none",
-            }}
-          >
-            Get a Quote
-          </Link>
+            <Link
+              href="/#contact"
+              onClick={() => setOpen(false)}
+              style={{
+                display: "inline-block",
+                padding: "10px 24px",
+                background: "var(--charcoal)",
+                color: "white",
+                fontFamily: "DM Sans",
+                fontSize: "0.85rem",
+                textDecoration: "none",
+              }}
+            >
+              Get a Quote
+            </Link>
+          </div>
         </div>
       )}
     </nav>

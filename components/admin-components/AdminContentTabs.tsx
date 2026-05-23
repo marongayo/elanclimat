@@ -561,7 +561,7 @@ export default function AdminContentTabs({
                   >
                     <Eye size={14} />
                   </Link>
-                  <button
+                  <div
                     onClick={() => setBlogForm({ ...p })}
                     style={{
                       padding: "7px",
@@ -574,8 +574,8 @@ export default function AdminContentTabs({
                     }}
                   >
                     <Edit3 size={14} />
-                  </button>
-                  <button
+                  </div>
+                  <div
                     onClick={() => deleteBlog(p._id)}
                     style={{
                       padding: "7px",
@@ -588,7 +588,7 @@ export default function AdminContentTabs({
                     }}
                   >
                     <Trash2 size={14} />
-                  </button>
+                  </div>
                 </div>
               </div>
             ))}

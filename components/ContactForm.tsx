@@ -37,27 +37,36 @@ export default function ContactForm() {
     const form = e.target as HTMLFormElement;
     const data = Object.fromEntries(new FormData(form).entries());
 
-    await fetch("/api/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    setSubmitted(true);
-    setMsg("Message sent!");
-    setLoading(false);
-    form.reset();
+      if (!res.ok) throw new Error("Failed to send message");
+
+      setSubmitted(true);
+      setMsg("Message sent!");
+      form.reset();
+    } catch {
+      setMsg("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "11px 14px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "white",
+    background: "#f7f8f7",
+    border: "1px solid rgba(40,45,42,0.14)",
+    color: "#0a0a0a",
     fontFamily: "DM Sans",
     fontSize: "0.88rem",
     outline: "none",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s",
   };
 
   const labelStyle: React.CSSProperties = {
@@ -66,7 +75,7 @@ export default function ContactForm() {
     fontSize: "0.72rem",
     letterSpacing: "0.12em",
     textTransform: "uppercase",
-    color: "var(--sage-light)",
+    color: "var(--sage)",
     marginBottom: 8,
   };
 
@@ -74,16 +83,16 @@ export default function ContactForm() {
     <div
       id="contact-form"
       style={{
-        background: "rgba(255,255,255,0.04)",
+        background: "#f9faf9",
         padding: "48px 40px",
-        border: "1px solid rgba(255,255,255,0.08)",
+        border: "1px solid rgba(143,175,159,0.2)",
       }}
     >
       <h3
         style={{
           fontFamily: "Cormorant Garamond, serif",
           fontSize: "1.6rem",
-          color: "white",
+          color: "#0a0a0a",
           marginBottom: 28,
         }}
       >
@@ -94,16 +103,17 @@ export default function ContactForm() {
         <div
           style={{
             padding: "40px 32px",
-            background: "rgba(255,255,255,0.08)",
+            background: "rgba(143,175,159,0.1)",
             borderRadius: 8,
             textAlign: "center",
+            border: "1px solid rgba(143,175,159,0.25)",
           }}
         >
           <p
             style={{
               fontFamily: "DM Sans",
               fontSize: "1.1rem",
-              color: "rgba(255,255,255,0.75)",
+              color: "#333",
               lineHeight: 1.7,
             }}
           >
@@ -126,14 +136,31 @@ export default function ContactForm() {
                 placeholder={field.placeholder}
                 required={field.required}
                 style={inputStyle}
+                onFocus={(e) =>
+                  (e.currentTarget.style.borderColor = "var(--sage)")
+                }
+                onBlur={(e) =>
+                  (e.currentTarget.style.borderColor = "rgba(40,45,42,0.14)")
+                }
               />
             </div>
           ))}
+
           <div>
             <label style={labelStyle}>Service Needed</label>
             <select
               name="service"
-              style={{ ...inputStyle, background: "rgba(30,35,32,0.95)" }}
+              style={{
+                ...inputStyle,
+                background: "#f7f8f7",
+                cursor: "pointer",
+              }}
+              onFocus={(e) =>
+                (e.currentTarget.style.borderColor = "var(--sage)")
+              }
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = "rgba(40,45,42,0.14)")
+              }
             >
               <option value="">Select a service</option>
               <option>HVAC Installation</option>
@@ -144,6 +171,7 @@ export default function ContactForm() {
               <option>Other</option>
             </select>
           </div>
+
           <div>
             <label style={labelStyle}>Message</label>
             <textarea
@@ -151,8 +179,15 @@ export default function ContactForm() {
               rows={4}
               placeholder="Tell us about your project or question..."
               style={{ ...inputStyle, resize: "vertical" }}
+              onFocus={(e) =>
+                (e.currentTarget.style.borderColor = "var(--sage)")
+              }
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = "rgba(40,45,42,0.14)")
+              }
             />
           </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -163,8 +198,8 @@ export default function ContactForm() {
               alignItems: "center",
               justifyContent: "center",
               gap: 8,
-              background: "var(--sage)",
-              color: "var(--charcoal)",
+              background: "var(--charcoal)",
+              color: "white",
               fontFamily: "DM Sans",
               fontSize: "0.88rem",
               fontWeight: 600,
@@ -174,12 +209,13 @@ export default function ContactForm() {
               opacity: loading ? 0.7 : 1,
               transition: "background 0.2s",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "var(--sage-light)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "var(--sage)")
-            }
+            onMouseEnter={(e) => {
+              if (!loading) e.currentTarget.style.background = "var(--sage)";
+            }}
+            onMouseLeave={(e) => {
+              if (!loading)
+                e.currentTarget.style.background = "var(--charcoal)";
+            }}
           >
             {loading ? (
               "Sending..."

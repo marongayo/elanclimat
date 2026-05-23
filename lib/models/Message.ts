@@ -1,3 +1,5 @@
+// lib/models/Message.ts
+
 import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
@@ -11,7 +13,7 @@ const MessageSchema = new mongoose.Schema(
     archived: { type: Boolean, default: false },
   },
   {
-    timestamps: true, // auto-manages createdAt + updatedAt
+    timestamps: true,
   },
 );
 
