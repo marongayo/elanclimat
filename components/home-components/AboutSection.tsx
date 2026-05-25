@@ -1,231 +1,220 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import { Shield, Star, CheckCircle, Phone, ArrowRight } from "lucide-react";
+const CONTENT = [
+  {
+    title: "From a Vision to a Trusted Name",
+    subtitle: "Since 2018",
+    description:
+      "Established in 2018, what started as a passion for smarter, sustainable buildings has grown into a full-service engineering company, bringing precision, innovation, energy economics and dependability to every system we touch across Kenya.",
+    cta: "Partner With Us",
+    images: [
+      { src: "/images/fandymuch.jpg", alt: "Outdoor HVAC system" },
+      {
+        src: "/images/coldroom.webp",
+        alt: "Cold room facility with open door showing interior shelves",
+      },
+      { src: "/images/solar.jpg", alt: "Solar panels installation" },
+    ],
+  },
+  {
+    title: "Engineering for Every Building's Needs",
+    subtitle: "Unmatched Craftmanship",
+    description:
+      "We design, install, and maintain HVAC, solar, refrigeration, electrical, and elevator systems, delivering reliable, energy-efficient solutions that keep homes and businesses running at peak performance across Kenya.",
+    cta: "Explore Our Services",
+    images: [
+      { src: "/images/lift.jpg", alt: "Elevator installation" },
+      {
+        src: "/images/elevator.jpg",
+        alt: "Elevator interior with wood paneling and mirror",
+      },
+      { src: "/images/liftrpr.png", alt: "Elevator installation" },
+    ],
+  },
+  {
+    title: "Leading with Purpose, Building for Tomorrow",
+    subtitle: "CSR & ESG Strategies",
+    description:
+      "We are committed to ethical leadership, environmental stewardship, and community impact, engineering sustainable systems that reduce carbon footprints, empower local talent, and build a cleaner, more resilient future for Kenya.",
+    cta: "Learn More",
+    images: [
+      { src: "/images/boardroom.jpg", alt: "Image of the boardroom" },
+      { src: "/images/treeplanting.jpg", alt: "Tree planting activity" },
+      { src: "/images/social.jpg", alt: "Social engagement activity" },
+    ],
+  },
+];
+
+const TAB_LABELS = ["Our Story", "About Us", "Corporate"];
 
 export default function AboutSection() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [ctaHovered, setCtaHovered] = useState(false);
+
   return (
-    <section id="about" style={{ padding: "100px 0" }} className="mesh-bg">
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
-        <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-20 items-center">
-          <div style={{ position: "relative" }}>
-            <div className="relative w-full sm:w-[90%] md:w-full aspect-4/5 min-h-105 overflow-hidden mx-auto">
+    // Page load: whole section slides up from bottom
+    <motion.section
+      className="bg-[#FAF8F5] min-h-screen flex items-center justify-center p-6 md:p-12 font-sans text-[#000000]"
+      initial={{ opacity: 0, y: 80 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Left Side: Images */}
+        <div className="grid grid-cols-2 grid-rows-[60%_40%] gap-4 h-[580px]">
+          {/* Top image */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`main-${currentIndex}`}
+              className="col-span-2 row-span-1 relative rounded-4xl overflow-hidden shadow-sm"
+              initial={{ opacity: 0, scale: 0.92, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.04, y: -30 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
               <Image
-                src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=700&q=80"
-                alt="HVAC technician at work"
+                src={CONTENT[currentIndex].images[0].src}
+                alt={CONTENT[currentIndex].images[0].alt}
+                fill
+                className="object-cover"
+                priority
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Bottom-left image */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`bl-${currentIndex}`}
+              className="relative rounded-4xl overflow-hidden shadow-sm"
+              initial={{ opacity: 0, scale: 0.88, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.04, y: -30 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.1,
+              }}
+            >
+              <Image
+                src={CONTENT[currentIndex].images[1].src}
+                alt={CONTENT[currentIndex].images[1].alt}
                 fill
                 className="object-cover"
               />
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                bottom: -24,
-                right: -24,
-                background: "white",
-                padding: "24px 28px",
-                boxShadow: "0 8px 40px rgba(0,0,0,0.1)",
-                minWidth: 180,
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Bottom-right image */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`br-${currentIndex}`}
+              className="relative rounded-4xl overflow-hidden shadow-sm"
+              initial={{ opacity: 0, scale: 0.88, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.04, y: -30 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.18,
               }}
             >
-              <div
-                style={{
-                  fontFamily: "Cormorant Garamond, serif",
-                  fontSize: "2.4rem",
-                  fontWeight: 600,
-                  color: "var(--charcoal)",
-                  lineHeight: 1,
-                }}
-              >
-                18
-              </div>
-              <div
-                style={{
-                  fontFamily: "DM Sans",
-                  fontSize: "0.78rem",
-                  color: "var(--text-muted)",
-                  marginTop: 4,
-                }}
-              >
-                Years of Excellence
-              </div>
-              <div
-                style={{
-                  width: 32,
-                  height: 2,
-                  background: "var(--sage)",
-                  marginTop: 12,
-                }}
+              <Image
+                src={CONTENT[currentIndex].images[2].src}
+                alt={CONTENT[currentIndex].images[2].alt}
+                fill
+                className="object-cover"
               />
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                top: -20,
-                left: -20,
-                background: "var(--charcoal)",
-                padding: "16px 20px",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "DM Sans",
-                  fontSize: "0.65rem",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "var(--sage-light)",
-                  marginBottom: 4,
-                }}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Right Side: Text */}
+        <div className="flex flex-col h-145">
+          {/* Pill tabs */}
+          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 rounded-full shadow-sm self-start">
+            {TAB_LABELS.map((label, i) => (
+              <button
+                key={label}
+                onClick={() => setCurrentIndex(i)}
+                className={`cursor-pointer px-5 py-2 rounded-full text-sm tracking-wide transition-all duration-200 ${
+                  currentIndex === i
+                    ? "bg-black text-white font-semibold"
+                    : "text-gray-500 hover:text-gray-800 font-medium"
+                }`}
               >
-                Certified
-              </div>
-              <div
-                style={{
-                  fontFamily: "Cormorant Garamond, serif",
-                  fontSize: "1.2rem",
-                  color: "white",
-                }}
-              >
-                Experts
-              </div>
-            </div>
+                {label}
+              </button>
+            ))}
           </div>
 
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 16,
-              }}
+          {/* Animated text */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`text-${currentIndex}`}
+              className="flex flex-col flex-1 justify-start gap-4 pt-6 pb-6"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div
-                style={{ width: 36, height: 1, background: "var(--sage)" }}
-              />
-              <span
-                style={{
-                  fontFamily: "DM Sans",
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "var(--sage-dark)",
-                }}
+              <motion.span
+                className="text-xs uppercase tracking-[0.25em] text-gray-400 font-semibold"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
               >
-                About Us
-              </span>
-            </div>
-            <h2
-              style={{
-                fontFamily: "Cormorant Garamond, serif",
-                fontSize: "clamp(2rem, 3.5vw, 3rem)",
-                fontWeight: 600,
-                color: "var(--charcoal)",
-                lineHeight: 1.2,
-                marginBottom: 24,
-              }}
+                {CONTENT[currentIndex].subtitle}
+              </motion.span>
+
+              <motion.h1
+                className="text-4xl sm:text-[54px] font-extrabold tracking-tight leading-[1.1] text-[#111111]"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.18 }}
+              >
+                {CONTENT[currentIndex].title}
+              </motion.h1>
+
+              <motion.p
+                className="text-gray-500 text-base sm:text-lg leading-relaxed font-normal"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.26 }}
+              >
+                {CONTENT[currentIndex].description}
+              </motion.p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* CTA */}
+          <div>
+            <button
+              onMouseEnter={() => setCtaHovered(true)}
+              onMouseLeave={() => setCtaHovered(false)}
+              className={`group cursor-pointer flex items-center space-x-4 pl-6 pr-2 py-2 rounded-full font-bold uppercase text-xs tracking-wider shadow-md transition-all duration-300 ${
+                ctaHovered
+                  ? "bg-transparent border-2 border-black text-black"
+                  : "bg-black border-2 border-transparent text-white"
+              }`}
             >
-              Engineering comfort{" "}
-              <em style={{ fontStyle: "italic", color: "var(--sage-dark)" }}>
-                &amp; sustainability,
-              </em>{" "}
-              since 2007
-            </h2>
-            <p
-              style={{
-                fontFamily: "DM Sans",
-                fontSize: "0.93rem",
-                lineHeight: 1.8,
-                color: "var(--text-muted)",
-                marginBottom: 20,
-              }}
-            >
-              Founded on the belief that comfort and responsibility are not
-              trade-offs, Élan Climat &amp; Énergie has grown from a two-person
-              HVAC firm into a full-spectrum climate and energy company trusted
-              by over a thousand households and businesses. <br />
-              We are a professionalized company for the sale, project design,
-              installation and maintenance of ventilation, heating and cooling
-              systems. Although it is a newly established company, E-Clima
-              always provides highest quality to customers with qualified
-              personnel with upto 20 years of experience in this field,
-              successfully demonstrating its quality with project design,
-              installation and technical service in many important projects.
-            </p>
-            <p
-              style={{
-                fontFamily: "DM Sans",
-                fontSize: "0.93rem",
-                lineHeight: 1.8,
-                color: "var(--text-muted)",
-                marginBottom: 36,
-              }}
-            >
-              Our engineers hold manufacturer certifications across all major
-              HVAC brands and solar platforms. Every installation is
-              precision-engineered — from thermal load calculations to inverter
-              sizing.
-            </p>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 16,
-                marginBottom: 36,
-              }}
-            >
-              {[
-                {
-                  label: "Manufacturer Certified",
-                  icon: <Shield size={15} />,
-                },
-                { label: "Energy-Star Partners", icon: <Star size={15} /> },
-                {
-                  label: "10-Year Warranty",
-                  icon: <CheckCircle size={15} />,
-                },
-                {
-                  label: "24/7 Emergency Service",
-                  icon: <Phone size={15} />,
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    fontFamily: "DM Sans",
-                    fontSize: "0.83rem",
-                    color: "var(--charcoal)",
-                  }}
-                >
-                  <span style={{ color: "var(--sage-dark)" }}>{item.icon}</span>
-                  {item.label}
-                </div>
-              ))}
-            </div>
-            <Link
-              href="/#contact"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "12px 28px",
-                background: "var(--charcoal)",
-                color: "white",
-                fontFamily: "DM Sans",
-                fontSize: "0.88rem",
-                textDecoration: "none",
-              }}
-            >
-              Work With Us <ArrowRight size={15} />
-            </Link>
+              <span>{CONTENT[currentIndex].cta}</span>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:rotate-45 ${
+                  ctaHovered ? "bg-black text-white" : "bg-white text-black"
+                }`}
+              >
+                <ArrowUpRight className="w-5 h-5" strokeWidth={3.5} />
+              </div>
+            </button>
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

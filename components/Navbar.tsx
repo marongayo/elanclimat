@@ -1,304 +1,95 @@
-//components/Navbar.tsx
+// components/Navbar.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Home", href: "/#home" },
-  { label: "Services", href: "/#services" },
-  { label: "About", href: "/#about" },
-  { label: "Blog", href: "/#news" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Services", href: "/services" },
+  { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
+function ArrowIcon({ hovered }: { hovered: boolean }) {
+  return (
+    <svg
+      className={`w-3.5 h-3.5 transition-transform duration-300 ${
+        hovered ? "rotate-0" : "-rotate-45"
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 12h14M12 5l7 7-7 7"
+      />
+    </svg>
+  );
+}
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [navOffset, setNavOffset] = useState(0);
-
-  const lastScrollY = useRef(0);
-  const navRef = useRef<HTMLElement>(null);
-  const openRef = useRef(false);
-
-  useEffect(() => {
-    openRef.current = open;
-  }, [open]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollY.current;
-      const navHeight = navRef.current?.offsetHeight ?? 72;
-
-      setScrolled(currentScrollY > 40);
-
-      if (currentScrollY < 10) {
-        setNavOffset(0);
-        lastScrollY.current = currentScrollY;
-        return;
-      }
-
-      if (delta > 0) {
-        setNavOffset((prev) => {
-          const next = Math.min(prev + delta, navHeight);
-          if (next >= navHeight && openRef.current) setOpen(false);
-          return next;
-        });
-      } else {
-        setNavOffset((prev) => Math.max(prev - Math.abs(delta), 0));
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const [shopHovered, setShopHovered] = useState(false);
 
   return (
-    <nav
-      ref={navRef}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        transition:
-          "background 0.35s ease, padding 0.35s ease, border-color 0.35s ease",
-        willChange: "transform",
-        background: scrolled ? "rgba(247, 245, 240, 0.65)" : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled
-          ? "1px solid rgba(143,175,159,0.2)"
-          : "1px solid transparent",
-        padding: scrolled ? "14px 0" : "22px 0",
-        transform: `translateY(-${navOffset}px)`,
-      }}
-    >
-      <style>{`
-        @media (max-width: 768px) {
-          .hidden-mobile { display: none !important; }
-          .show-mobile { display: flex !important; }
-        }
-        @media (min-width: 769px) {
-          .show-mobile { display: none !important; }
-        }
-        .nav-link { position: relative; }
-        .nav-link::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          bottom: -4px;
-          width: 0%;
-          height: 1px;
-          background: var(--charcoal);
-          transition: width 0.25s ease;
-        }
-        .nav-link:hover::after { width: 100%; }
-        .shop-cta {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 9px 22px;
-          border: 1px solid var(--charcoal);
-          color: var(--charcoal);
-          font-family: DM Sans, sans-serif;
-          font-size: 0.8rem;
-          font-weight: 500;
-          text-decoration: none;
-          letter-spacing: 0.03em;
-          transition: background 0.2s ease, color 0.2s ease;
-        }
-        .shop-cta:hover {
-          background: var(--charcoal);
-          color: white;
-        }
-        .shop-cta:hover svg { stroke: white; }
-      `}</style>
-
-      <div
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4 md:px-6">
+      <nav
+        className="flex items-center justify-between px-5 py-3 w-full max-w-5xl rounded-full"
         style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          padding: "0 32px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          background: "rgba(255,255,255,0.10)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          border: "1px solid rgba(255,255,255,0.18)",
         }}
       >
         {/* Logo */}
-        <Link href="/" style={{ textDecoration: "none" }}>
-          <div
-            style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}
-          >
-            <span
-              style={{
-                fontFamily: "Cormorant Garamond, serif",
-                fontSize: "1.3rem",
-                fontWeight: 600,
-                color: "var(--charcoal)",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Élan Climat
-            </span>
-            <span
-              style={{
-                fontFamily: "DM Sans, sans-serif",
-                fontSize: "0.62rem",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "var(--sage-dark)",
-                marginTop: 1,
-              }}
-            >
-              & Énergie
-            </span>
-          </div>
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Élan Logo" width={40} height={40} />
+          <span className="text-white font-bold text-xl tracking-wide">
+            élan
+          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div
-          className="hidden-mobile"
-          style={{ display: "flex", gap: 36, alignItems: "center" }}
-        >
-          {NAV_LINKS.map((l) => (
+        {/* Nav links */}
+        <div className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map(({ label, href }) => (
             <Link
-              key={l.label}
-              href={l.href}
-              className="nav-link"
-              style={{
-                fontFamily: "DM Sans",
-                fontSize: "0.85rem",
-                fontWeight: 400,
-                color: "var(--charcoal)",
-                textDecoration: "none",
-                letterSpacing: "0.01em",
-              }}
+              key={label}
+              href={href}
+              className="text-white text-sm font-medium hover:opacity-70 transition-opacity"
             >
-              {l.label}
+              {label}
             </Link>
           ))}
         </div>
 
-        {/* Right Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Shop — outlined CTA, same weight as Get a Quote */}
-          <Link href="/shop" className="shop-cta hidden-mobile">
-            <ShoppingBag size={14} />
-            Shop
-          </Link>
-
-          <Link
-            href="/#contact"
-            className="hidden-mobile"
-            style={{
-              display: "inline-block",
-              padding: "9px 22px",
-              background: "var(--charcoal)",
-              color: "white",
-              fontFamily: "DM Sans",
-              fontSize: "0.8rem",
-              fontWeight: 500,
-              textDecoration: "none",
-              letterSpacing: "0.03em",
-              transition: "background 0.2s ease",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "var(--sage-dark)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "var(--charcoal)")
-            }
-          >
-            Get a Quote
-          </Link>
-
-          <button
-            onClick={() => setOpen((prev) => !prev)}
-            className="show-mobile"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "var(--charcoal)",
-              display: "none",
-            }}
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {open && (
-        <div
+        {/* Shop CTA */}
+        <Link
+          href="/shop"
+          className="flex items-center gap-2 rounded-full px-5 py-2.5 font-bold text-sm transition-all duration-200 border"
           style={{
-            background: "var(--warm-white)",
-            borderTop: "1px solid var(--off-white)",
-            padding: "24px 32px 32px",
+            background: shopHovered ? "transparent" : "#ffffff",
+            color: shopHovered ? "#ffffff" : "#000000",
+            borderColor: "#ffffff",
           }}
+          onMouseEnter={() => setShopHovered(true)}
+          onMouseLeave={() => setShopHovered(false)}
         >
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.label}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              style={{
-                display: "block",
-                padding: "12px 0",
-                fontFamily: "DM Sans",
-                fontSize: "1rem",
-                color: "var(--charcoal)",
-                textDecoration: "none",
-                borderBottom: "1px solid var(--off-white)",
-              }}
-            >
-              {l.label}
-            </Link>
-          ))}
-
-          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-            <Link
-              href="/shop"
-              onClick={() => setOpen(false)}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "10px 20px",
-                border: "1px solid var(--charcoal)",
-                color: "var(--charcoal)",
-                fontFamily: "DM Sans",
-                fontSize: "0.85rem",
-                textDecoration: "none",
-              }}
-            >
-              <ShoppingBag size={14} />
-              Shop
-            </Link>
-
-            <Link
-              href="/#contact"
-              onClick={() => setOpen(false)}
-              style={{
-                display: "inline-block",
-                padding: "10px 24px",
-                background: "var(--charcoal)",
-                color: "white",
-                fontFamily: "DM Sans",
-                fontSize: "0.85rem",
-                textDecoration: "none",
-              }}
-            >
-              Get a Quote
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
+          S H O P
+          <span
+            className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 translate-x-2"
+            style={{
+              background: shopHovered ? "#ffffff" : "#000000",
+              color: shopHovered ? "#000000" : "#ffffff",
+            }}
+          >
+            <ArrowIcon hovered={shopHovered} />
+          </span>
+        </Link>
+      </nav>
+    </div>
   );
 }

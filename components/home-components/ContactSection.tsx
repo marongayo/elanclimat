@@ -1,217 +1,50 @@
-"use client";
-
-import ContactForm from "@/components/ContactForm";
-import { Phone, Mail, MapPin } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 
 export default function ContactSection() {
   return (
-    <section
-      id="contact"
-      style={{
-        padding: "100px 0",
-        background: "#ffffff",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Subtle background accent */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-10%",
-          right: "-8%",
-          width: 480,
-          height: 480,
-          borderRadius: "50%",
-          background: "rgba(143,175,159,0.08)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-15%",
-          left: "-5%",
-          width: 340,
-          height: 340,
-          borderRadius: "50%",
-          background: "rgba(143,175,159,0.05)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
-        style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          padding: "0 32px",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 80,
-          }}
-        >
-          {/* Left column */}
+    <div className="w-full px-3 sm:px-5 md:px-8 py-4 bg-[#ffffff]">
+      <div className="grid grid-cols-1 md:grid-cols-2 bg-[#141d14] rounded-3xl overflow-hidden shadow-xl">
+        {/* Left Content Side */}
+        <div className="flex flex-col justify-between p-8 sm:p-12 md:p-16 min-h-100 md:min-h-125">
+          {/* Top Tag */}
           <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: 20,
-              }}
-            >
-              <div
-                style={{ width: 36, height: 1, background: "var(--sage)" }}
-              />
-              <span
-                style={{
-                  fontFamily: "DM Sans",
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "var(--sage)",
-                }}
-              >
-                Get In Touch
-              </span>
-            </div>
-
-            <h2
-              style={{
-                fontFamily: "Cormorant Garamond, serif",
-                fontSize: "clamp(2.2rem, 4vw, 3.5rem)",
-                fontWeight: 600,
-                color: "#0a0a0a",
-                lineHeight: 1.15,
-                marginBottom: 28,
-              }}
-            >
-              Let&apos;s design your{" "}
-              <em style={{ color: "var(--sage)", fontStyle: "italic" }}>
-                ideal system
-              </em>
-            </h2>
-
-            <p
-              style={{
-                fontFamily: "DM Sans",
-                fontSize: "0.93rem",
-                lineHeight: 1.8,
-                color: "#444",
-                marginBottom: 48,
-                maxWidth: 420,
-              }}
-            >
-              Whether you need a simple HVAC tune-up or a complete
-              solar-plus-battery installation, start with a free consultation.
-              Transparent proposals, no pressure.
-            </p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              {[
-                {
-                  icon: <Phone size={16} />,
-                  label: "Call us",
-                  value: "+254 796 952 717",
-                  href: "tel:+254796952717",
-                },
-                {
-                  icon: <Mail size={16} />,
-                  label: "Email",
-                  value: "hello@elanclimat.co.ke",
-                  href: "mailto:hello@elanclimat.co.ke",
-                },
-                {
-                  icon: <MapPin size={16} />,
-                  label: "Address",
-                  value: "Ananas Business Park, Off Garrissa Road, Thika",
-                  href: "https://maps.google.com/?q=Ananas+Business+Park,+Off+Garrissa+Road,+Thika",
-                },
-              ].map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target={item.href.startsWith("http") ? "_blank" : undefined}
-                  rel={
-                    item.href.startsWith("http")
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 16,
-                    textDecoration: "none",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    const valueEl = e.currentTarget.querySelector(
-                      ".contact-value",
-                    ) as HTMLElement | null;
-                    if (valueEl) valueEl.style.color = "var(--sage)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const valueEl = e.currentTarget.querySelector(
-                      ".contact-value",
-                    ) as HTMLElement | null;
-                    if (valueEl) valueEl.style.color = "#222";
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
-                      background: "rgba(143,175,159,0.15)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--sage)",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: "DM Sans",
-                        fontSize: "0.7rem",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: "var(--sage)",
-                        marginBottom: 3,
-                      }}
-                    >
-                      {item.label}
-                    </div>
-                    <div
-                      className="contact-value"
-                      style={{
-                        fontFamily: "DM Sans",
-                        fontSize: "0.9rem",
-                        color: "#222",
-                        transition: "color 0.2s ease",
-                      }}
-                    >
-                      {item.value}
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+            <span className="inline-block bg-[#242d24] text-[#a1ad9c] text-xs font-semibold tracking-widest px-4 py-1.5 rounded-full uppercase">
+              Talk to Us
+            </span>
           </div>
 
-          {/* Right column — form */}
-          <ContactForm />
+          {/* Main Heading */}
+          <div className="my-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white leading-[1.1] tracking-tight">
+              Let's design your ideal system together.
+            </h2>
+          </div>
+
+          {/* CTA Button */}
+          <div>
+            <button className="inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-6 pr-2 py-2 rounded-full transition-all duration-300 cursor-pointer group">
+              <span className="text-sm tracking-wider uppercase">
+                Request a Call
+              </span>
+              <div className="bg-black group-hover:bg-white p-2 rounded-full text-white group-hover:text-black group-hover:rotate-45 transition-all duration-300">
+                <ArrowUpRight className="w-4 h-4" />
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Right Image Side */}
+        <div className="relative w-full h-72 sm:h-96 md:h-auto md:min-h-125">
+          <Image
+            src="/images/contact.jpg"
+            alt="Contact Us Image"
+            fill
+            className="object-cover object-center"
+            priority
+          />
         </div>
       </div>
-    </section>
+    </div>
   );
 }
