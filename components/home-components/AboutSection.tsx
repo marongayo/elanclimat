@@ -43,7 +43,7 @@ const CONTENT = [
       "We are committed to ethical leadership, environmental stewardship, and community impact, engineering sustainable systems that reduce carbon footprints, empower local talent, and build a cleaner, more resilient future for Kenya.",
     cta: "Learn More",
     images: [
-      { src: "/images/boardroom.jpg", alt: "Image of the boardroom" },
+      { src: "/images/boadroom.jpg", alt: "Image of the boardroom" },
       { src: "/images/treeplanting.jpg", alt: "Tree planting activity" },
       { src: "/images/social.jpg", alt: "Social engagement activity" },
     ],
