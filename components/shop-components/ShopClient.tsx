@@ -3,14 +3,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  motion,
-  useScroll,
-  useMotionValueEvent,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/types/product";
-import Navbar from "@/components/Navbar";
 import ShopHero from "@/components/shop-components/ShopHero";
 import Image from "next/image";
 import AboutCollections from "@/components/shop-components/AboutCollections";
@@ -34,17 +28,9 @@ export default function ShopClient({
   const [cart, setCart] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const [showNav, setShowNav] = useState(false);
-
-  const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setShowNav(latest > 80);
-  });
-
   // ── On load: if a product was pre-selected via URL, scroll to it ─────────────
   useEffect(() => {
     if (initialProduct) {
-      // Small delay so the DOM is ready
       const t = setTimeout(() => {
         document
           .getElementById("collections")
@@ -55,10 +41,6 @@ export default function ShopClient({
   }, [initialProduct]);
 
   // ── Sync URL whenever selectedProduct changes ────────────────────────────────
-  // We use window.history.pushState directly — NOT router.push — because
-  // router.push triggers a Next.js navigation that remounts the page and
-  // wipes all client state (selected product, cart, etc.).
-  // pushState updates only the address bar with zero routing side effects.
   function handleSelectProduct(product: Product | null) {
     setSelectedProduct(product);
     const url = product ? `/shop/${product._id}` : "/shop";
@@ -78,23 +60,6 @@ export default function ShopClient({
 
   return (
     <main>
-      {/* Floating Navbar */}
-      <motion.div
-        initial={false}
-        animate={{ opacity: showNav ? 1 : 0, y: showNav ? 0 : -30 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          zIndex: 50,
-          pointerEvents: showNav ? "auto" : "none",
-        }}
-      >
-        <Navbar />
-      </motion.div>
-
       {/* AboutCollections */}
       <div style={{ position: "relative", zIndex: 2 }}>
         <AboutCollections
