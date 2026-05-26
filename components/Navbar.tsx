@@ -1,9 +1,8 @@
-// components/Navbar.tsx
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import ElanLogo from "./ElanLogo";
 
 const NAV_LINKS = [
   { label: "Services", href: "/services" },
@@ -31,26 +30,66 @@ function ArrowIcon({ hovered }: { hovered: boolean }) {
     </svg>
   );
 }
+
 export default function Navbar() {
   const [shopHovered, setShopHovered] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+
+      // Show/hide based on scroll direction
+      if (currentY < 10) {
+        setVisible(true); // always show at top
+      } else if (currentY < lastScrollY.current) {
+        setVisible(true); // scrolling up → show
+      } else if (currentY > lastScrollY.current + 8) {
+        setVisible(false); // scrolling down → hide (8px threshold avoids jitter)
+      }
+
+      // Switch style once past the hero (adjust 80 to your hero height if needed)
+      setScrolled(currentY > 80);
+
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4 md:px-6">
+    <div
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4 md:px-6 transition-transform duration-300"
+      style={{
+        transform: visible ? "translateY(0)" : "translateY(-110%)",
+      }}
+    >
       <nav
-        className="flex items-center justify-between px-5 py-3 w-full max-w-5xl rounded-full"
-        style={{
-          background: "rgba(255,255,255,0.10)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          border: "1px solid rgba(255,255,255,0.18)",
-        }}
+        className="flex items-center justify-between px-5 py-3 w-full max-w-5xl rounded-full transition-all duration-300"
+        style={
+          scrolled
+            ? {
+                // Darker glass — still frosted, readable over light sections
+                background: "rgba(11, 19, 31, 0.55)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+              }
+            : {
+                // Light glass — for dark hero sections
+                background: "rgba(255,255,255,0.10)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                border: "1px solid rgba(255,255,255,0.18)",
+              }
+        }
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Élan Logo" width={40} height={40} />
-          <span className="text-white font-bold text-xl tracking-wide">
-            élan
-          </span>
+          <ElanLogo size={140} />
         </Link>
 
         {/* Nav links */}

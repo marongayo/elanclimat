@@ -137,12 +137,12 @@ export default function AboutSection() {
         {/* Right Side: Text */}
         <div className="flex flex-col h-145">
           {/* Pill tabs */}
-          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 rounded-full shadow-sm self-start">
+          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 shadow-sm self-start">
             {TAB_LABELS.map((label, i) => (
               <button
                 key={label}
                 onClick={() => setCurrentIndex(i)}
-                className={`cursor-pointer px-5 py-2 rounded-full text-sm tracking-wide transition-all duration-200 ${
+                className={`cursor-pointer px-5 py-2 text-sm tracking-wide transition-all duration-200 ${
                   currentIndex === i
                     ? "bg-black text-white font-semibold"
                     : "text-gray-500 hover:text-gray-800 font-medium"
@@ -197,7 +197,7 @@ export default function AboutSection() {
             <button
               onMouseEnter={() => setCtaHovered(true)}
               onMouseLeave={() => setCtaHovered(false)}
-              className={`group cursor-pointer flex items-center space-x-4 pl-6 pr-2 py-2 rounded-full font-bold uppercase text-xs tracking-wider shadow-md transition-all duration-300 ${
+              className={`group cursor-pointer flex items-center space-x-4 pl-6 pr-2 py-2 font-bold uppercase text-xs tracking-wider shadow-md transition-all duration-300 ${
                 ctaHovered
                   ? "bg-transparent border-2 border-black text-black"
                   : "bg-black border-2 border-transparent text-white"

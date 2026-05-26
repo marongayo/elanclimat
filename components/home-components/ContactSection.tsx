@@ -9,7 +9,7 @@ export default function ContactSection() {
         <div className="flex flex-col justify-between p-8 sm:p-12 md:p-16 min-h-100 md:min-h-125">
           {/* Top Tag */}
           <div>
-            <span className="inline-block bg-[#242d24] text-[#a1ad9c] text-xs font-semibold tracking-widest px-4 py-1.5 rounded-full uppercase">
+            <span className="inline-block bg-[#242d24] text-[#a1ad9c] text-xs font-semibold tracking-widest px-4 py-1.5 uppercase">
               Talk to Us
             </span>
           </div>
@@ -23,11 +23,11 @@ export default function ContactSection() {
 
           {/* CTA Button */}
           <div>
-            <button className="inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-6 pr-2 py-2 rounded-full transition-all duration-300 cursor-pointer group">
+            <button className="inline-flex rounded-base items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-6 pr-2 py-2 transition-all duration-300 cursor-pointer group">
               <span className="text-sm tracking-wider uppercase">
                 Request a Call
               </span>
-              <div className="bg-black group-hover:bg-white p-2 rounded-full text-white group-hover:text-black group-hover:rotate-45 transition-all duration-300">
+              <div className="bg-black group-hover:bg-white p-2  rounded-full text-white group-hover:text-black group-hover:rotate-45 transition-all duration-300">
                 <ArrowUpRight className="w-4 h-4" />
               </div>
             </button>

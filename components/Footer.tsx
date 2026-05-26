@@ -1,6 +1,7 @@
 // components/footer/Footer.tsx
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import ElanLogo from "./ElanLogo";
 
 const SOCIALS = [
   {
@@ -53,11 +54,10 @@ const SERVICES = [
 ];
 
 const QUICK_LINKS = [
-  { label: "Our Story", href: "#" },
-  { label: "About Us", href: "#" },
-  { label: "Corporate", href: "#" },
   { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Careers", href: "#" },
+  { label: "Admin", href: "/admin" },
 ];
 
 const CONTACT_INFO = [
@@ -72,61 +72,54 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         {/* TOP */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 pb-14 border-b border-gray-200">
-          <div className="flex flex-col gap-4 max-w-sm">
-            <div className="flex items-center gap-2.5">
-              <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="16" fill="#111111" />
-                <path d="M16 4 A12 12 0 0 1 16 28 Z" fill="#ffffff" />
-              </svg>
-
-              <div className="leading-tight">
-                <p className="text-xl font-extrabold tracking-widest text-[#111111]">
-                  élan
-                </p>
-                <p className="text-[10px] tracking-wider text-gray-400 font-semibold -mt-1">
-                  climat & énergie
-                </p>
-              </div>
+          {/* Logo LEFT + text/socials RIGHT */}
+          <div className="flex items-start gap-5 max-w-sm">
+            {/* Logo */}
+            <div className="shrink-0">
+              <ElanLogo size={150} />
             </div>
 
-            <p className="text-gray-500 text-sm leading-relaxed">
-              Smart solutions for HVAC, solar, refrigeration, electrical, and
-              elevator systems across Kenya.
-            </p>
+            {/* Description + socials */}
+            <div className="flex flex-col gap-4">
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Smart solutions for HVAC, solar, refrigeration, electrical, and
+                elevator systems across Kenya.
+              </p>
 
-            <div className="flex items-center gap-2 mt-1">
-              {SOCIALS.map(({ label, href, icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-9 h-9 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:bg-black hover:text-white hover:border-transparent transition-all duration-200"
-                >
-                  {icon}
-                </a>
-              ))}
+              <div className="flex items-center gap-2">
+                {SOCIALS.map(({ label, href, icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    className="w-9 h-9 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:bg-black hover:text-white hover:border-transparent transition-all duration-200"
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 
+          {/* Blog CTA card */}
           <div className="bg-[#141d14] rounded-3xl px-8 py-7 flex flex-col sm:flex-row sm:items-center justify-between gap-6 md:max-w-md w-full">
             <p className="text-white font-extrabold text-xl leading-snug tracking-tight">
-              Ready to get
+              Insights
               <br />
-              started?
+              and updates
             </p>
 
-            <a
-              href="#contact"
-              className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 rounded-full transition-all duration-300 shrink-0"
+            <Link
+              href="/blog"
+              className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 transition-all duration-300 shrink-0"
             >
               <span className="text-xs tracking-wider uppercase">
-                Free Consultation
+                View Blog
               </span>
-
               <div className="bg-black group-hover:bg-white p-2 rounded-full text-white group-hover:text-black group-hover:rotate-45 transition-all duration-300 translate-x-1">
                 <ArrowUpRight className="w-4 h-4" />
               </div>
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -136,7 +129,6 @@ export default function Footer() {
             <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
               Company
             </p>
-
             <ul className="flex flex-col gap-2.5">
               {QUICK_LINKS.map(({ label, href }) => (
                 <li key={label}>
@@ -155,7 +147,6 @@ export default function Footer() {
             <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
               Services
             </p>
-
             <ul className="flex flex-col gap-2.5">
               {SERVICES.slice(0, 4).map((service) => (
                 <li key={service}>
@@ -174,7 +165,6 @@ export default function Footer() {
             <p className="text-xs font-bold uppercase tracking-widest text-gray-400 invisible">
               hidden
             </p>
-
             <ul className="flex flex-col gap-2.5">
               {SERVICES.slice(4).map((service) => (
                 <li key={service}>
@@ -193,7 +183,6 @@ export default function Footer() {
             <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
               Contact
             </p>
-
             <ul className="flex flex-col gap-3">
               {CONTACT_INFO.map(({ label, href }) => (
                 <li key={label}>
@@ -215,7 +204,6 @@ export default function Footer() {
             © {`2018 – ${new Date().getFullYear()}`} Élan Climat & Énergie. All
             rights reserved.
           </p>
-
           <p className="font-medium">
             smart solutions.{" "}
             <span className="text-gray-500 font-semibold">

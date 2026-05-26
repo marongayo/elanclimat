@@ -1,7 +1,6 @@
 // blog/[slug]/page.tsx
 
 import { getBlogPosts, getBlogPost } from "@/lib/db";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,7 +22,6 @@ export default async function BlogPostPage({
 
   return (
     <>
-      <Navbar />
       <main
         style={{
           paddingTop: 80,
