@@ -1,43 +1,20 @@
 // components/Hero.tsx
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import Navbar from "../Navbar";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 const TAGS = [
-  "HVAC Services",
-  "Plumbing Services",
-  "Solar Installation",
-  "Cold Room Installation",
-  "Elevator Installation",
-  "Electrical",
+  { label: "HVAC Services", href: "/services#hvac" },
+  { label: "Plumbing Services", href: "/services#plumbing" },
+  { label: "Solar Installation", href: "/services#solar" },
+  { label: "Cold Room Installation", href: "/services#cold-room" },
+  { label: "Elevator Installation", href: "/services#elevator" },
+  { label: "Electrical", href: "/services#electrical" },
 ];
 
-function ArrowIcon({ hovered }: { hovered: boolean }) {
-  return (
-    <svg
-      className={`w-3.5 h-3.5 transition-transform duration-300 ${hovered ? "rotate-0" : "-rotate-45"}`}
-      style={{ color: "#000000" }}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.5}
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M5 12h14M12 5l7 7-7 7"
-      />
-    </svg>
-  );
-}
-
 export default function Hero() {
-  const [consultHovered, setConsultHovered] = useState(false);
-
   return (
     <>
       <div className="relative w-full min-h-screen overflow-hidden">
@@ -58,9 +35,10 @@ export default function Hero() {
         />
 
         <div className="relative z-20 flex flex-col min-h-screen">
-          {/* ── HERO CONTENT ── */}
-          <div className="flex-1 flex flex-col justify-center px-8 md:px-20 pt-10 pb-32">
-            <div className="max-w-xl md:max-w-3xl">
+          {/* ── HERO CONTENT + TAGS — pinned to bottom ── */}
+          <div className="mt-auto flex flex-col md:flex-row md:items-end md:justify-between gap-10 px-8 md:px-20 pb-12">
+            {/* Left: text + CTA */}
+            <div className="max-w-xl md:max-w-2xl">
               <h1
                 className="text-white font-extrabold mb-5"
                 style={{
@@ -86,36 +64,36 @@ export default function Hero() {
 
               <Link
                 href="/shop"
-                className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 transition-all duration-300 shrink-0"
+                className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 rounded-full transition-all duration-300 shrink-0"
               >
                 <span className="text-xs tracking-wider uppercase">
                   Visit Our Store
                 </span>
-
                 <div className="bg-black group-hover:bg-white p-2 rounded-full text-white group-hover:text-black group-hover:rotate-45 transition-all duration-300 translate-x-1">
                   <ArrowUpRight className="w-4 h-4" />
                 </div>
               </Link>
             </div>
-          </div>
 
-          {/* ── BOTTOM-RIGHT TAGS ── */}
-          <div className="absolute bottom-8 right-6 md:right-16 flex flex-wrap justify-end gap-2 max-w-xs md:max-w-lg">
-            {TAGS.map((label) => (
-              <span
-                key={label}
-                className="flex items-center gap-2 px-4 py-2 text-white text-xs font-medium"
-                style={{
-                  background: "rgba(255,255,255,0.11)",
-                  backdropFilter: "blur(8px)",
-                  WebkitBackdropFilter: "blur(8px)",
-                  border: "1px solid rgba(255,255,255,0.22)",
-                }}
-              >
-                <span className="w-2 h-2 inline-block bg-black" />
-                {label}
-              </span>
-            ))}
+            {/* Right: tags */}
+            <div className="flex flex-wrap justify-start md:justify-end gap-2 max-w-xs md:max-w-sm shrink-0">
+              {TAGS.map((tag) => (
+                <Link
+                  key={tag.label}
+                  href={tag.href}
+                  className="flex items-center gap-2 px-4 py-2 text-white text-xs font-medium rounded-full transition-colors duration-200 hover:bg-white/20"
+                  style={{
+                    background: "rgba(255,255,255,0.11)",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                    border: "1px solid rgba(255,255,255,0.22)",
+                  }}
+                >
+                  <span className="w-2 h-2 inline-block bg-white rounded-full" />
+                  {tag.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,6 +20,7 @@ const CONTENT = [
       },
       { src: "/images/solar.jpg", alt: "Solar panels installation" },
     ],
+    href: "/about#our-story",
   },
   {
     title: "Engineering for Every Building's Needs",
@@ -35,6 +36,7 @@ const CONTENT = [
       },
       { src: "/images/liftrpr.png", alt: "Elevator installation" },
     ],
+    href: "/about#our-services",
   },
   {
     title: "Leading with Purpose, Building for Tomorrow",
@@ -47,6 +49,7 @@ const CONTENT = [
       { src: "/images/treeplanting.jpg", alt: "Tree planting activity" },
       { src: "/images/social.jpg", alt: "Social engagement activity" },
     ],
+    href: "/about#csr-esg",
   },
 ];
 
@@ -54,7 +57,6 @@ const TAB_LABELS = ["Our Story", "About Us", "Corporate"];
 
 export default function AboutSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [ctaHovered, setCtaHovered] = useState(false);
 
   return (
     // Page load: whole section slides up from bottom
@@ -137,12 +139,12 @@ export default function AboutSection() {
         {/* Right Side: Text */}
         <div className="flex flex-col h-145">
           {/* Pill tabs */}
-          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 shadow-sm self-start">
+          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 shadow-sm self-start rounded-full">
             {TAB_LABELS.map((label, i) => (
               <button
                 key={label}
                 onClick={() => setCurrentIndex(i)}
-                className={`cursor-pointer px-5 py-2 text-sm tracking-wide transition-all duration-200 ${
+                className={`cursor-pointer px-5 py-2 text-sm tracking-wide transition-all duration-200 rounded-full ${
                   currentIndex === i
                     ? "bg-black text-white font-semibold"
                     : "text-gray-500 hover:text-gray-800 font-medium"
@@ -157,7 +159,7 @@ export default function AboutSection() {
           <AnimatePresence mode="wait">
             <motion.div
               key={`text-${currentIndex}`}
-              className="flex flex-col flex-1 justify-start gap-4 pt-6 pb-6"
+              className="flex flex-col justify-start gap-4 pt-6 pb-6"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
@@ -189,30 +191,22 @@ export default function AboutSection() {
               >
                 {CONTENT[currentIndex].description}
               </motion.p>
+
+              {/* CTA Link */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.34 }}
+              >
+                <Link
+                  href={CONTENT[currentIndex].href}
+                  className="inline-block font-bold uppercase tracking-wider underline underline-offset-4 text-sm text-black hover:text-gray-600 transition-colors duration-200"
+                >
+                  {CONTENT[currentIndex].cta}
+                </Link>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
-
-          {/* CTA */}
-          <div>
-            <button
-              onMouseEnter={() => setCtaHovered(true)}
-              onMouseLeave={() => setCtaHovered(false)}
-              className={`group cursor-pointer flex items-center space-x-4 pl-6 pr-2 py-2 font-bold uppercase text-xs tracking-wider shadow-md transition-all duration-300 ${
-                ctaHovered
-                  ? "bg-transparent border-2 border-black text-black"
-                  : "bg-black border-2 border-transparent text-white"
-              }`}
-            >
-              <span>{CONTENT[currentIndex].cta}</span>
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:rotate-45 ${
-                  ctaHovered ? "bg-black text-white" : "bg-white text-black"
-                }`}
-              >
-                <ArrowUpRight className="w-5 h-5" strokeWidth={3.5} />
-              </div>
-            </button>
-          </div>
         </div>
       </div>
     </motion.section>

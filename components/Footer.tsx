@@ -111,7 +111,7 @@ export default function Footer() {
 
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 transition-all duration-300 shrink-0"
+              className="group inline-flex items-center gap-3 bg-white hover:bg-transparent border-2 border-white text-black hover:text-white font-bold pl-5 pr-2 py-2 rounded-full transition-all duration-300 shrink-0"
             >
               <span className="text-xs tracking-wider uppercase">
                 View Blog
