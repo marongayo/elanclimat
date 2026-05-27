@@ -1,7 +1,23 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import Schema from "./seo/Schema";
+
+// ✅ ADD THIS: Load your font via next/font instead of globals.css/@import.
+//    next/font automatically sets display:swap, self-hosts the font (no extra
+//    network round-trip to Google), and injects a preload link in <head> —
+//    all of which directly reduce your FCP.
+//    Replace "Geist" with whatever font you're currently using.
+import { Geist } from "next/font/google";
+
+const font = Geist({
+  subsets: ["latin"],
+  display: "swap", // prevents invisible text during font load (FOIT)
+  preload: true,
+  variable: "--font-sans", // use as a CSS variable in globals.css if needed
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://elanclimat.co.ke"),
@@ -66,7 +82,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    // ✅ ADD THIS: Apply the font variable to the html element so it cascades
+    //    to every component without needing to import it again anywhere.
+    <html lang="en" className={font.variable}>
       <head>
         <Schema />
       </head>

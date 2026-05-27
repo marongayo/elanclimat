@@ -41,7 +41,9 @@ export default function ContactSection() {
             alt="Contact Us Image"
             fill
             className="object-cover object-center"
-            priority
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={80}
           />
         </div>
       </div>

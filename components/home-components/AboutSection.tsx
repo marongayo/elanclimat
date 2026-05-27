@@ -55,20 +55,28 @@ const CONTENT = [
 
 const TAB_LABELS = ["Our Story", "About Us", "Corporate"];
 
+// ✅ Centralised sizes values — the grid is 2-col on lg+, so each side is ~50vw.
+//    The image grid itself is col-span-2 for top, and ~25vw each for the two bottom ones.
+const IMAGE_SIZES = {
+  top: "(max-width: 1024px) 100vw, 50vw",
+  bottom: "(max-width: 1024px) 50vw, 25vw",
+};
+
 export default function AboutSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   return (
-    // Page load: whole section slides up from bottom
     <motion.section
       className="bg-[#FAF8F5] min-h-screen flex items-center justify-center p-6 md:p-12 font-sans text-[#000000]"
-      initial={{ opacity: 0, y: 80 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      // ✅ Removed section-level entrance animation — it was animating the whole
+      //    section in from y:80, which delays LCP paint. Text/images inside still animate.
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left Side: Images */}
-        <div className="grid grid-cols-2 grid-rows-[60%_40%] gap-4 h-[580px]">
+        <div className="grid grid-cols-2 grid-rows-[60%_40%] gap-4 h-145">
           {/* Top image */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -84,7 +92,12 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[0].alt}
                 fill
                 className="object-cover"
-                priority
+                // ✅ Only the FIRST tab's top image gets priority (it's the largest
+                //    image visible on initial load). All others are lazy.
+                priority={currentIndex === 0}
+                loading={currentIndex === 0 ? "eager" : "lazy"}
+                sizes={IMAGE_SIZES.top}
+                quality={80}
               />
             </motion.div>
           </AnimatePresence>
@@ -108,6 +121,10 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[1].alt}
                 fill
                 className="object-cover"
+                // ✅ Bottom images are smaller — always lazy
+                loading="lazy"
+                sizes={IMAGE_SIZES.bottom}
+                quality={80}
               />
             </motion.div>
           </AnimatePresence>
@@ -131,6 +148,10 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[2].alt}
                 fill
                 className="object-cover"
+                // ✅ Bottom images are smaller — always lazy
+                loading="lazy"
+                sizes={IMAGE_SIZES.bottom}
+                quality={80}
               />
             </motion.div>
           </AnimatePresence>

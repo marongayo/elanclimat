@@ -22,8 +22,17 @@ export default function Hero() {
           src="/images/qwerty.png"
           alt="Hero background"
           fill
+          // ✅ KEEP priority — this is your LCP element. Never remove it.
           priority
           className="object-cover object-[center_40%]"
+          // ✅ This is a full-viewport background — 100vw is correct here.
+          //    Explicitly setting it lets Next.js pick the right srcset variant
+          //    instead of guessing, which was likely causing it to serve an
+          //    oversized image and inflate your 5.61s LCP time.
+          sizes="100vw"
+          // ✅ Hero backgrounds tolerate slight compression well.
+          //    85 keeps it sharp at full-screen while reducing file size ~20%.
+          quality={85}
         />
 
         <div
