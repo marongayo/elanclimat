@@ -1,3 +1,5 @@
+// lib/types/blog.ts
+
 export interface BlogForm {
   _id?: string;
   title: string;

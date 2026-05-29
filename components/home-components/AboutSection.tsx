@@ -55,8 +55,6 @@ const CONTENT = [
 
 const TAB_LABELS = ["Our Story", "About Us", "Corporate"];
 
-// ✅ Centralised sizes values — the grid is 2-col on lg+, so each side is ~50vw.
-//    The image grid itself is col-span-2 for top, and ~25vw each for the two bottom ones.
 const IMAGE_SIZES = {
   top: "(max-width: 1024px) 100vw, 50vw",
   bottom: "(max-width: 1024px) 50vw, 25vw",
@@ -67,9 +65,8 @@ export default function AboutSection() {
 
   return (
     <motion.section
-      className="bg-[#FAF8F5] min-h-screen flex items-center justify-center p-6 md:p-12 font-sans text-[#000000]"
-      // ✅ Removed section-level entrance animation — it was animating the whole
-      //    section in from y:80, which delays LCP paint. Text/images inside still animate.
+      className="min-h-screen flex items-center justify-center p-6 md:p-12 font-sans"
+      style={{ backgroundColor: "#EDE8DF", color: "#2B2B2B" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
@@ -77,7 +74,6 @@ export default function AboutSection() {
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left Side: Images */}
         <div className="grid grid-cols-2 grid-rows-[60%_40%] gap-4 h-145">
-          {/* Top image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`main-${currentIndex}`}
@@ -92,8 +88,6 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[0].alt}
                 fill
                 className="object-cover"
-                // ✅ Only the FIRST tab's top image gets priority (it's the largest
-                //    image visible on initial load). All others are lazy.
                 priority={currentIndex === 0}
                 loading={currentIndex === 0 ? "eager" : "lazy"}
                 sizes={IMAGE_SIZES.top}
@@ -102,7 +96,6 @@ export default function AboutSection() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Bottom-left image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`bl-${currentIndex}`}
@@ -121,7 +114,6 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[1].alt}
                 fill
                 className="object-cover"
-                // ✅ Bottom images are smaller — always lazy
                 loading="lazy"
                 sizes={IMAGE_SIZES.bottom}
                 quality={80}
@@ -129,7 +121,6 @@ export default function AboutSection() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Bottom-right image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`br-${currentIndex}`}
@@ -148,7 +139,6 @@ export default function AboutSection() {
                 alt={CONTENT[currentIndex].images[2].alt}
                 fill
                 className="object-cover"
-                // ✅ Bottom images are smaller — always lazy
                 loading="lazy"
                 sizes={IMAGE_SIZES.bottom}
                 quality={80}
@@ -160,16 +150,31 @@ export default function AboutSection() {
         {/* Right Side: Text */}
         <div className="flex flex-col h-145">
           {/* Pill tabs */}
-          <div className="inline-flex items-center space-x-2 bg-white border border-gray-100 p-0.5 shadow-sm self-start rounded-full">
+          <div
+            className="inline-flex items-center space-x-2 p-0.5 shadow-sm self-start rounded-full"
+            style={{
+              backgroundColor: "#FFFFFF",
+              border: "1px solid rgba(43,43,43,0.12)",
+            }}
+          >
             {TAB_LABELS.map((label, i) => (
               <button
                 key={label}
                 onClick={() => setCurrentIndex(i)}
-                className={`cursor-pointer px-5 py-2 text-sm tracking-wide transition-all duration-200 rounded-full ${
+                className="cursor-pointer px-5 py-2 text-sm tracking-wide transition-all duration-200 rounded-full"
+                style={
                   currentIndex === i
-                    ? "bg-black text-white font-semibold"
-                    : "text-gray-500 hover:text-gray-800 font-medium"
-                }`}
+                    ? {
+                        backgroundColor: "#2B2B2B",
+                        color: "#EDE8DF",
+                        fontWeight: 600,
+                      }
+                    : {
+                        color: "#2B2B2B",
+                        opacity: 0.45,
+                        fontWeight: 500,
+                      }
+                }
               >
                 {label}
               </button>
@@ -187,7 +192,8 @@ export default function AboutSection() {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
               <motion.span
-                className="text-xs uppercase tracking-[0.25em] text-gray-400 font-semibold"
+                className="text-xs uppercase tracking-[0.25em] font-semibold"
+                style={{ color: "#C8391A" }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -196,7 +202,8 @@ export default function AboutSection() {
               </motion.span>
 
               <motion.h1
-                className="text-4xl sm:text-[54px] font-extrabold tracking-tight leading-[1.1] text-[#111111]"
+                className="text-4xl sm:text-[54px] font-extrabold tracking-tight leading-[1.1]"
+                style={{ color: "#2B2B2B" }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.18 }}
@@ -205,7 +212,8 @@ export default function AboutSection() {
               </motion.h1>
 
               <motion.p
-                className="text-gray-500 text-base sm:text-lg leading-relaxed font-normal"
+                className="text-base sm:text-lg leading-relaxed font-normal"
+                style={{ color: "#2B2B2B", opacity: 0.6 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.26 }}
@@ -213,7 +221,6 @@ export default function AboutSection() {
                 {CONTENT[currentIndex].description}
               </motion.p>
 
-              {/* CTA Link */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -221,7 +228,16 @@ export default function AboutSection() {
               >
                 <Link
                   href={CONTENT[currentIndex].href}
-                  className="inline-block font-bold uppercase tracking-wider underline underline-offset-4 text-sm text-black hover:text-gray-600 transition-colors duration-200"
+                  className="inline-block font-bold uppercase tracking-wider underline underline-offset-4 text-sm transition-colors duration-200"
+                  style={{ color: "#C8391A" }}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLAnchorElement).style.color =
+                      "#2B2B2B")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLAnchorElement).style.color =
+                      "#C8391A")
+                  }
                 >
                   {CONTENT[currentIndex].cta}
                 </Link>

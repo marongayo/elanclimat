@@ -83,7 +83,6 @@ export default function RootLayout({
         <Schema />
         <SpeedInsights />
       </head>
-
       <body>
         <Providers>{children}</Providers>
       </body>
