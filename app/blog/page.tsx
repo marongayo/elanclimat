@@ -1,4 +1,4 @@
-// blog/page.tsx
+// app/blog/page.tsx
 
 import { getBlogPosts } from "@/lib/db";
 import Footer from "@/components/Footer";
@@ -15,88 +15,303 @@ export default async function BlogPage() {
 
   return (
     <>
-      <main className="bg-[#FAF8F5] min-h-screen" style={{ paddingTop: 80 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+        .blog-card {
+          background: #ffffff;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: box-shadow 0.3s ease;
+          border: 1px solid #ede9e2;
+        }
+        .blog-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); }
+
+        .blog-card-img img {
+          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .blog-card:hover .blog-card-img img { transform: scale(1.04); }
+
+        .blog-arrow-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: 1px solid rgba(26,26,24,0.18);
+          background: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #1a1a18;
+          flex-shrink: 0;
+          transition: all 0.25s ease;
+        }
+        .blog-card:hover .blog-arrow-btn {
+          background: #1a1a18;
+          color: #f9f7f4;
+          border-color: #1a1a18;
+          transform: rotate(45deg);
+        }
+
+        .blog-category-pill {
+          display: inline-block;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.58rem;
+          font-weight: 500;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #8fa68e;
+          border: 1px solid rgba(143,166,142,0.35);
+          padding: 4px 10px;
+          background: rgba(143,166,142,0.06);
+        }
+
+        .featured-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 9px 9px 22px;
+          border-radius: 9999px;
+          border: 1px solid rgba(26,26,24,0.18);
+          background: none;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.72rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #1a1a18;
+          text-decoration: none;
+          transition: all 0.25s ease;
+        }
+        .featured-cta:hover {
+          border-color: #1a1a18;
+          background: #1a1a18;
+          color: #f9f7f4;
+        }
+        .featured-cta-icon {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: #1a1a18;
+          color: #f9f7f4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+          flex-shrink: 0;
+        }
+        .featured-cta:hover .featured-cta-icon {
+          background: #8fa68e;
+          color: #1a1a18;
+          transform: rotate(45deg);
+        }
+
+        .featured-card {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          border: 1px solid #ede9e2;
+          overflow: hidden;
+          transition: box-shadow 0.3s ease;
+        }
+        .featured-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.08); }
+        .featured-card img {
+          transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .featured-card:hover img { transform: scale(1.03); }
+
+        @media (max-width: 768px) {
+          .featured-card { grid-template-columns: 1fr !important; }
+          .blog-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .blog-header-inner { padding: 56px 28px 56px !important; }
+          .blog-content-inner { padding: 48px 28px !important; }
+        }
+
+        @media (max-width: 480px) {
+          .blog-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      <main
+        style={{ background: "#f9f7f4", minHeight: "100vh", paddingTop: 80 }}
+      >
         {/* ── HEADER ── */}
-        <div className="bg-[#141d14] px-8 md:px-20 pt-20 pb-24">
-          <div className="max-w-7xl mx-auto">
-            {/* Eyebrow */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-px bg-[#a1ad9c]" />
-              <span className="text-[#a1ad9c] text-xs font-semibold tracking-[0.22em] uppercase">
+        <div style={{ background: "#1a1a18", width: "100%" }}>
+          <div
+            className="blog-header-inner"
+            style={{
+              maxWidth: 1100,
+              margin: "0 auto",
+              padding: "72px 64px 64px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 20,
+              }}
+            >
+              <div style={{ width: 24, height: 1, background: "#8fa68e" }} />
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.62rem",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "#8fa68e",
+                }}
+              >
                 Insights
               </span>
             </div>
 
             <h1
-              className="text-white font-extrabold tracking-tight leading-[1.06] mb-5"
-              style={{ fontSize: "clamp(2.6rem, 5vw, 4rem)" }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(2.4rem, 5vw, 3.6rem)",
+                fontWeight: 400,
+                color: "#f9f7f4",
+                lineHeight: 1.1,
+                letterSpacing: "-0.01em",
+                marginBottom: 16,
+              }}
             >
               The Élan Blog
             </h1>
 
-            <p className="text-white/50 text-base max-w-md leading-relaxed">
+            <p
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.82rem",
+                color: "rgba(249,247,244,0.45)",
+                lineHeight: 1.8,
+                maxWidth: 360,
+                margin: 0,
+              }}
+            >
               Expert insights on HVAC, solar energy, battery storage, and
               sustainable living from our team of engineers.
             </p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-8 md:px-20 py-16">
+        <div
+          className="blog-content-inner"
+          style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 64px" }}
+        >
           {/* ── FEATURED POST ── */}
           {featured && (
             <Link
               href={`/blog/${featured.slug}`}
-              className="group block bg-white rounded-3xl overflow-hidden shadow-sm mb-12 grid grid-cols-1 md:grid-cols-2 transition-shadow duration-300 hover:shadow-md"
+              className="featured-card"
+              style={{
+                display: "grid",
+                marginBottom: 48,
+                textDecoration: "none",
+              }}
             >
               {/* Image */}
-              <div className="relative aspect-square overflow-hidden">
+              <div
+                className="blog-card-img"
+                style={{
+                  position: "relative",
+                  aspectRatio: "1 / 1",
+                  overflow: "hidden",
+                }}
+              >
                 <Image
                   src={featured.image}
                   alt={featured.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  style={{ objectFit: "cover" }}
                   priority
                 />
               </div>
 
               {/* Text */}
-              <div className="flex flex-col justify-center p-10 md:p-14">
-                {/* Category pill */}
-                <span className="inline-block self-start bg-[#242d24] text-[#a1ad9c] text-xs font-semibold tracking-widest px-4 py-1.5 rounded-full uppercase mb-6">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  padding: "52px 56px",
+                  background: "#ffffff",
+                }}
+              >
+                <span
+                  className="blog-category-pill"
+                  style={{ alignSelf: "flex-start", marginBottom: 24 }}
+                >
                   {featured.category}
                 </span>
 
                 <h2
-                  className="font-extrabold text-[#111111] tracking-tight leading-[1.1] mb-4"
-                  style={{ fontSize: "clamp(1.6rem, 2.5vw, 2.4rem)" }}
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(1.6rem, 2.5vw, 2.2rem)",
+                    fontWeight: 500,
+                    color: "#1a1a18",
+                    lineHeight: 1.15,
+                    letterSpacing: "-0.01em",
+                    marginBottom: 16,
+                  }}
                 >
                   {featured.title}
                 </h2>
 
-                <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                <p
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.82rem",
+                    color: "#888580",
+                    lineHeight: 1.8,
+                    marginBottom: 24,
+                  }}
+                >
                   {featured.excerpt}
                 </p>
 
-                <div className="flex items-center gap-5 mb-8">
-                  <span className="flex items-center gap-1.5 text-gray-400 text-xs">
-                    <Calendar size={12} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 20,
+                    marginBottom: 32,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.72rem",
+                      color: "#b0b0a8",
+                    }}
+                  >
+                    <Calendar size={11} />
                     {featured.date}
                   </span>
-                  <span className="flex items-center gap-1.5 text-gray-400 text-xs">
-                    <Clock size={12} />
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.72rem",
+                      color: "#b0b0a8",
+                    }}
+                  >
+                    <Clock size={11} />
                     {featured.readTime} read
                   </span>
                 </div>
 
-                {/* CTA button — matches main site style */}
                 <div>
-                  <span className="inline-flex items-center gap-3 bg-[#1a1a1a] group-hover:bg-transparent border-2 border-transparent group-hover:border-black text-white group-hover:text-black font-bold pl-6 pr-2 py-2 rounded-full text-xs tracking-wider uppercase transition-all duration-300">
+                  <span className="featured-cta">
                     Read Article
-                    <span className="w-9 h-9 rounded-full bg-white flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:rotate-45 transition-all duration-300">
-                      <ArrowUpRight
-                        className="w-4 h-4 text-black group-hover:text-white"
-                        strokeWidth={3}
-                      />
+                    <span className="featured-cta-icon">
+                      <ArrowUpRight size={13} />
                     </span>
                   </span>
                 </div>
@@ -104,56 +319,150 @@ export default async function BlogPage() {
             </Link>
           )}
 
+          {/* ── SECTION LABEL ── */}
+          {rest.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                marginBottom: 32,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.6rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "#b0b0a8",
+                }}
+              >
+                All Articles
+              </span>
+              <div style={{ flex: 1, height: 1, background: "#ede9e2" }} />
+            </div>
+          )}
+
           {/* ── GRID ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+          <div
+            className="blog-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 12,
+            }}
+          >
             {rest.map((post) => (
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
-                className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col"
+                className="blog-card"
+                style={{ textDecoration: "none" }}
               >
                 {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
+                <div
+                  className="blog-card-img"
+                  style={{
+                    position: "relative",
+                    aspectRatio: "16 / 10",
+                    overflow: "hidden",
+                  }}
+                >
                   <Image
                     src={post.image}
                     alt={post.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    style={{ objectFit: "cover" }}
                   />
                 </div>
 
                 {/* Body */}
-                <div className="flex flex-col flex-1 p-7">
-                  {/* Meta row */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="bg-[#242d24] text-[#a1ad9c] text-[0.6rem] font-semibold tracking-widest px-3 py-1 rounded-full uppercase">
-                      {post.category}
-                    </span>
-                    <span className="flex items-center gap-1 text-gray-400 text-xs">
-                      <Clock size={11} />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    padding: "24px 24px 20px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 16,
+                    }}
+                  >
+                    <span className="blog-category-pill">{post.category}</span>
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.68rem",
+                        color: "#b0b0a8",
+                      }}
+                    >
+                      <Clock size={10} />
                       {post.readTime}
                     </span>
                   </div>
 
-                  <h3 className="font-extrabold text-[#111111] text-lg leading-[1.2] tracking-tight mb-3">
+                  <h3
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "1.15rem",
+                      fontWeight: 500,
+                      color: "#1a1a18",
+                      lineHeight: 1.25,
+                      letterSpacing: "-0.005em",
+                      marginBottom: 10,
+                    }}
+                  >
                     {post.title}
                   </h3>
 
-                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
+                  <p
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.78rem",
+                      color: "#888580",
+                      lineHeight: 1.75,
+                      marginBottom: 20,
+                      flex: 1,
+                    }}
+                  >
                     {post.excerpt}
                   </p>
 
                   {/* Footer row */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span className="flex items-center gap-1.5 text-gray-400 text-xs">
-                      <Calendar size={11} />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      paddingTop: 16,
+                      borderTop: "1px solid #ede9e2",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.68rem",
+                        color: "#b0b0a8",
+                      }}
+                    >
+                      <Calendar size={10} />
                       {post.date}
                     </span>
-                    <span className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
-                      <ArrowUpRight
-                        className="w-3.5 h-3.5 text-white"
-                        strokeWidth={3}
-                      />
+                    <span className="blog-arrow-btn">
+                      <ArrowUpRight size={13} strokeWidth={1.5} />
                     </span>
                   </div>
                 </div>
@@ -162,6 +471,7 @@ export default async function BlogPage() {
           </div>
         </div>
       </main>
+
       <Footer />
     </>
   );

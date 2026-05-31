@@ -6,13 +6,25 @@ import Providers from "./providers";
 import Schema from "./seo/Schema";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-import { Geist } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 
-const font = Geist({
+// DM Sans is a variable font — use weight: "variable" to unlock the opsz axis
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
   preload: true,
   variable: "--font-sans",
+  weight: "variable",
+  axes: ["opsz"],
+});
+
+// Cormorant Garamond is NOT a variable font on Google Fonts — explicit weights only, no axes
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -78,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={font.variable}>
+    <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
       <head>
         <Schema />
         <SpeedInsights />

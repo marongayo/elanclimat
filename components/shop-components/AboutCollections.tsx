@@ -524,7 +524,7 @@ export default function AboutCollections({
 
   const aboutTitle = selectedProduct
     ? selectedProduct.fullName
-    : "About The Élan Store.";
+    : "About Our Store of Equipment and Accessories.";
   const aboutBody = selectedProduct
     ? selectedProduct.description
     : "A destination for engineered excellence and sustainable power. Élan Climat & Énergie brings the latest in energy and structural systems to suit uniquely into your building or project. We stand behind premium efficiency, lifetime durability, and precise technical vision. Whether optimizing indoor comfort, harnessing clean energy, or securing uninterrupted facility operations, we deliver integrated engineering solutions that power modern living. From precision climate architecture to resilient power backups and vertical mobility, our work ensures your infrastructure performs at its absolute peak, safely, sustainably, and without compromise.";
@@ -672,7 +672,7 @@ export default function AboutCollections({
                     src={
                       selectedProduct
                         ? selectedProduct.images[0]
-                        : "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
+                        : "/images/contact.jpg"
                     }
                     alt={
                       selectedProduct ? selectedProduct.name : "Store interior"
@@ -827,7 +827,7 @@ export default function AboutCollections({
                   style={{ marginTop: 24 }}
                 >
                   <a
-                    href="#"
+                    href="/about-us"
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: "0.75rem",
@@ -843,7 +843,7 @@ export default function AboutCollections({
                       paddingBottom: 2,
                     }}
                   >
-                    Shop Now
+                    Learn More
                   </a>
                 </motion.div>
               )}
@@ -969,7 +969,7 @@ export default function AboutCollections({
                       selectedProduct
                         ? (selectedProduct.images[1] ??
                           selectedProduct.images[0])
-                        : "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80"
+                        : "/images/qwerty.png"
                     }
                     alt={
                       selectedProduct

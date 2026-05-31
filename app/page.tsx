@@ -11,7 +11,7 @@ export default async function Home() {
     <div>
       <Hero />
       <AboutSection />
-      {blogPosts.length > 0 && <BlogSection post={blogPosts[0]} />}
+      {blogPosts.length > 0 && <BlogSection posts={blogPosts} />}
       <Footer />
     </div>
   );

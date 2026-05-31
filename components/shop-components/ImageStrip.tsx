@@ -88,29 +88,6 @@ export default function ImageStrip() {
       {/* Handle */}
 
       <p className="strip-handle">{HANDLE}</p>
-
-      {/* Image strip */}
-      <div className="mt-10">
-        <div className="strip-grid">
-          {IMAGES.map((img, i) => (
-            <div
-              key={i}
-              className="strip-cell"
-              onMouseEnter={() => setHoveredIndex(i)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              <Image
-                src={img.src}
-                alt={img.alt}
-                fill
-                sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, 20vw"
-                style={{ objectFit: "cover" }}
-              />
-              <div className="strip-overlay" />
-            </div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
