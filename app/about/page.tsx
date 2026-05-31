@@ -1238,7 +1238,7 @@ export default function AboutPage() {
               </div>
 
               <Link
-                href="/about#our-story"
+                href="mailto:info@elanclimat.co.ke?subject=Requesting%20ESG%20Report&body=Hello%20Élan%20Team%2C%0A%0AI%20would%20like%20to%20request%20a%20copy%20of%20your%20latest%20ESG%20report.%20Please%20let%20me%20know%20if%20there's%20any%20additional%20information%20you%20need.%0A%0AThank%20you!"
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.72rem",
