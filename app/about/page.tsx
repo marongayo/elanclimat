@@ -27,8 +27,7 @@ const C = {
 const IMG = {
   heroMain:
     "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1800&q=85",
-  storyLeft:
-    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&q=80",
+  storyLeft: "/images/liftrpr.png",
   storyTopRight:
     "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80",
   storyBottomRight:
@@ -41,14 +40,11 @@ const IMG = {
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80",
   team4:
     "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80",
-  serviceHvac:
-    "https://images.unsplash.com/photo-1581275233838-4c24e11c7c79?w=800&q=80",
+  serviceHvac: "/sticky.png",
   serviceSolar:
     "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80",
-  serviceElectrical:
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-  serviceRefrigeration:
-    "https://images.unsplash.com/photo-1620714223084-8fcacc2dfd4d?w=800&q=80",
+  serviceElectrical: "/mostafa.jpg",
+  serviceRefrigeration: "/images/coldroom.webp",
   serviceElevator:
     "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",
   csrTree:
@@ -521,6 +517,40 @@ export default function AboutPage() {
             paddingBottom: 64,
           }}
         >
+          {/* Breadcrumb */}
+          <div className="pp-inner mb-3">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Link
+                href="/"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.4)",
+                  textDecoration: "none",
+                }}
+              >
+                Home
+              </Link>
+              <span
+                style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.6rem" }}
+              >
+                /
+              </span>
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: C.sage,
+                }}
+              >
+                About Us
+              </span>
+            </div>
+          </div>
           <Eyebrow text="Our Company" light />
           <h1
             style={{
@@ -1390,7 +1420,7 @@ export default function AboutPage() {
             }}
           >
             Whether you're planning a new building, upgrading an existing
-            system, or exploring solar — start with a conversation.
+            system, or exploring solar; start with a conversation.
           </p>
           <div
             style={{
@@ -1406,35 +1436,20 @@ export default function AboutPage() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 10,
-                background: "#ffffff",
-                color: C.charcoal,
-                textDecoration: "none",
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.75rem",
+                fontSize: "0.72rem",
                 fontWeight: 500,
+                color: "rgba(255,255,255,0.5)",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                padding: "12px 10px 12px 24px",
-                borderRadius: 9999,
-                border: "1.5px solid #ffffff",
-                transition: "background 0.25s, color 0.25s",
+                textDecoration: "none",
+                borderBottom: "1px solid rgba(255,255,255,0.2)",
+                paddingBottom: 2,
+                alignSelf: "center",
+                transition: "color 0.2s",
               }}
             >
               Get in Touch
-              <span
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: "50%",
-                  background: C.charcoal,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ArrowUpRight size={13} color="#ffffff" strokeWidth={2} />
-              </span>
             </Link>
             <Link
               href="/shop"

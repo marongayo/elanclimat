@@ -70,6 +70,7 @@ const QUICK_LINKS = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
   { label: "Careers", href: "/careers" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const CONTACT_INFO = [
