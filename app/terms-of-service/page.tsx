@@ -1,13 +1,64 @@
-// app/terms/page.tsx  (or pages/terms.tsx — works for both App Router and Pages Router)
-
+// app/terms/page.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import Footer from "@/components/Footer";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Design tokens — exact match across all pages ─────────────────────────────
+const C = {
+  charcoal: "#1a1a18",
+  warmWhite: "#f9f7f4",
+  offWhite: "#ede9e2",
+  sage: "#8fa68e",
+  sageDark: "#5a7a59",
+  accent: "#c9a96e",
+  muted: "#888580",
+  body: "#6b6b68",
+  rule: "#e8e4dd",
+  ruleLight: "#c8c8c4",
+  dim: "#b0b0a8",
+};
+
+const META = [
+  { label: "Entity", value: "Élan Climat & Énergie Ltd" },
+  { label: "Jurisdiction", value: "Republic of Kenya" },
+  { label: "Last Revised", value: "31 May 2025" },
+  { label: "Sections", value: "10" },
+];
+
+// ─── Shared eyebrow ───────────────────────────────────────────────────────────
+function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <span
+        style={{
+          display: "inline-block",
+          width: 24,
+          height: 1,
+          background: light ? "rgba(255,255,255,0.35)" : C.ruleLight,
+        }}
+      />
+      <span
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.62rem",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase" as const,
+          color: light ? "rgba(255,255,255,0.45)" : C.sage,
+          fontWeight: 500,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
+// ─── Section data ─────────────────────────────────────────────────────────────
 interface Section {
   id: string;
   num: string;
@@ -16,7 +67,6 @@ interface Section {
   content: React.ReactNode;
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 const SECTIONS: Section[] = [
   {
     id: "acceptance",
@@ -90,9 +140,7 @@ const SECTIONS: Section[] = [
           All formal quotations issued by Élan Climat &amp; Énergie are valid
           for <strong>30 calendar days</strong> from the date of issue unless
           otherwise stated in writing. After this period, equipment pricing,
-          availability, and lead times are subject to change without notice,
-          particularly in light of fluctuating import duties and foreign
-          exchange rates.
+          availability, and lead times are subject to change without notice.
         </p>
         <p>
           A project becomes binding only upon the client's written acceptance of
@@ -133,9 +181,7 @@ const SECTIONS: Section[] = [
         <p>
           All installations are carried out in compliance with applicable Kenyan
           Standards (KS), Energy and Petroleum Regulatory Authority (EPRA)
-          guidelines, and manufacturer specifications. Any client-requested
-          deviation from recommended practice must be confirmed in writing and
-          may void applicable warranties.
+          guidelines, and manufacturer specifications.
         </p>
       </>
     ),
@@ -150,10 +196,7 @@ const SECTIONS: Section[] = [
         <p>
           Equipment supplied by Élan Climat &amp; Énergie carries the original
           manufacturer's warranty, the terms and duration of which vary by brand
-          and product line and are communicated at point of sale. Élan Climat
-          &amp; Énergie acts as an authorised reseller or distributor and will
-          facilitate warranty claims on your behalf but does not independently
-          extend or guarantee manufacturer warranty obligations.
+          and product line and are communicated at point of sale.
         </p>
         <p>
           Our workmanship warranty covers installation defects for a period of{" "}
@@ -188,16 +231,13 @@ const SECTIONS: Section[] = [
         <p>
           Deposits paid to secure equipment procurement are non-refundable once
           an order has been placed with our suppliers, as equipment is often
-          imported to specification. This will be clearly communicated before
-          any deposit is requested.
+          imported to specification.
         </p>
         <p>
           Where a project is cancelled by the client after work has commenced,
           Élan Climat &amp; Énergie reserves the right to invoice for all work
-          completed to that point, including labour, materials consumed, and any
-          costs already committed to third-party suppliers. Any balance owed
-          after offsetting deposits will be due within 14 days of the
-          cancellation notice.
+          completed to that point. Any balance owed after offsetting deposits
+          will be due within 14 days of the cancellation notice.
         </p>
         <p>
           Late payments accrue interest at a rate of{" "}
@@ -216,23 +256,21 @@ const SECTIONS: Section[] = [
       <>
         <p>
           To the fullest extent permitted by Kenyan law, Élan Climat &amp;
-          Énergie's total liability to you — whether in contract, tort
-          (including negligence), breach of statutory duty, or otherwise — shall
-          not exceed the total value of the fees paid by you in connection with
-          the specific project giving rise to the claim.
+          Énergie's total liability to you shall not exceed the total value of
+          the fees paid by you in connection with the specific project giving
+          rise to the claim.
         </p>
         <p>
           We shall not be liable under any circumstances for indirect,
           consequential, or special losses, including but not limited to: loss
           of profits or revenue, loss of production, business interruption,
-          spoilage of perishable goods due to system downtime, loss of
-          anticipated savings, or any reputational damage.
+          spoilage of perishable goods due to system downtime, or loss of
+          anticipated savings.
         </p>
         <p>
           Nothing in these terms limits or excludes our liability for death or
-          personal injury caused by our proven negligence, fraud or fraudulent
-          misrepresentation, or any other liability that cannot be excluded
-          under applicable law.
+          personal injury caused by our proven negligence, fraud, or any other
+          liability that cannot be excluded under applicable law.
         </p>
       </>
     ),
@@ -245,26 +283,22 @@ const SECTIONS: Section[] = [
     content: (
       <>
         <p>
-          All content on this website — including but not limited to
-          photographs, project imagery, system design schematics, technical
-          documentation, copywriting, and the Élan Climat &amp; Énergie brand
-          identity — is the exclusive property of Élan Climat &amp; Énergie Ltd
-          or its licensed content partners and is protected under Kenyan and
-          international intellectual property law.
+          All content on this website — including photographs, project imagery,
+          system design schematics, technical documentation, copywriting, and
+          the Élan Climat &amp; Énergie brand identity — is the exclusive
+          property of Élan Climat &amp; Énergie Ltd or its licensed content
+          partners and is protected under Kenyan and international intellectual
+          property law.
         </p>
         <p>
-          You may not reproduce, distribute, modify, create derivative works
-          from, or commercially exploit any part of our content without our
-          express prior written consent. Brief citation for journalistic or
-          educational purposes is permitted, provided clear attribution is
-          given.
+          You may not reproduce, distribute, modify, or commercially exploit any
+          part of our content without our express prior written consent.
         </p>
         <p>
           Technical drawings, energy audit reports, and system designs produced
-          by Élan Climat &amp; Énergie in the course of a project engagement
-          remain the intellectual property of Élan Climat &amp; Énergie until
-          all outstanding invoices relating to that project have been paid in
-          full.
+          in the course of a project engagement remain the intellectual property
+          of Élan Climat &amp; Énergie until all outstanding invoices have been
+          paid in full.
         </p>
       </>
     ),
@@ -280,26 +314,39 @@ const SECTIONS: Section[] = [
           When you submit an enquiry, request a quotation, or interact with our
           website, we collect personal data including your name, contact
           details, property address, and project requirements. This data is used
-          solely to respond to your enquiry, manage our project relationship
-          with you, and — with your consent — send you relevant product or
-          service updates.
+          solely to respond to your enquiry and manage our project relationship
+          with you.
         </p>
         <p>
           We do not sell, rent, or trade your personal data to third parties. We
           may share limited information with trusted sub-contractors or
-          suppliers where necessary to fulfil a project, and only to the extent
-          required.
+          suppliers where necessary to fulfil a project.
         </p>
         <p>
           You have the right to request access to, correction of, or deletion of
           your personal data at any time by contacting us at{" "}
           <a
-            href="mailto:privacy@elanclimatenergy.com"
-            style={{ color: "var(--sage-dark)", textDecoration: "underline" }}
+            href="mailto:privacy@elanclimat.co.ke"
+            style={{
+              color: "#5a7a59",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
           >
-            privacy@elanclimatenergy.com
+            privacy@elanclimat.co.ke
           </a>
-          . We will respond within 14 working days.
+          . See our full{" "}
+          <Link
+            href="/privacy-policy"
+            style={{
+              color: "#5a7a59",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            Privacy Policy
+          </Link>{" "}
+          for details.
         </p>
       </>
     ),
@@ -314,8 +361,7 @@ const SECTIONS: Section[] = [
         <p>
           These Terms of Service are governed by and construed in accordance
           with the laws of the Republic of Kenya. Any dispute arising out of or
-          in connection with these terms, including any question regarding their
-          existence, validity, or termination, shall be subject to the exclusive
+          in connection with these terms shall be subject to the exclusive
           jurisdiction of the courts of Nairobi, Kenya.
         </p>
         <p>
@@ -335,7 +381,7 @@ const SECTIONS: Section[] = [
   },
 ];
 
-// ─── Accordion Item ───────────────────────────────────────────────────────────
+// ─── Accordion item ───────────────────────────────────────────────────────────
 function AccordionItem({
   section,
   isOpen,
@@ -348,9 +394,7 @@ function AccordionItem({
   return (
     <div
       id={section.id}
-      style={{
-        borderBottom: "1px solid #e8e8e4",
-      }}
+      style={{ borderBottom: `1px solid ${C.rule}`, scrollMarginTop: 80 }}
     >
       <button
         onClick={onToggle}
@@ -361,7 +405,7 @@ function AccordionItem({
           padding: "28px 0",
           cursor: "pointer",
           display: "grid",
-          gridTemplateColumns: "48px 1fr auto",
+          gridTemplateColumns: "56px 1fr auto",
           alignItems: "start",
           gap: 20,
           textAlign: "left",
@@ -370,10 +414,10 @@ function AccordionItem({
         <span
           style={{
             fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.6rem",
+            fontSize: "0.58rem",
             fontWeight: 500,
             letterSpacing: "0.18em",
-            color: "#b0b0a8",
+            color: C.dim,
             paddingTop: 4,
           }}
         >
@@ -384,9 +428,9 @@ function AccordionItem({
           <span
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(1.1rem, 2vw, 1.4rem)",
-              fontWeight: 500,
-              color: isOpen ? "#1a1a18" : "#1a1a18",
+              fontSize: "clamp(1.15rem, 2vw, 1.45rem)",
+              fontWeight: 400,
+              color: C.charcoal,
               letterSpacing: "-0.01em",
               display: "block",
               marginBottom: 4,
@@ -397,8 +441,9 @@ function AccordionItem({
           <span
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.75rem",
-              color: "#b0b0a8",
+              fontSize: "0.74rem",
+              color: C.dim,
+              fontWeight: 300,
               display: "block",
             }}
           >
@@ -408,27 +453,31 @@ function AccordionItem({
 
         <div
           style={{
-            width: 28,
-            height: 28,
+            width: 32,
+            height: 32,
             borderRadius: "50%",
-            border: "1px solid #e8e8e4",
+            border: `1px solid ${isOpen ? "transparent" : C.rule}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
             marginTop: 2,
-            background: isOpen ? "#1a1a18" : "transparent",
-            transition: "background 0.25s",
+            background: isOpen ? C.charcoal : "transparent",
+            transition: "background 0.25s, border-color 0.25s",
           }}
         >
-          <ChevronDown
-            size={13}
-            color={isOpen ? "#ffffff" : "#1a1a18"}
+          <span
             style={{
+              fontSize: "1rem",
+              lineHeight: 1,
+              color: isOpen ? "#ffffff" : C.charcoal,
               transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
-              transform: isOpen ? "rotate(180deg)" : "none",
+              transform: isOpen ? "rotate(45deg)" : "none",
+              display: "block",
             }}
-          />
+          >
+            +
+          </span>
         </div>
       </button>
 
@@ -439,15 +488,11 @@ function AccordionItem({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "hidden" }}
           >
             <div
-              style={{
-                paddingLeft: 68,
-                paddingBottom: 32,
-                paddingRight: 48,
-              }}
+              style={{ paddingLeft: 76, paddingBottom: 36, paddingRight: 40 }}
               className="tos-body"
             >
               {section.content}
@@ -459,415 +504,615 @@ function AccordionItem({
   );
 }
 
-// ─── Table of Contents ────────────────────────────────────────────────────────
-function TableOfContents({
-  sections,
-  activeId,
-}: {
-  sections: Section[];
-  activeId: string | null;
-}) {
-  return (
-    <nav
-      style={{
-        position: "sticky",
-        top: 80,
-        paddingTop: 8,
-      }}
-    >
-      <span
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.6rem",
-          fontWeight: 500,
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: "#b0b0a8",
-          display: "block",
-          marginBottom: 20,
-        }}
-      >
-        Contents
-      </span>
-      {sections.map((s) => (
-        <a
-          key={s.id}
-          href={`#${s.id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            document
-              .getElementById(s.id)
-              ?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 10,
-            padding: "6px 0",
-            textDecoration: "none",
-            borderLeft: `2px solid ${activeId === s.id ? "#1a1a18" : "transparent"}`,
-            paddingLeft: 12,
-            marginLeft: -14,
-            transition: "border-color 0.2s",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.58rem",
-              color: "#c8c8c4",
-              minWidth: 18,
-              letterSpacing: "0.06em",
-            }}
-          >
-            {s.num}
-          </span>
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.75rem",
-              color: activeId === s.id ? "#1a1a18" : "#888580",
-              fontWeight: activeId === s.id ? 500 : 400,
-              transition: "color 0.2s, font-weight 0.2s",
-              lineHeight: 1.4,
-            }}
-          >
-            {s.title}
-          </span>
-        </a>
-      ))}
-    </nav>
-  );
-}
-
-// ─── Main Component ───────────────────────────────────────────────────────────
-export default function TermsOfService() {
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function TermsOfServicePage() {
   const [openId, setOpenId] = useState<string | null>("acceptance");
   const [activeId, setActiveId] = useState<string | null>("acceptance");
-  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showTop, setShowTop] = useState(false);
 
-  // Back-to-top visibility
   useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 600);
+    const onScroll = () => setShowTop(window.scrollY > 500);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Intersection observer for ToC highlight
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveId(e.target.id);
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" },
+    );
     SECTIONS.forEach((s) => {
       const el = document.getElementById(s.id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveId(s.id);
-        },
-        { rootMargin: "-20% 0px -70% 0px" },
-      );
-      obs.observe(el);
-      observers.push(obs);
+      if (el) obs.observe(el);
     });
-    return () => observers.forEach((o) => o.disconnect());
+    return () => obs.disconnect();
   }, []);
 
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
 
   return (
-    <main
-      style={{
-        background: "var(--warm-white, #f9f7f4)",
-        minHeight: "100vh",
-      }}
-    >
+    <main style={{ fontFamily: "'DM Sans', sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        *, *::before, *::after { box-sizing: border-box; }
 
-        :root {
-          --warm-white: #f9f7f4;
-          --off-white: #ede9e2;
-          --charcoal: #1a1a18;
-          --sage: #8fa68e;
-          --sage-dark: #5a7a59;
-          --accent: #c9a96e;
-          --text-muted: #888580;
+        .tos-inner { max-width: 1200px; margin: 0 auto; padding: 0 64px; }
+        .tos-nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 64px; display: flex; overflow-x: auto; scrollbar-width: none; }
+        .tos-nav-inner::-webkit-scrollbar { display: none; }
+        .tos-nav-link { font-family: 'DM Sans', sans-serif; font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 14px 16px; white-space: nowrap; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; color: #b0b0a8; }
+        .tos-nav-link.active { color: #1a1a18; border-bottom-color: #8fa68e; }
+        .tos-nav-link:hover { color: #1a1a18; }
+
+        .tos-layout { display: grid; grid-template-columns: 220px 1fr; gap: 80px; max-width: 1200px; margin: 0 auto; padding: 80px 64px 120px; align-items: start; }
+        .tos-sidebar { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 0; }
+        .tos-sidebar-title { font-family: 'DM Sans', sans-serif; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: #b0b0a8; margin-bottom: 16px; display: block; }
+        .tos-sidebar-link { font-family: 'DM Sans', sans-serif; font-size: 0.74rem; color: #b0b0a8; text-decoration: none; padding: 10px 0 10px 16px; border-left: 2px solid #e8e4dd; line-height: 1.4; display: block; transition: color 0.2s, border-color 0.2s; }
+        .tos-sidebar-link:hover { color: #1a1a18; }
+        .tos-sidebar-link.active { color: #1a1a18; border-left-color: #8fa68e; font-weight: 500; }
+
+        .tos-body p { font-family: 'DM Sans', sans-serif; font-size: 0.875rem; color: #6b6b68; line-height: 1.9; margin: 0 0 1rem 0; font-weight: 300; }
+        .tos-body p:last-child { margin-bottom: 0; }
+        .tos-body strong { font-weight: 500; color: #1a1a18; }
+        .tos-body em { font-style: italic; }
+
+        .tos-meta-strip { display: flex; gap: 48px; flex-wrap: wrap; padding-top: 36px; margin-top: 36px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .tos-cta-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 280px; }
+
+        @media (max-width: 1100px) {
+          .tos-inner { padding: 0 32px; }
+          .tos-nav-inner { padding: 0 32px; }
+          .tos-layout { grid-template-columns: 1fr; padding: 56px 32px 80px; gap: 0; }
+          .tos-sidebar { display: none; }
+          .tos-cta-grid { grid-template-columns: 1fr; }
+          .tos-hero-right { display: none; }
         }
-
-        .tos-body p {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.875rem;
-          color: #6b6b68;
-          line-height: 1.85;
-          margin: 0 0 1rem 0;
-        }
-
-        .tos-body p:last-child {
-          margin-bottom: 0;
-        }
-
-        .tos-body strong {
-          font-weight: 500;
-          color: #1a1a18;
-        }
-
-        .tos-body em {
-          font-style: italic;
-        }
-
-        .tos-layout {
-          display: grid;
-          grid-template-columns: 220px 1fr;
-          gap: 80px;
-          max-width: 1020px;
-          margin: 0 auto;
-          padding: 64px 40px 120px;
-        }
-
-        .tos-toc {
-          display: block;
-        }
-
-        @media (max-width: 860px) {
-          .tos-layout {
-            grid-template-columns: 1fr;
-            gap: 0;
-            padding: 40px 28px 80px;
-          }
-          .tos-toc { display: none; }
-          .tos-body { padding-left: 0 !important; padding-right: 0 !important; }
-        }
-
-        .hero-rule {
-          width: 32px;
-          height: 1px;
-          background: #1a1a18;
-          display: inline-block;
-          margin-right: 12px;
-          vertical-align: middle;
+        @media (max-width: 640px) {
+          .tos-inner { padding: 0 24px; }
+          .tos-nav-inner { padding: 0 24px; }
+          .tos-layout { padding: 48px 24px 64px; }
+          .tos-meta-strip { gap: 24px; }
         }
       `}</style>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          background: "#1a1a18",
-          padding: "80px 40px 72px",
-        }}
-      >
-        <div style={{ maxWidth: 1020, margin: "0 auto" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 24,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 24,
-                height: 1,
-                background: "rgba(255,255,255,0.5)",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.62rem",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.5)",
-              }}
-            >
-              Legal
-            </span>
-          </div>
-
-          <h1
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(2.4rem, 5vw, 3.8rem)",
-              fontWeight: 400,
-              color: "#ffffff",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.1,
-              margin: "0 0 20px",
-              maxWidth: 560,
-            }}
-          >
-            Terms of Service
-          </h1>
-
-          <p
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.82rem",
-              color: "rgba(255,255,255,0.55)",
-              lineHeight: 1.7,
-              maxWidth: 480,
-              margin: "0 0 40px",
-            }}
-          >
-            These terms govern your relationship with Élan Climat &amp; Énergie.
-            We've written them to be clear and human — not to obscure, but to be
-            honest about how we work.
-          </p>
-
-          {/* Meta strip */}
-          <div
-            style={{
-              display: "flex",
-              gap: 40,
-              flexWrap: "wrap",
-            }}
-          >
-            {[
-              { label: "Entity", value: "Élan Climat & Énergie Ltd" },
-              { label: "Jurisdiction", value: "Republic of Kenya" },
-              { label: "Last Revised", value: "31 May 2025" },
-              { label: "Sections", value: "10" },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <span
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.58rem",
-                    letterSpacing: "0.16em",
-                    textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.3)",
-                    display: "block",
-                    marginBottom: 4,
-                  }}
-                >
-                  {label}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "0.95rem",
-                    color: "rgba(255,255,255,0.8)",
-                    fontWeight: 400,
-                  }}
-                >
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Thin accent bar ──────────────────────────────────────────────────── */}
+      {/* HERO */}
       <div
         style={{
-          height: 3,
-          background: `linear-gradient(to right, #8fa68e 0%, #c9a96e 60%, #f9f7f4 100%)`,
+          position: "relative",
+          height: "56vh",
+          minHeight: 440,
+          overflow: "hidden",
         }}
-      />
-
-      {/* ── Body ─────────────────────────────────────────────────────────────── */}
-      <div className="tos-layout">
-        {/* Left: sticky ToC */}
-        <aside className="tos-toc">
-          <TableOfContents sections={SECTIONS} activeId={activeId} />
-        </aside>
-
-        {/* Right: accordion */}
-        <div>
-          {/* Preamble */}
-          <p
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.82rem",
-              color: "#888580",
-              lineHeight: 1.8,
-              borderLeft: "2px solid #e8e8e4",
-              paddingLeft: 20,
-              marginBottom: 48,
-              fontStyle: "italic",
-            }}
-          >
-            These Terms of Service ("Terms") apply to all clients, prospective
-            clients, and visitors engaging with Élan Climat &amp; Énergie Ltd, a
-            company incorporated in Kenya. If you have any questions about these
-            terms before engaging our services, please write to us at{" "}
-            <a
-              href="mailto:legal@elanclimat.co.ke"
-              style={{ color: "var(--sage-dark)", textDecoration: "underline" }}
-            >
-              legal@elanclimat.co.ke
-            </a>
-            .
-          </p>
-
-          {/* Accordion */}
-          <div style={{ borderTop: "1px solid #e8e8e4" }}>
-            {SECTIONS.map((section) => (
-              <AccordionItem
-                key={section.id}
-                section={section}
-                isOpen={openId === section.id}
-                onToggle={() => toggle(section.id)}
-              />
-            ))}
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1800&q=85"
+          alt="Terms of service"
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: "cover", objectPosition: "center 38%" }}
+          quality={85}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to right, rgba(26,26,24,0.90) 0%, rgba(26,26,24,0.58) 55%, rgba(26,26,24,0.18) 100%)",
+            zIndex: 1,
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            zIndex: 2,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+            padding: "48px 0 56px",
+          }}
+        >
+          {/* Breadcrumb */}
+          <div className="tos-inner">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Link
+                href="/"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.4)",
+                  textDecoration: "none",
+                }}
+              >
+                Home
+              </Link>
+              <span
+                style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.6rem" }}
+              >
+                /
+              </span>
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "#8fa68e",
+                }}
+              >
+                Terms of Service
+              </span>
+            </div>
           </div>
 
-          {/* Footer note */}
-          <div
-            style={{
-              marginTop: 64,
-              padding: "32px",
-              background: "#f2f1ee",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
-            <span
+          {/* Copy */}
+          <div className="tos-inner">
+            <div
               style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.6rem",
-                fontWeight: 500,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "#b0b0a8",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 80,
+                alignItems: "flex-end",
               }}
             >
-              A Note from Our Team
-            </span>
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "1.1rem",
-                fontWeight: 400,
-                color: "#1a1a18",
-                lineHeight: 1.7,
-                margin: 0,
-                fontStyle: "italic",
-              }}
-            >
-              "We believe in long relationships — not fine print. These terms
-              exist to protect both parties fairly. If anything here feels
-              unclear or concerns you before a project, please reach out. We'd
-              rather have a conversation than a contract dispute."
-            </p>
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.72rem",
-                color: "#888580",
-              }}
-            >
-              — The Élan Climat &amp; Énergie Team
-            </span>
+              {/* Left */}
+              <motion.div
+                initial={{ opacity: 0, y: 28 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: "flex", flexDirection: "column", gap: 16 }}
+              >
+                <Eyebrow text="Legal" light />
+                <h1
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(2.6rem, 5vw, 4rem)",
+                    fontWeight: 400,
+                    lineHeight: 1.05,
+                    letterSpacing: "-0.025em",
+                    color: "#ffffff",
+                    margin: 0,
+                  }}
+                >
+                  Terms of
+                  <br />
+                  <em
+                    style={{
+                      fontStyle: "italic",
+                      fontWeight: 300,
+                      color: "#c9a96e",
+                    }}
+                  >
+                    Service
+                  </em>
+                </h1>
+                <div className="tos-meta-strip">
+                  {META.map(({ label, value }) => (
+                    <div key={label}>
+                      <span
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.58rem",
+                          letterSpacing: "0.16em",
+                          textTransform: "uppercase",
+                          color: "rgba(255,255,255,0.28)",
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "'Cormorant Garamond', serif",
+                          fontSize: "0.95rem",
+                          color: "rgba(255,255,255,0.75)",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Right */}
+              <motion.div
+                className="tos-hero-right"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: 0.12,
+                }}
+                style={{ display: "flex", flexDirection: "column", gap: 14 }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.84rem",
+                    color: "rgba(255,255,255,0.55)",
+                    lineHeight: 1.85,
+                    margin: 0,
+                    fontWeight: 300,
+                    maxWidth: 380,
+                  }}
+                >
+                  These terms govern your relationship with Élan Climat &amp;
+                  Énergie. We've written them to be clear and honest — not to
+                  obscure, but to set fair expectations on both sides.
+                </p>
+                <a
+                  href="mailto:legal@elanclimat.co.ke"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.76rem",
+                    color: "#c9a96e",
+                    textDecoration: "none",
+                    borderBottom: "1px solid rgba(201,169,110,0.3)",
+                    paddingBottom: 2,
+                    display: "inline-block",
+                    letterSpacing: "0.04em",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  legal@elanclimat.co.ke
+                </a>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── Back to top ──────────────────────────────────────────────────────── */}
+      {/* Gradient accent bar */}
+      <div
+        style={{
+          height: 3,
+          background:
+            "linear-gradient(to right, #8fa68e 0%, #c9a96e 55%, #f9f7f4 100%)",
+        }}
+      />
+
+      {/* STICKY TOP NAV */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 50,
+          backgroundColor: "#f9f7f4",
+          borderBottom: "1px solid #e8e4dd",
+        }}
+      >
+        <nav className="tos-nav-inner" aria-label="Terms sections">
+          {SECTIONS.map((s) => (
+            <a
+              key={s.id}
+              href={`#${s.id}`}
+              className={`tos-nav-link${activeId === s.id ? " active" : ""}`}
+            >
+              {s.num}. {s.title}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      {/* BODY */}
+      <section style={{ backgroundColor: "#f9f7f4" }}>
+        <div className="tos-layout">
+          {/* Sidebar */}
+          <aside className="tos-sidebar">
+            <span className="tos-sidebar-title">Contents</span>
+            {SECTIONS.map((s) => (
+              <a
+                key={s.id}
+                href={`#${s.id}`}
+                className={`tos-sidebar-link${activeId === s.id ? " active" : ""}`}
+              >
+                {s.num}. {s.title}
+              </a>
+            ))}
+          </aside>
+
+          {/* Content */}
+          <div>
+            {/* Preamble */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                borderLeft: "2px solid #e8e4dd",
+                paddingLeft: 20,
+                marginBottom: 48,
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.82rem",
+                  color: "#888580",
+                  lineHeight: 1.8,
+                  margin: 0,
+                  fontStyle: "italic",
+                  fontWeight: 300,
+                }}
+              >
+                These Terms of Service ("Terms") apply to all clients,
+                prospective clients, and visitors engaging with Élan Climat
+                &amp; Énergie Ltd, a company incorporated in Kenya. If you have
+                questions before engaging our services, write to us at{" "}
+                <a
+                  href="mailto:legal@elanclimat.co.ke"
+                  style={{
+                    color: "#5a7a59",
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                  }}
+                >
+                  legal@elanclimat.co.ke
+                </a>
+                .
+              </p>
+            </motion.div>
+
+            {/* Accordion */}
+            <div style={{ borderTop: "1px solid #e8e4dd" }}>
+              {SECTIONS.map((section) => (
+                <AccordionItem
+                  key={section.id}
+                  section={section}
+                  isOpen={openId === section.id}
+                  onToggle={() => toggle(section.id)}
+                />
+              ))}
+            </div>
+
+            {/* Closing note */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                marginTop: 64,
+                background: "#ede9e2",
+                border: "1px solid #e8e4dd",
+                padding: "36px 40px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 14,
+              }}
+            >
+              <Eyebrow text="A note from our team" />
+              <p
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "1.2rem",
+                  fontWeight: 400,
+                  color: "#1a1a18",
+                  lineHeight: 1.75,
+                  margin: 0,
+                  fontStyle: "italic",
+                }}
+              >
+                "We believe in long relationships — not fine print. These terms
+                exist to protect both parties fairly. If anything here feels
+                unclear or concerns you before a project, please reach out. We'd
+                rather have a conversation than a contract dispute."
+              </p>
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.72rem",
+                  color: "#888580",
+                  fontWeight: 300,
+                }}
+              >
+                — The Élan Climat &amp; Énergie Team
+              </span>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA BAND */}
+      <section style={{ background: "#1a1a18" }}>
+        <div className="tos-cta-grid">
+          <div
+            style={{
+              padding: "72px 64px",
+              borderRight: "1px solid rgba(255,255,255,0.07)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <Eyebrow text="Questions about these terms?" light />
+              <h2
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(1.8rem, 2.8vw, 2.6rem)",
+                  fontWeight: 400,
+                  color: "#ffffff",
+                  lineHeight: 1.12,
+                  letterSpacing: "-0.02em",
+                  margin: 0,
+                }}
+              >
+                We'd rather talk
+                <br />
+                <em
+                  style={{
+                    fontStyle: "italic",
+                    color: "#c9a96e",
+                    fontWeight: 300,
+                  }}
+                >
+                  than dispute.
+                </em>
+              </h2>
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  color: "rgba(255,255,255,0.38)",
+                  lineHeight: 1.8,
+                  maxWidth: 340,
+                  fontWeight: 300,
+                }}
+              >
+                If anything in these terms is unclear before you engage us,
+                reach out. We're a team of engineers, not lawyers — we'll give
+                you a straight answer.
+              </p>
+            </div>
+            <a
+              href="mailto:legal@elanclimat.co.ke"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.78rem",
+                color: "#c9a96e",
+                letterSpacing: "0.06em",
+                textDecoration: "none",
+                borderBottom: "1px solid rgba(201,169,110,0.35)",
+                paddingBottom: 2,
+                display: "inline-block",
+                alignSelf: "flex-start",
+                marginTop: 32,
+              }}
+            >
+              legal@elanclimat.co.ke
+            </a>
+          </div>
+
+          <div
+            style={{
+              padding: "72px 64px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.58rem",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.2)",
+                  marginBottom: 4,
+                }}
+              >
+                Related
+              </span>
+              {[
+                {
+                  label: "Privacy Policy",
+                  href: "/privacy-policy",
+                  desc: "How we handle your data",
+                },
+                {
+                  label: "Contact Us",
+                  href: "/contact",
+                  desc: "Send us a direct message",
+                },
+                {
+                  label: "Our Services",
+                  href: "/services",
+                  desc: "What we build and maintain",
+                },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "16px 0",
+                    borderBottom: "1px solid rgba(255,255,255,0.07)",
+                    textDecoration: "none",
+                    gap: 16,
+                    transition: "border-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (
+                      e.currentTarget as HTMLAnchorElement
+                    ).style.borderBottomColor = "rgba(255,255,255,0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (
+                      e.currentTarget as HTMLAnchorElement
+                    ).style.borderBottomColor = "rgba(255,255,255,0.07)";
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "1.1rem",
+                        fontWeight: 400,
+                        color: "#ffffff",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {link.label}
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.72rem",
+                        color: "rgba(255,255,255,0.3)",
+                        fontWeight: 300,
+                        marginTop: 2,
+                      }}
+                    >
+                      {link.desc}
+                    </div>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path
+                      d="M2 12L12 2M12 2H5M12 2V9"
+                      stroke="rgba(255,255,255,0.25)"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "0.88rem",
+                color: "rgba(255,255,255,0.18)",
+                lineHeight: 1.75,
+                maxWidth: 260,
+                marginTop: 32,
+              }}
+            >
+              Élan Climat & Énergie
+              <br />
+              Nairobi, Kenya · Est. 2012
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Back to top */}
       <AnimatePresence>
-        {showBackToTop && (
+        {showTop && (
           <motion.button
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -896,7 +1141,6 @@ export default function TermsOfService() {
           </motion.button>
         )}
       </AnimatePresence>
-      <Footer />
     </main>
   );
 }

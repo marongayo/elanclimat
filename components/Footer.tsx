@@ -85,13 +85,11 @@ export default function Footer() {
       style={{
         backgroundColor: "#1a1a18",
         fontFamily: "'DM Sans', sans-serif",
+        paddingTop: "40px",
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-
         .footer-section-label {
-          font-family: 'DM Sans', sans-serif;
           font-size: 0.6rem;
           font-weight: 500;
           letter-spacing: 0.18em;
@@ -102,7 +100,6 @@ export default function Footer() {
         }
 
         .footer-link {
-          font-family: 'DM Sans', sans-serif;
           font-size: 0.82rem;
           color: rgba(249,247,244,0.45);
           text-decoration: none;
@@ -110,6 +107,7 @@ export default function Footer() {
           display: block;
           line-height: 1;
         }
+
         .footer-link:hover {
           color: #f9f7f4;
         }
@@ -119,20 +117,38 @@ export default function Footer() {
           height: 34px;
           border-radius: 50%;
           border: 1px solid rgba(249,247,244,0.12);
-          background: none;
           color: rgba(249,247,244,0.35);
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
           transition: all 0.2s ease;
           text-decoration: none;
-          flex-shrink: 0;
         }
+
         .footer-social-btn:hover {
           border-color: #8fa68e;
           color: #8fa68e;
           background: rgba(143,166,142,0.08);
+        }
+
+        /* CTA CARD (FLOATING PREMIUM STYLE) */
+        .footer-cta-card {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 52px 64px 48px;
+          gap: 32px;
+
+          background: #ffffff;
+          border-radius: 24px;
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+
+          margin: 0 32px;
+          margin-top: -48px;
+
+          position: relative;
+          z-index: 10;
         }
 
         .footer-cta-btn {
@@ -141,22 +157,21 @@ export default function Footer() {
           gap: 10px;
           padding: 9px 9px 9px 20px;
           border-radius: 9999px;
-          border: 1px solid rgba(249,247,244,0.15);
-          background: none;
-          cursor: pointer;
-          font-family: 'DM Sans', sans-serif;
+          border: 1px solid rgba(26,26,24,0.15);
+          background: white;
           font-size: 0.72rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(249,247,244,0.75);
+          color: #1a1a18;
           text-decoration: none;
           transition: all 0.25s ease;
         }
+
         .footer-cta-btn:hover {
+          background: rgba(143,166,142,0.08);
           border-color: #8fa68e;
-          color: #f9f7f4;
-          background: rgba(143,166,142,0.06);
         }
+
         .footer-cta-icon {
           width: 28px;
           height: 28px;
@@ -167,8 +182,8 @@ export default function Footer() {
           align-items: center;
           justify-content: center;
           transition: transform 0.25s ease;
-          flex-shrink: 0;
         }
+
         .footer-cta-btn:hover .footer-cta-icon {
           transform: rotate(45deg);
         }
@@ -180,73 +195,58 @@ export default function Footer() {
         }
 
         @media (max-width: 768px) {
-          .footer-main-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .footer-brand-col {
-            grid-column: 1 / -1 !important;
-          }
-          .footer-top-row {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .footer-main-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .footer-brand-col {
-            grid-column: auto !important;
+          .footer-cta-card {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 36px 24px;
+            margin: 0 16px;
+            margin-top: -32px;
           }
         }
       `}</style>
 
-      {/* ── Top CTA band ── */}
-      <div
-        className="footer-top-row"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "52px 64px 48px",
-          gap: 32,
-        }}
-      >
-        {/* Headline */}
+      {/* FLOATING CTA CARD */}
+      <div className="footer-cta-card">
         <div style={{ maxWidth: 480 }}>
-          <span className="footer-section-label">Get in touch</span>
+          <span
+            style={{
+              fontSize: "0.6rem",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "rgba(26,26,24,0.6)",
+              display: "block",
+              marginBottom: 12,
+            }}
+          >
+            Get in touch
+          </span>
+
           <h2
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontSize: "clamp(2rem, 3.5vw, 2.8rem)",
               fontWeight: 400,
-              color: "#f9f7f4",
-              lineHeight: 1.15,
-              letterSpacing: "-0.01em",
+              color: "#1a1a18",
               margin: 0,
+              lineHeight: 1.15,
             }}
           >
             Let's design your solution
           </h2>
         </div>
 
-        {/* CTA */}
-        <div style={{ flexShrink: 0 }}>
-          <Link href="/contact" className="footer-cta-btn">
-            Request a Call
-            <span className="footer-cta-icon">
-              <ArrowUpRight size={14} />
-            </span>
-          </Link>
-        </div>
+        <Link href="/contact" className="footer-cta-btn">
+          Request a Call
+          <span className="footer-cta-icon">
+            <ArrowUpRight size={14} />
+          </span>
+        </Link>
       </div>
 
       <hr className="footer-divider" />
 
-      {/* ── Main link grid ── */}
+      {/* MAIN GRID */}
       <div
-        className="footer-main-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "2fr 1fr 1fr 1fr",
@@ -254,18 +254,12 @@ export default function Footer() {
           padding: "52px 64px",
         }}
       >
-        {/* Brand column */}
-        <div
-          className="footer-brand-col"
-          style={{ display: "flex", flexDirection: "column", gap: 24 }}
-        >
-          <div style={{ opacity: 0.9 }}>
-            <ElanLogo size={130} />
-          </div>
+        {/* Brand */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <ElanLogo size={130} />
 
           <p
             style={{
-              fontFamily: "'DM Sans', sans-serif",
               fontSize: "0.8rem",
               color: "rgba(249,247,244,0.38)",
               lineHeight: 1.8,
@@ -277,16 +271,15 @@ export default function Footer() {
             elevator systems across Kenya.
           </p>
 
-          {/* Socials */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {SOCIALS.map(({ label, href, icon }) => (
+          <div style={{ display: "flex", gap: 10 }}>
+            {SOCIALS.map((s) => (
               <a
-                key={label}
-                href={href}
-                aria-label={label}
+                key={s.label}
+                href={s.href}
                 className="footer-social-btn"
+                aria-label={s.label}
               >
-                {icon}
+                {s.icon}
               </a>
             ))}
           </div>
@@ -295,123 +288,74 @@ export default function Footer() {
         {/* Company */}
         <div>
           <span className="footer-section-label">Company</span>
-          <ul
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-            }}
-          >
-            {QUICK_LINKS.map(({ label, href }) => (
-              <li key={label}>
-                <Link href={href} className="footer-link">
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {QUICK_LINKS.map((l) => (
+            <Link key={l.label} href={l.href} className="footer-link">
+              {l.label}
+            </Link>
+          ))}
         </div>
 
         {/* Services */}
         <div>
           <span className="footer-section-label">Services</span>
-          <ul
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-            }}
-          >
-            {SERVICES.map((service) => (
-              <li key={service}>
-                <Link
-                  href={`/services#${service.toLowerCase().replace(" ", "-")}`}
-                  className="footer-link"
-                >
-                  {service}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {SERVICES.map((s) => (
+            <Link
+              key={s}
+              href={`/services#${s.toLowerCase().replace(" ", "-")}`}
+              className="footer-link"
+            >
+              {s}
+            </Link>
+          ))}
         </div>
 
         {/* Contact */}
         <div>
           <span className="footer-section-label">Contact</span>
-          <ul
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-            }}
-          >
-            {CONTACT_INFO.map(({ label, href }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  className="footer-link"
-                  style={{ wordBreak: "break-all" }}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          {CONTACT_INFO.map((c) => (
+            <a
+              key={c.label}
+              href={c.href}
+              className="footer-link"
+              style={{ wordBreak: "break-word" }}
+            >
+              {c.label}
+            </a>
+          ))}
         </div>
       </div>
 
       <hr className="footer-divider" />
 
-      {/* ── Bottom bar ── */}
+      {/* BOTTOM BAR */}
       <div
         style={{
           display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
           justifyContent: "space-between",
+          flexWrap: "wrap",
           gap: 12,
           padding: "20px 64px",
         }}
       >
         <p
           style={{
-            fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.7rem",
             color: "rgba(249,247,244,0.28)",
             margin: 0,
-            letterSpacing: "0.02em",
           }}
         >
-          © {`2018\u2013${new Date().getFullYear()}`} Élan Climat & Énergie. All
-          rights reserved.
+          © {`2018–${new Date().getFullYear()}`} Élan Climat & Énergie
         </p>
+
         <p
           style={{
-            fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.7rem",
             color: "rgba(249,247,244,0.28)",
             margin: 0,
-            letterSpacing: "0.05em",
           }}
         >
           smart solutions.{" "}
-          <span
-            style={{
-              color: "#8fa68e",
-              fontWeight: 500,
-            }}
-          >
-            sustainable future.
-          </span>
+          <span style={{ color: "#8fa68e" }}>sustainable future.</span>
         </p>
       </div>
     </footer>

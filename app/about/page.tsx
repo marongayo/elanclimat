@@ -28,12 +28,9 @@ const IMG = {
   heroMain:
     "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1800&q=85",
   storyLeft: "/images/liftrpr.png",
-  storyTopRight:
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80",
-  storyBottomRight:
-    "https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=700&q=80",
-  team1:
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
+  storyTopRight: "/images/lift.jpg",
+  storyBottomRight: "/images/solar.jpg",
+  team1: "/imageCEO.png",
   team2:
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80",
   team3:
@@ -45,10 +42,8 @@ const IMG = {
     "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80",
   serviceElectrical: "/mostafa.jpg",
   serviceRefrigeration: "/images/coldroom.webp",
-  serviceElevator:
-    "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80",
-  csrTree:
-    "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80",
+  serviceElevator: "/images/elevator.jpg",
+  csrTree: "/images/treeplanting.jpg",
   csrCommunity:
     "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80",
 };
@@ -1081,7 +1076,7 @@ export default function AboutPage() {
                 image: IMG.team2,
               },
               {
-                name: "Daniel Mwenda",
+                name: "Gabriel Chomba",
                 role: "Chief HVAC Engineer",
                 image: IMG.team3,
               },

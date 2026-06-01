@@ -28,7 +28,7 @@ const SECTIONS = [
   {
     index: "01",
     title: "Who we are",
-    content: `Élan Climat & Énergie is a Nairobi-based energy solutions company specialising in HVAC systems, solar PV installations, and battery storage. Our registered address is Nairobi, Kenya. When this policy refers to "Élan", "we", "us", or "our", it means Élan Climat & Énergie.\n\nYou can reach us at any time at privacy@elanclimat.co.ke.`,
+    content: `Élan Climat & Énergie is a Nairobi-based energy solutions company specialising in HVAC systems, solar PV installations, and battery storage. Our registered address is Nairobi, Kenya. When this policy refers to "Élan", "we", "us", or "our", it means Élan Climat & Énergie.\n\nYou can reach us at any time at legal@elanclimat.co.ke.`,
   },
   {
     index: "02",
@@ -58,7 +58,7 @@ const SECTIONS = [
   {
     index: "07",
     title: "Your rights",
-    content: `Under the Kenya Data Protection Act, 2019, you have the right to:\n\n— Access the personal data we hold about you\n— Correct inaccurate or incomplete data\n— Request erasure of your data (subject to legal retention obligations)\n— Object to or restrict certain types of processing\n— Withdraw consent where processing is based on consent\n— Lodge a complaint with the Office of the Data Protection Commissioner (ODPC)\n\nTo exercise any of these rights, write to us at privacy@elanclimat.co.ke. We will respond within 21 days.`,
+    content: `Under the Kenya Data Protection Act, 2019, you have the right to:\n\n— Access the personal data we hold about you\n— Correct inaccurate or incomplete data\n— Request erasure of your data (subject to legal retention obligations)\n— Object to or restrict certain types of processing\n— Withdraw consent where processing is based on consent\n— Lodge a complaint with the Office of the Data Protection Commissioner (ODPC)\n\nTo exercise any of these rights, write to us at legal@elanclimat.co.ke. We will respond within 21 days.`,
   },
   {
     index: "08",
@@ -78,7 +78,7 @@ const SECTIONS = [
   {
     index: "11",
     title: "Contact us",
-    content: `For any questions, requests, or concerns about this privacy policy or how we handle your data, please contact:\n\nÉlan Climat & Énergie\nEmail: privacy@elanclimat.co.ke\nLocation: Nairobi, Kenya\n\nIf you are unsatisfied with our response, you have the right to contact the Office of the Data Protection Commissioner (ODPC) at www.odpc.go.ke.`,
+    content: `For any questions, requests, or concerns about this privacy policy or how we handle your data, please contact:\n\nÉlan Climat & Énergie\nEmail: legal@elanclimat.co.ke\nLocation: Nairobi, Kenya\n\nIf you are unsatisfied with our response, you have the right to contact the Office of the Data Protection Commissioner (ODPC) at www.odpc.go.ke.`,
   },
 ];
 
@@ -397,7 +397,7 @@ export default function PrivacyPolicyPage() {
                 </p>
 
                 <a
-                  href="mailto:privacy@elanclimat.co.ke"
+                  href="mailto:legal@elanclimat.co.ke"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: "0.76rem",
@@ -410,7 +410,7 @@ export default function PrivacyPolicyPage() {
                     alignSelf: "flex-start",
                   }}
                 >
-                  privacy@elanclimat.co.ke
+                  legal@elanclimat.co.ke
                 </a>
               </motion.div>
             </div>
@@ -572,12 +572,12 @@ export default function PrivacyPolicyPage() {
                 >
                   {/* Linkify email and odpc.go.ke */}
                   {s.content
-                    .split(/(privacy@elanclimat\.co\.ke|www\.odpc\.go\.ke)/g)
+                    .split(/(legal@elanclimat\.co\.ke|www\.odpc\.go\.ke)/g)
                     .map((part, pi) =>
-                      part === "privacy@elanclimat.co.ke" ? (
+                      part === "legal@elanclimat.co.ke" ? (
                         <a
                           key={pi}
-                          href="mailto:privacy@elanclimat.co.ke"
+                          href="mailto:legal@elanclimat.co.ke"
                           style={{
                             color: C.charcoal,
                             textDecoration: "underline",
@@ -673,7 +673,7 @@ export default function PrivacyPolicyPage() {
               </p>
             </div>
             <a
-              href="mailto:privacy@elanclimat.co.ke"
+              href="mailto:legal@elanclimat.co.ke"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "0.78rem",
@@ -687,7 +687,7 @@ export default function PrivacyPolicyPage() {
                 marginTop: 32,
               }}
             >
-              privacy@elanclimat.co.ke
+              legal@elanclimat.co.ke
             </a>
           </div>
 

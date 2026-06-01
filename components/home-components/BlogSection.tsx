@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
 import type { BlogPost } from "@/lib/types/blog";
 
 export default function BlogSection({ posts }: { posts: BlogPost[] }) {
@@ -18,8 +17,8 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
   return (
     <section
       style={{
-        backgroundColor: "#1a1a18",
-        padding: "96px 0",
+        backgroundColor: "#ffffff",
+        padding: "70px 0",
       }}
     >
       <style>{`
@@ -28,6 +27,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
           margin: 0 auto;
           padding: 0 64px;
         }
+
         @media (max-width: 768px) {
           .blog-section-inner { padding: 0 28px; }
           .blog-grid { grid-template-columns: 1fr !important; }
@@ -45,7 +45,9 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
           gap: 4px;
           transition: opacity 0.2s;
         }
+
         .blog-post-tab:hover { opacity: 1 !important; }
+
         .blog-read-link {
           display: inline-flex;
           align-items: center;
@@ -61,18 +63,21 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
           padding: 10px 10px 10px 20px;
           border-radius: 9999px;
           transition: background 0.2s, color 0.2s;
-          border: 1.5px solid white;
+          border: 1.5px solid #1a1a18;
           align-self: flex-start;
         }
+
         .blog-read-link:hover {
-          background: transparent;
+          background: #1a1a18;
           color: white;
         }
+
         .blog-read-link:hover .blog-link-icon {
           background: white;
           color: #1a1a18;
           transform: rotate(45deg);
         }
+
         .blog-link-icon {
           width: 30px;
           height: 30px;
@@ -94,14 +99,14 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
             display: "flex",
             alignItems: "center",
             gap: 10,
-            marginBottom: 48,
+            marginBottom: 28,
           }}
         >
           <div
             style={{
               width: 24,
               height: 1,
-              background: "rgba(255,255,255,0.3)",
+              background: "rgba(26,26,24,0.15)",
             }}
           />
           <span
@@ -110,7 +115,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
               fontSize: "0.62rem",
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(26,26,24,0.55)",
               fontWeight: 500,
             }}
           >
@@ -127,16 +132,16 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
             alignItems: "start",
           }}
         >
-          {/* Left: post list + active content */}
+          {/* LEFT */}
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {/* Post selector tabs */}
+            {/* Tabs */}
             {posts.length > 1 && (
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  borderTop: "1px solid rgba(255,255,255,0.08)",
-                  marginBottom: 40,
+                  borderTop: "1px solid rgba(26,26,24,0.1)",
+                  marginBottom: 28,
                 }}
               >
                 {posts.map((p, i) => (
@@ -145,9 +150,9 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                     className="blog-post-tab"
                     onClick={() => setActiveIndex(i)}
                     style={{
-                      borderBottom: "1px solid rgba(255,255,255,0.08)",
+                      borderBottom: "1px solid rgba(26,26,24,0.1)",
                       padding: "18px 0",
-                      opacity: activeIndex === i ? 1 : 0.4,
+                      opacity: activeIndex === i ? 1 : 0.5,
                     }}
                   >
                     <span
@@ -157,23 +162,20 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                         letterSpacing: "0.18em",
                         textTransform: "uppercase",
                         color:
-                          activeIndex === i
-                            ? "#8fa68e"
-                            : "rgba(255,255,255,0.5)",
+                          activeIndex === i ? "#8fa68e" : "rgba(26,26,24,0.6)",
                         fontWeight: 500,
                       }}
                     >
                       {p.category}
                     </span>
+
                     <span
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
                         fontSize: "1.15rem",
                         fontWeight: activeIndex === i ? 500 : 400,
                         color:
-                          activeIndex === i
-                            ? "#ffffff"
-                            : "rgba(255,255,255,0.6)",
+                          activeIndex === i ? "#1a1a18" : "rgba(26,26,24,0.65)",
                         lineHeight: 1.3,
                         letterSpacing: "-0.01em",
                       }}
@@ -185,7 +187,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
               </div>
             )}
 
-            {/* Active post detail */}
+            {/* Content */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={post.slug}
@@ -193,9 +195,13 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: "flex", flexDirection: "column", gap: 20 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                }}
               >
-                {/* Date + read time */}
+                {/* Meta */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                   <span
                     style={{
@@ -213,18 +219,20 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                       day: "numeric",
                     })}
                   </span>
+
                   <span
                     style={{
                       width: 1,
                       height: 12,
-                      background: "rgba(255,255,255,0.2)",
+                      background: "rgba(26,26,24,0.15)",
                     }}
                   />
+
                   <span
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: "0.65rem",
-                      color: "rgba(255,255,255,0.35)",
+                      color: "rgba(26,26,24,0.5)",
                       letterSpacing: "0.06em",
                     }}
                   >
@@ -232,14 +240,14 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                   </span>
                 </div>
 
-                {/* Headline — only shown if single post or no tab list */}
+                {/* Title (single post mode only) */}
                 {posts.length === 1 && (
                   <h2
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
                       fontWeight: 400,
-                      color: "#ffffff",
+                      color: "#1a1a18",
                       lineHeight: 1.15,
                       letterSpacing: "-0.015em",
                       margin: 0,
@@ -254,7 +262,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: "0.88rem",
-                    color: "rgba(255,255,255,0.5)",
+                    color: "#1a1a18",
                     lineHeight: 1.8,
                     margin: 0,
                     fontWeight: 300,
@@ -263,7 +271,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                   {post.excerpt}
                 </p>
 
-                {/* CTA row */}
+                {/* CTA */}
                 <div
                   style={{
                     display: "flex",
@@ -272,11 +280,34 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                     marginTop: 8,
                   }}
                 >
-                  <Link href={`/blog/${post.slug}`} className="blog-read-link">
-                    <span>Read Article</span>
-                    <span className="blog-link-icon">
-                      <ArrowUpRight size={14} strokeWidth={2} />
-                    </span>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.72rem",
+                      fontWeight: 500,
+                      color: "#1a1a18",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      textDecoration: "none",
+                      borderBottom: "1px solid rgba(26,26,24,0.2)",
+                      paddingBottom: 2,
+                      transition: "color 0.2s, border-color 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "rgba(26,26,24,0.7)";
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                        "rgba(26,26,24,0.4)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.color =
+                        "#1a1a18";
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
+                        "rgba(26,26,24,0.2)";
+                    }}
+                  >
+                    Read Article
                   </Link>
 
                   <Link
@@ -285,25 +316,25 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: "0.72rem",
                       fontWeight: 500,
-                      color: "rgba(255,255,255,0.35)",
+                      color: "rgba(26,26,24,0.6)",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
                       textDecoration: "none",
-                      borderBottom: "1px solid rgba(255,255,255,0.2)",
+                      borderBottom: "1px solid rgba(26,26,24,0.2)",
                       paddingBottom: 2,
                       transition: "color 0.2s, border-color 0.2s",
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        "rgba(255,255,255,0.7)";
+                        "#1a1a18";
                       (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(255,255,255,0.4)";
+                        "rgba(26,26,24,0.4)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLAnchorElement).style.color =
-                        "rgba(255,255,255,0.35)";
+                        "rgba(26,26,24,0.6)";
                       (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(255,255,255,0.2)";
+                        "rgba(26,26,24,0.2)";
                     }}
                   >
                     All Articles
@@ -313,7 +344,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
             </AnimatePresence>
           </div>
 
-          {/* Right: featured image */}
+          {/* RIGHT */}
           <div className="blog-image-col">
             <AnimatePresence mode="wait">
               <motion.div
@@ -324,7 +355,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   position: "relative",
-                  aspectRatio: "4 / 5",
+                  aspectRatio: "16 / 12",
                   overflow: "hidden",
                 }}
               >
@@ -340,22 +371,19 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
               </motion.div>
             </AnimatePresence>
 
-            {/* Post counter */}
             {posts.length > 1 && (
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginTop: 16,
                   justifyContent: "flex-end",
+                  marginTop: 16,
                 }}
               >
                 <span
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: "0.62rem",
-                    color: "rgba(255,255,255,0.25)",
+                    color: "rgba(26,26,24,0.5)",
                     letterSpacing: "0.12em",
                   }}
                 >
