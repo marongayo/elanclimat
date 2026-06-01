@@ -723,9 +723,9 @@ export default function ContactPage() {
                     maxWidth: 440,
                   }}
                 >
-                  Whether it's a new installation, a maintenance contract, or an
-                  urgent repair — describe your needs below and we'll connect
-                  you with the right specialist.
+                  Whether it is a new installation, a maintenance contract, or
+                  an urgent repair describe your needs to us confident that you
+                  are connected with the right technical industry specialists.
                 </p>
               </div>
 

@@ -342,6 +342,7 @@ export default async function BlogPostPage({
                   display: "grid",
                   gridTemplateColumns: "repeat(2, 1fr)",
                   gap: 12,
+                  marginBottom: 100,
                 }}
               >
                 {filteredRelated.map((p) => (
