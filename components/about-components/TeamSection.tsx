@@ -31,21 +31,33 @@ export function TeamSection() {
         borderTop: `1px solid ${C.rule}`,
       }}
     >
+      <style>{`
+        .team-header {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: end;
+          margin-bottom: 56px;
+        }
+        @media (max-width: 768px) {
+          .team-header {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+          }
+        }
+      `}</style>
+
       <div className="about-inner">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 80,
-            alignItems: "end",
-            marginBottom: 56,
-          }}
-        >
+        <div className="team-header">
+          {/* Heading — always the dominant element */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Eyebrow text="The People" />
             <SectionHeading>Meet the Team Behind the Systems</SectionHeading>
             <div style={{ width: 32, height: 1, background: C.ruleLight }} />
           </div>
+
+          {/* Description — sits beside on desktop, below on mobile */}
           <p
             style={{
               fontFamily: "'DM Sans', sans-serif",
