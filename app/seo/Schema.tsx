@@ -3,8 +3,8 @@ export default function Schema() {
     "@context": "https://schema.org",
     "@type": "HVACBusiness",
     name: "Élan Climat & Énergie",
-    url: "https://elanclimat.co.ke",
-    logo: "https://elanclimat.co.ke/logo.png",
+    url: "https://www.elanclimat.co.ke",
+    logo: "https://www.elanclimat.co.ke/logo.png",
     description:
       "Solar energy, HVAC systems, refrigeration, cold rooms, electrical services, lithium batteries, elevator installation, and generator maintenance across East & Central Africa.",
 
@@ -12,6 +12,7 @@ export default function Schema() {
       "@type": "PostalAddress",
       addressCountry: "KE",
       addressRegion: "Nyeri",
+      // Tip: Adding streetAddress and addressLocality here will prevent Google Search Console warnings.
     },
 
     areaServed: [
@@ -23,8 +24,10 @@ export default function Schema() {
       "Central Africa",
     ],
 
+    // Add your social media links here instead of your own website URL
     sameAs: [
-      "https://elanclimat.co.ke",
+      "https://www.facebook.com/your-page",
+      "https://www.linkedin.com/company/your-page"
     ],
 
     hasOfferCatalog: {
@@ -32,12 +35,16 @@ export default function Schema() {
       name: "Services",
       itemListElement: [
         { "@type": "Offer", itemOffered: { "@type": "Service", name: "Solar Panel Installation" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "HVAC Installation & Maintenance" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Refrigeration & Cold Rooms" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "HVAC Installation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "HVAC Maintenance" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Refrigeration Systems" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cold Rooms" } },
         { "@type": "Offer", itemOffered: { "@type": "Service", name: "Electrical Services" } },
         { "@type": "Offer", itemOffered: { "@type": "Service", name: "Lithium Battery Storage Systems" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Generator Installation & Maintenance" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Lift & Elevator Installation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Generator Installation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Generator Maintenance" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Lift Installation" } },
+        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Elevator Installation" } },
       ],
     },
   };
