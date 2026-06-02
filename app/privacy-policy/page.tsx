@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Footer from "@/components/Footer";
 
-// ─── Design tokens — exact match across all pages ─────────────────────────────
+// ─── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
   charcoal: "#1a1a18",
   warmWhite: "#f9f7f4",
@@ -82,7 +82,6 @@ const SECTIONS = [
   },
 ];
 
-// ─── Shared eyebrow — identical across all pages ──────────────────────────────
 function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -110,11 +109,9 @@ function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PrivacyPolicyPage() {
   const [activeSection, setActiveSection] = useState("01");
 
-  // Highlight active TOC item on scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -146,14 +143,13 @@ export default function PrivacyPolicyPage() {
           padding: 0 64px;
         }
 
-        /* Sticky TOC nav */
+        /* Sticky top nav */
         .pp-toc-inner {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 64px;
           display: flex;
           align-items: center;
-          gap: 0;
           overflow-x: auto;
           scrollbar-width: none;
         }
@@ -176,7 +172,7 @@ export default function PrivacyPolicyPage() {
         }
         .pp-toc-link:hover { color: ${C.charcoal}; }
 
-        /* Body layout — sidebar TOC + content */
+        /* Body: sidebar + content */
         .pp-layout {
           display: grid;
           grid-template-columns: 220px 1fr;
@@ -186,8 +182,6 @@ export default function PrivacyPolicyPage() {
           margin: 0 auto;
           padding: 80px 64px 120px;
         }
-
-        /* Sidebar TOC */
         .pp-sidebar {
           position: sticky;
           top: 80px;
@@ -229,16 +223,68 @@ export default function PrivacyPolicyPage() {
         .pp-section:first-child { padding-top: 0; }
         .pp-section:last-child { border-bottom: none; }
 
+        /* Hero right col */
+        .pp-hero-right { display: flex; flex-direction: column; gap: 14px; }
+
+        /* CTA band */
+        .pp-cta-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          min-height: 280px;
+        }
+        .pp-cta-left {
+          padding: 72px 64px;
+          border-right: 1px solid rgba(255,255,255,0.07);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .pp-cta-right {
+          padding: 72px 64px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        /* ── Tablet ── */
         @media (max-width: 1100px) {
           .pp-inner { padding: 0 32px; }
           .pp-toc-inner { padding: 0 32px; }
-          .pp-layout { grid-template-columns: 1fr; padding: 56px 32px 80px; gap: 0; }
+          .pp-layout {
+            grid-template-columns: 1fr;
+            padding: 56px 32px 80px;
+            gap: 0;
+          }
           .pp-sidebar { display: none; }
+
+          /* Hero: stack columns */
+          .pp-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .pp-hero-right { max-width: 560px; }
+
+          /* CTA: stack */
+          .pp-cta-grid { grid-template-columns: 1fr !important; }
+          .pp-cta-left {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding: 56px 32px !important;
+          }
+          .pp-cta-right { padding: 56px 32px !important; }
         }
+
+        /* ── Mobile ── */
         @media (max-width: 640px) {
-          .pp-inner { padding: 0 24px; }
-          .pp-toc-inner { padding: 0 24px; }
-          .pp-layout { padding: 48px 24px 64px; }
+          .pp-inner { padding: 0 20px; }
+          .pp-toc-inner { padding: 0 20px; }
+          .pp-layout { padding: 40px 20px 64px; }
+
+          .pp-cta-left { padding: 48px 20px !important; }
+          .pp-cta-right { padding: 48px 20px !important; }
+
+          /* Tighten section rows */
+          .pp-section { padding: 40px 0; }
+
+          /* Hide ghost numeral on very small screens */
+          .pp-section-numeral { display: none !important; }
         }
       `}</style>
 
@@ -262,7 +308,6 @@ export default function PrivacyPolicyPage() {
           style={{ objectFit: "cover", objectPosition: "center 40%" }}
           quality={85}
         />
-        {/* Same gradient as contact/services/careers */}
         <div
           style={{
             position: "absolute",
@@ -322,6 +367,7 @@ export default function PrivacyPolicyPage() {
           {/* Hero copy */}
           <div className="pp-inner">
             <div
+              className="pp-hero-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -329,7 +375,6 @@ export default function PrivacyPolicyPage() {
                 alignItems: "flex-end",
               }}
             >
-              {/* Left */}
               <motion.div
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -356,8 +401,8 @@ export default function PrivacyPolicyPage() {
                 </h1>
               </motion.div>
 
-              {/* Right */}
               <motion.div
+                className="pp-hero-right"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
@@ -365,7 +410,6 @@ export default function PrivacyPolicyPage() {
                   ease: [0.22, 1, 0.36, 1],
                   delay: 0.12,
                 }}
-                style={{ display: "flex", flexDirection: "column", gap: 14 }}
               >
                 <span
                   style={{
@@ -378,7 +422,6 @@ export default function PrivacyPolicyPage() {
                 >
                   Last updated — {LAST_UPDATED}
                 </span>
-
                 <p
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
@@ -395,7 +438,6 @@ export default function PrivacyPolicyPage() {
                   explains exactly how we handle your personal data in
                   compliance with the Kenya Data Protection Act, 2019.
                 </p>
-
                 <a
                   href="mailto:legal@elanclimat.co.ke"
                   style={{
@@ -419,7 +461,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          STICKY TOP NAV — same pattern as services page
+          STICKY TOP NAV
       ══════════════════════════════════════════════════════════════════════ */}
       <div
         style={{
@@ -448,7 +490,6 @@ export default function PrivacyPolicyPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ backgroundColor: C.warmWhite }}>
         <div className="pp-layout">
-          {/* Sidebar TOC — same sticky sidebar pattern */}
           <aside className="pp-sidebar">
             <span className="pp-sidebar-title">Contents</span>
             {SECTIONS.map((s) => (
@@ -462,7 +503,6 @@ export default function PrivacyPolicyPage() {
             ))}
           </aside>
 
-          {/* Content */}
           <div>
             {SECTIONS.map((s, i) => (
               <motion.div
@@ -479,7 +519,6 @@ export default function PrivacyPolicyPage() {
                 }}
                 style={{ scrollMarginTop: 80 }}
               >
-                {/* Section header row */}
                 <div
                   style={{
                     display: "flex",
@@ -492,7 +531,6 @@ export default function PrivacyPolicyPage() {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 8 }}
                   >
-                    {/* Eyebrow-style index */}
                     <div
                       style={{ display: "flex", alignItems: "center", gap: 10 }}
                     >
@@ -532,8 +570,8 @@ export default function PrivacyPolicyPage() {
                     </h2>
                   </div>
 
-                  {/* Section number — large ghost numeral, same as services page */}
                   <span
+                    className="pp-section-numeral"
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
@@ -548,7 +586,6 @@ export default function PrivacyPolicyPage() {
                   </span>
                 </div>
 
-                {/* Divider — same 32px rule from about/contact */}
                 <div
                   style={{
                     width: 32,
@@ -558,7 +595,6 @@ export default function PrivacyPolicyPage() {
                   }}
                 />
 
-                {/* Content */}
                 <div
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
@@ -570,7 +606,6 @@ export default function PrivacyPolicyPage() {
                     maxWidth: 680,
                   }}
                 >
-                  {/* Linkify email and odpc.go.ke */}
                   {s.content
                     .split(/(legal@elanclimat\.co\.ke|www\.odpc\.go\.ke)/g)
                     .map((part, pi) =>
@@ -612,26 +647,12 @@ export default function PrivacyPolicyPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          CTA BAND — dark, matching contact/careers/services footer bands
+          CTA BAND
       ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: C.charcoal, padding: "0" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            minHeight: 280,
-          }}
-        >
+      <section style={{ background: C.charcoal, padding: 0 }}>
+        <div className="pp-cta-grid">
           {/* Left */}
-          <div
-            style={{
-              padding: "72px 64px",
-              borderRight: "1px solid rgba(255,255,255,0.07)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
+          <div className="pp-cta-left">
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <Eyebrow text="Questions about your data?" light />
               <h2
@@ -665,6 +686,7 @@ export default function PrivacyPolicyPage() {
                   lineHeight: 1.8,
                   maxWidth: 340,
                   fontWeight: 300,
+                  margin: 0,
                 }}
               >
                 We're happy to clarify anything in this policy or tell you
@@ -691,15 +713,8 @@ export default function PrivacyPolicyPage() {
             </a>
           </div>
 
-          {/* Right — related links */}
-          <div
-            style={{
-              padding: "72px 64px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
+          {/* Right */}
+          <div className="pp-cta-right">
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <span
                 style={{
@@ -744,12 +759,14 @@ export default function PrivacyPolicyPage() {
                     gap: 16,
                   }}
                   onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLAnchorElement;
-                    el.style.borderBottomColor = "rgba(255,255,255,0.2)";
+                    (
+                      e.currentTarget as HTMLAnchorElement
+                    ).style.borderBottomColor = "rgba(255,255,255,0.2)";
                   }}
                   onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLAnchorElement;
-                    el.style.borderBottomColor = "rgba(255,255,255,0.07)";
+                    (
+                      e.currentTarget as HTMLAnchorElement
+                    ).style.borderBottomColor = "rgba(255,255,255,0.07)";
                   }}
                 >
                   <div>

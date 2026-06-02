@@ -32,7 +32,6 @@ const ROLES = [
     location: "Nairobi, KE",
     type: "Full-time",
     index: "01",
-
     description:
       "Install, commission, and service high-efficiency HVAC systems across residential and commercial projects. You'll work alongside our senior engineers on premium builds where precision matters.",
     requirements: [
@@ -49,7 +48,6 @@ const ROLES = [
     location: "Nairobi, KE",
     type: "Full-time",
     index: "02",
-
     description:
       "Design and oversee solar PV and battery storage installations from site survey through commissioning. You care about clean energy as much as we do.",
     requirements: [
@@ -66,7 +64,6 @@ const ROLES = [
     location: "Nairobi, KE",
     type: "Full-time",
     index: "03",
-
     description:
       "Keep our installation projects running on time and on budget. You'll coordinate between clients, procurement, and field teams — the connective tissue that makes everything work.",
     requirements: [
@@ -83,7 +80,6 @@ const ROLES = [
     location: "Nairobi, KE",
     type: "Full-time",
     index: "04",
-
     description:
       "Introduce clients to our range of HVAC, solar, and battery solutions. You'll guide them from initial inquiry through system selection — warm conversations with people who already want what we offer.",
     requirements: [
@@ -100,7 +96,6 @@ const ROLES = [
     location: "Nairobi / Remote",
     type: "Internship",
     index: "05",
-
     description:
       "Help shape how Élan looks and sounds — from social content to product photography briefs. Real experience with a brand that takes aesthetics seriously.",
     requirements: [
@@ -152,7 +147,6 @@ const EMPTY_FORM: AppForm = {
 };
 type Role = (typeof ROLES)[number];
 
-// ─── Shared eyebrow — same as about/contact ───────────────────────────────────
 function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -180,7 +174,6 @@ function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
   );
 }
 
-// ─── Form field — same pattern as contact page ────────────────────────────────
 function FormField({
   label,
   required,
@@ -224,7 +217,6 @@ function FormField({
   );
 }
 
-// ─── Application form ─────────────────────────────────────────────────────────
 function ApplicationForm({
   role,
   onSuccess,
@@ -291,13 +283,13 @@ function ApplicationForm({
       exit={{ opacity: 0, y: 6 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       onClick={(e) => e.stopPropagation()}
+      className="app-form-inner"
       style={{
         background: C.offWhite,
         borderTop: `1px solid ${C.rule}`,
         padding: "40px 0 48px 80px",
       }}
     >
-      {/* Form heading */}
       <div style={{ marginBottom: 32 }}>
         <Eyebrow text="Application" />
         <h3
@@ -320,14 +312,7 @@ function ApplicationForm({
 
       <div style={{ maxWidth: 680 }}>
         {/* Name */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 16,
-            marginBottom: 16,
-          }}
-        >
+        <div className="form-row-2" style={{ marginBottom: 16 }}>
           <FormField label="First name" required error={errors.firstName}>
             <input
               style={inputStyle("firstName")}
@@ -351,14 +336,7 @@ function ApplicationForm({
         </div>
 
         {/* Email + phone */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 16,
-            marginBottom: 16,
-          }}
-        >
+        <div className="form-row-2" style={{ marginBottom: 16 }}>
           <FormField label="Email address" required error={errors.email}>
             <input
               style={inputStyle("email")}
@@ -384,14 +362,7 @@ function ApplicationForm({
         </div>
 
         {/* Location + LinkedIn */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 16,
-            marginBottom: 16,
-          }}
-        >
+        <div className="form-row-2" style={{ marginBottom: 16 }}>
           <FormField label="Current location">
             <input
               style={inputStyle("location")}
@@ -627,7 +598,6 @@ function ApplicationForm({
   );
 }
 
-// ─── Role row ─────────────────────────────────────────────────────────────────
 function RoleRow({
   role,
   isOpen,
@@ -652,6 +622,7 @@ function RoleRow({
         onClick={() => {
           if (status !== "form") onToggle();
         }}
+        className="role-row-header"
         style={{
           display: "grid",
           gridTemplateColumns: "56px 1fr auto auto",
@@ -669,8 +640,9 @@ function RoleRow({
           (e.currentTarget as HTMLDivElement).style.paddingLeft = "0px";
         }}
       >
-        {/* Index */}
+        {/* Index — hidden on mobile via CSS */}
         <span
+          className="role-index"
           style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.58rem",
@@ -686,7 +658,7 @@ function RoleRow({
           <div
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "1.35rem",
+              fontSize: "clamp(1.05rem, 2.5vw, 1.35rem)",
               fontWeight: 400,
               color: C.charcoal,
               lineHeight: 1.2,
@@ -709,8 +681,9 @@ function RoleRow({
           </div>
         </div>
 
-        {/* Meta */}
+        {/* Meta — hidden on small screens via CSS */}
         <div
+          className="role-row-meta"
           style={{
             display: "flex",
             flexDirection: "column",
@@ -739,7 +712,7 @@ function RoleRow({
           </span>
         </div>
 
-        {/* Chevron — same pill style as about section tabs */}
+        {/* Chevron */}
         <div
           style={{
             width: 32,
@@ -774,216 +747,245 @@ function RoleRow({
             style={{ overflow: "hidden" }}
           >
             <div onClick={(e) => e.stopPropagation()}>
-              {/* Role detail — image + text two-column */}
+              {/* Role detail — single column on mobile, padded left on desktop */}
               <div
+                className="role-detail-left"
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 380px",
-                  gap: 48,
                   padding: "0 0 40px 80px",
-                  alignItems: "start",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 24,
                 }}
               >
-                {/* Left: description + requirements + CTA */}
+                {/* Meta tags shown on mobile (hidden on desktop via CSS) */}
                 <div
-                  style={{ display: "flex", flexDirection: "column", gap: 24 }}
+                  className="role-meta-mobile"
+                  style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
                 >
-                  <div>
-                    <span
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.58rem",
-                        letterSpacing: "0.2em",
-                        textTransform: "uppercase" as const,
-                        color: C.dim,
-                        display: "block",
-                        marginBottom: 10,
-                      }}
-                    >
-                      About the role
-                    </span>
-                    <p
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.86rem",
-                        color: C.body,
-                        lineHeight: 1.85,
-                        fontWeight: 300,
-                      }}
-                    >
-                      {role.description}
-                    </p>
-                  </div>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.68rem",
+                      color: C.muted,
+                      background: C.rule,
+                      padding: "4px 10px",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {role.location}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.68rem",
+                      color: C.dim,
+                      background: C.rule,
+                      padding: "4px 10px",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {role.type}
+                  </span>
+                </div>
 
-                  <div>
-                    <span
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.58rem",
-                        letterSpacing: "0.2em",
-                        textTransform: "uppercase" as const,
-                        color: C.dim,
-                        display: "block",
-                        marginBottom: 12,
-                      }}
-                    >
-                      What we're looking for
-                    </span>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 10,
-                      }}
-                    >
-                      {role.requirements.map((r, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: 12,
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 4,
-                              height: 4,
-                              borderRadius: "50%",
-                              background: C.sage,
-                              flexShrink: 0,
-                              marginTop: 8,
-                              display: "inline-block",
-                            }}
-                          />
-                          <span
-                            style={{
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontSize: "0.82rem",
-                              color: C.body,
-                              lineHeight: 1.7,
-                              fontWeight: 300,
-                            }}
-                          >
-                            {r}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.58rem",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase" as const,
+                      color: C.dim,
+                      display: "block",
+                      marginBottom: 10,
+                    }}
+                  >
+                    About the role
+                  </span>
+                  <p
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.86rem",
+                      color: C.body,
+                      lineHeight: 1.85,
+                      fontWeight: 300,
+                      maxWidth: 640,
+                      margin: 0,
+                    }}
+                  >
+                    {role.description}
+                  </p>
+                </div>
 
-                  {/* Status-driven CTA */}
-                  {status === "idle" && (
-                    <button
-                      onClick={onOpenForm}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 10,
-                        background: C.charcoal,
-                        color: "#ffffff",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "12px 10px 12px 24px",
-                        borderRadius: 9999,
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.74rem",
-                        fontWeight: 500,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase" as const,
-                        alignSelf: "flex-start",
-                        marginTop: 8,
-                        transition: "opacity 0.2s",
-                      }}
-                      onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLButtonElement).style.opacity =
-                          "0.8")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLButtonElement).style.opacity =
-                          "1")
-                      }
-                    >
-                      Apply for this role
-                      <span
+                <div>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.58rem",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase" as const,
+                      color: C.dim,
+                      display: "block",
+                      marginBottom: 12,
+                    }}
+                  >
+                    What we're looking for
+                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 10,
+                    }}
+                  >
+                    {role.requirements.map((r, i) => (
+                      <div
+                        key={i}
                         style={{
-                          width: 30,
-                          height: 30,
-                          borderRadius: "50%",
-                          background: "rgba(255,255,255,0.15)",
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          alignItems: "flex-start",
+                          gap: 12,
                         }}
                       >
-                        <ArrowUpRight size={13} strokeWidth={2} />
-                      </span>
-                    </button>
-                  )}
-
-                  {status === "form" && (
-                    <p
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.7rem",
-                        color: C.sage,
-                        letterSpacing: "0.06em",
-                        marginTop: 8,
-                      }}
-                    >
-                      ↓ Complete the form below
-                    </p>
-                  )}
-
-                  {status === "success" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 14,
-                        background: "#f3f8f3",
-                        border: "1px solid #c8dbc7",
-                        padding: "16px 20px",
-                        marginTop: 8,
-                      }}
-                    >
-                      <CheckCircle2
-                        size={18}
-                        strokeWidth={1.5}
-                        style={{
-                          color: C.sageDark,
-                          marginTop: 1,
-                          flexShrink: 0,
-                        }}
-                      />
-                      <div>
-                        <div
+                        <span
+                          style={{
+                            width: 4,
+                            height: 4,
+                            borderRadius: "50%",
+                            background: C.sage,
+                            flexShrink: 0,
+                            marginTop: 8,
+                            display: "inline-block",
+                          }}
+                        />
+                        <span
                           style={{
                             fontFamily: "'DM Sans', sans-serif",
                             fontSize: "0.82rem",
-                            color: C.sageDark,
-                            fontWeight: 500,
+                            color: C.body,
+                            lineHeight: 1.7,
+                            fontWeight: 300,
                           }}
                         >
-                          Application received
-                        </div>
-                        <div
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: "0.74rem",
-                            color: C.sageDark,
-                            opacity: 0.75,
-                            marginTop: 2,
-                          }}
-                        >
-                          We'll be in touch within one business day.
-                        </div>
+                          {r}
+                        </span>
                       </div>
-                    </motion.div>
-                  )}
+                    ))}
+                  </div>
                 </div>
+
+                {/* Status-driven CTA */}
+                {status === "idle" && (
+                  <button
+                    onClick={onOpenForm}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 10,
+                      background: C.charcoal,
+                      color: "#ffffff",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "12px 10px 12px 24px",
+                      borderRadius: 9999,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.74rem",
+                      fontWeight: 500,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase" as const,
+                      alignSelf: "flex-start",
+                      marginTop: 8,
+                      transition: "opacity 0.2s",
+                    }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.opacity =
+                        "0.8")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLButtonElement).style.opacity =
+                        "1")
+                    }
+                  >
+                    Apply for this role
+                    <span
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: "50%",
+                        background: "rgba(255,255,255,0.15)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <ArrowUpRight size={13} strokeWidth={2} />
+                    </span>
+                  </button>
+                )}
+
+                {status === "form" && (
+                  <p
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.7rem",
+                      color: C.sage,
+                      letterSpacing: "0.06em",
+                      marginTop: 8,
+                    }}
+                  >
+                    ↓ Complete the form below
+                  </p>
+                )}
+
+                {status === "success" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 14,
+                      background: "#f3f8f3",
+                      border: "1px solid #c8dbc7",
+                      padding: "16px 20px",
+                      marginTop: 8,
+                      maxWidth: 400,
+                    }}
+                  >
+                    <CheckCircle2
+                      size={18}
+                      strokeWidth={1.5}
+                      style={{
+                        color: C.sageDark,
+                        marginTop: 1,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.82rem",
+                          color: C.sageDark,
+                          fontWeight: 500,
+                        }}
+                      >
+                        Application received
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.74rem",
+                          color: C.sageDark,
+                          opacity: 0.75,
+                          marginTop: 2,
+                        }}
+                      >
+                        We'll be in touch within one business day.
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
 
               {/* Application form */}
@@ -1032,25 +1034,78 @@ export default function CareersPage() {
           margin: 0 auto;
           padding: 0 64px;
         }
+
+        /* Mobile meta tags: hidden on desktop, shown on mobile */
+        .role-meta-mobile { display: none; }
+
+        /* ── Tablet ── */
         @media (max-width: 1024px) {
           .careers-inner { padding: 0 32px; }
+
+          /* Hero: stack vertically */
           .careers-hero-grid { grid-template-columns: 1fr !important; }
           .careers-hero-right { display: none !important; }
-          .careers-roles-detail { grid-template-columns: 1fr !important; }
-          .careers-roles-img { display: none !important; }
+
+          /* Culture: stack image above text */
+          .careers-culture-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .careers-culture-images {
+            height: 320px !important;
+            grid-template-rows: 1fr !important;
+          }
+          /* On tablet show only the first (full-width) image */
+          .careers-culture-images > div:nth-child(2),
+          .careers-culture-images > div:nth-child(3) {
+            display: none !important;
+          }
+          .careers-culture-images > div:first-child {
+            grid-column: 1 / -1 !important;
+          }
+
+          /* Roles: collapse location/type meta in header, show pills inside */
           .role-row-meta { display: none !important; }
-          .careers-cta-grid { grid-template-columns: 1fr !important; }
-          .app-form-inner { padding-left: 0 !important; }
+          .role-meta-mobile { display: flex !important; }
+
+          /* Role detail: remove left indent */
           .role-detail-left { padding-left: 0 !important; }
+          .app-form-inner { padding-left: 0 !important; }
+
+          /* Role header: collapse index column */
+          .role-index { display: none; }
+          .role-row-header { grid-template-columns: 1fr auto auto !important; }
+
+          /* Roles section header: single column */
+          .careers-roles-header { grid-template-columns: 1fr !important; gap: 24px !important; }
+
+          /* CTA: stack */
+          .careers-cta-grid { grid-template-columns: 1fr !important; }
+          .careers-cta-left { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; }
         }
+
+        /* ── Mobile ── */
         @media (max-width: 640px) {
-          .careers-inner { padding: 0 24px; }
+          .careers-inner { padding: 0 20px; }
           .careers-stats { gap: 28px !important; }
+
+          /* Culture images: even shorter on mobile */
+          .careers-culture-images { height: 240px !important; }
+
+          /* Form: single column for all field pairs */
+          .form-row-2 {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+          }
+
+          /* CTA pads */
+          .careers-cta-left,
+          .careers-cta-right { padding: 48px 24px !important; }
         }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          HERO — dark split matching contact/services hero language
+          HERO
       ══════════════════════════════════════════════════════════════════════ */}
       <div
         style={{ position: "relative", minHeight: "88vh", overflow: "hidden" }}
@@ -1292,11 +1347,12 @@ export default function CareersPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          CULTURE STRIP — three images + text, warm white bg like about section
+          CULTURE STRIP
       ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ backgroundColor: C.warmWhite, padding: "96px 0" }}>
         <div className="careers-inner">
           <div
+            className="careers-culture-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
@@ -1304,8 +1360,9 @@ export default function CareersPage() {
               alignItems: "center",
             }}
           >
-            {/* Left: image collage — same 3-image grid as about section */}
+            {/* Left: image collage */}
             <div
+              className="careers-culture-images"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -1325,7 +1382,7 @@ export default function CareersPage() {
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&q=80"
                   alt="Team collaboration"
                   fill
-                  sizes="(max-width:1024px) 100vw, 50vw"
+                  sizes="(max-width:640px) 100vw, (max-width:1024px) 100vw, 50vw"
                   style={{ objectFit: "cover" }}
                   quality={80}
                 />
@@ -1434,12 +1491,13 @@ export default function CareersPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          ROLES — accordion list on off-white
+          ROLES
       ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ backgroundColor: C.offWhite, padding: "96px 0" }}>
         <div className="careers-inner">
           {/* Section header */}
           <div
+            className="careers-roles-header"
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
@@ -1508,7 +1566,7 @@ export default function CareersPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          OPEN APPLICATION CTA — dark band matching contact/services CTA
+          OPEN APPLICATION CTA
       ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: C.charcoal, padding: "0" }}>
         <div
@@ -1521,6 +1579,7 @@ export default function CareersPage() {
         >
           {/* Left */}
           <div
+            className="careers-cta-left"
             style={{
               padding: "72px 64px",
               borderRight: "1px solid rgba(255,255,255,0.07)",
@@ -1590,6 +1649,7 @@ export default function CareersPage() {
 
           {/* Right — company note */}
           <div
+            className="careers-cta-right"
             style={{
               padding: "72px 64px",
               display: "flex",
@@ -1629,8 +1689,6 @@ export default function CareersPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

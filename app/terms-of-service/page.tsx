@@ -1016,6 +1016,7 @@ export default function TermsOfServicePage() {
                 Related
               </span>
               {[
+                { label: "Home", href: "/", desc: "Return to our homepage" },
                 {
                   label: "Privacy Policy",
                   href: "/privacy-policy",
@@ -1025,11 +1026,6 @@ export default function TermsOfServicePage() {
                   label: "Contact Us",
                   href: "/contact",
                   desc: "Send us a direct message",
-                },
-                {
-                  label: "Our Services",
-                  href: "/services",
-                  desc: "What we build and maintain",
                 },
               ].map((link) => (
                 <Link
@@ -1104,7 +1100,7 @@ export default function TermsOfServicePage() {
             >
               Élan Climat & Énergie
               <br />
-              Nairobi, Kenya · Est. 2012
+              Nairobi, Kenya · Est. 2018
             </div>
           </div>
         </div>
