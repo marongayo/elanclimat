@@ -26,8 +26,8 @@ export default function Schema() {
 
     // Add your social media links here instead of your own website URL
     sameAs: [
-      "https://www.facebook.com/your-page",
-      "https://www.linkedin.com/company/your-page"
+      "https://www.facebook.com/elanclimat",
+      "https://www.linkedin.com/company/elanclimat"
     ],
 
     hasOfferCatalog: {
