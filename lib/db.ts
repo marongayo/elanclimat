@@ -7,15 +7,15 @@ import { ProductModel } from "./models/Product";
 import { MessageModel } from "./models/Message";
 import { UserModel } from "./models/User";
 import bcrypt from "bcryptjs";
-import { BlogPost } from "@/lib/types/blog";
-import { Product } from "@/lib/types/product";
-import { Message } from "@/lib/types/message";
-import { User } from "@/lib/types/admin";
+import type { BlogPost } from "@/lib/types/blog";
+import type { Job } from "@/lib/types/jobs";
+import type { Product } from "@/lib/types/product";
+import type { Message } from "@/lib/types/message";
+import type { User } from "@/lib/types/admin";
+import { JobModel } from "./models/Jobs";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Fully serializes a raw Mongoose product document into a plain Product object.
-// Handles top-level _id and any nested ObjectIds in sub-document arrays.
 function serializeProduct(raw: any): Product {
   return {
     ...raw,
@@ -186,4 +186,29 @@ export async function updateUserPassword(
   await UserModel.findByIdAndUpdate(new Types.ObjectId(id), {
     password: hashedPassword,
   });
+}
+
+// ─── Jobs ─────────────────────────────────────────────────────────────────────
+export async function getJobs() {
+  await connectDB();
+  const jobs = await JobModel.find().lean();
+  return jobs.map(({ _id, ...rest }) => ({
+    ...rest,
+    _id: _id.toString(),
+  })) as unknown as Job[];
+}
+
+export async function saveJob(job: Job) {
+  await connectDB();
+  const { _id, ...data } = job;
+  if (_id) {
+    await JobModel.findByIdAndUpdate(new Types.ObjectId(_id), data);
+  } else {
+    await JobModel.create(data);
+  }
+}
+
+export async function deleteJob(id: string) {
+  await connectDB();
+  await JobModel.findByIdAndDelete(new Types.ObjectId(id));
 }

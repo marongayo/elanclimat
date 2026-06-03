@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { Eyebrow } from "@/components/about-components/Eyebrow";
+import Eyebrow from "@/components/Eyebrow";
 import { SectionHeading } from "@/components/about-components/SectionHeading";
 import { TeamCard } from "@/components/about-components/TeamCard";
-import { C, IMG } from "@/app/about/_tokens";
+import { C, IMG } from "@/lib/constants";
 
 const TEAM = [
   {

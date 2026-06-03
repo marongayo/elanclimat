@@ -12,7 +12,8 @@ import { ServicesSection } from "@/components/about-components/ServicesSection";
 import { TeamSection } from "@/components/about-components/TeamSection";
 import { CsrSection } from "@/components/about-components/CsrSection";
 import { CtaSection } from "@/components/about-components/CtaSection";
-import { C } from "./_tokens";
+import Navbar from "@/components/Navbar";
+import { C } from "@/lib/constants";
 
 export default function AboutPage() {
   const [showTop, setShowTop] = useState(false);
@@ -25,6 +26,7 @@ export default function AboutPage() {
 
   return (
     <main style={{ background: C.warmWhite }}>
+      <Navbar />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 

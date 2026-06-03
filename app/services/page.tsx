@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUpRight, ArrowUp, CheckCircle2 } from "lucide-react";
+import Navbar from "@/components/Navbar";
 
 // ─── Shared design tokens ────────────────────────────────────────────────────
 const C = {
@@ -563,6 +564,8 @@ export default function ServicesPage() {
 
   return (
     <main style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <Navbar />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 

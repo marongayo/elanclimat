@@ -8,7 +8,15 @@ import { useSession, signOut } from "next-auth/react";
 import { BlogPost } from "@/lib/types/blog";
 import { Product } from "@/lib/types/product";
 import { User } from "@/lib/types/admin";
-import { SquareCheckBig, X, Save, UserPlus } from "lucide-react";
+import {
+  SquareCheckBig,
+  X,
+  Save,
+  FileText,
+  Package,
+  Briefcase,
+  UserPlus,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "@/components/admin-components/AdminSidebar";
 import AdminMessagesPanel from "@/components/admin-components/AdminMessagesPanel";
@@ -19,6 +27,7 @@ import type { BlogForm } from "@/lib/types/blog";
 import type { AdminForm, AdminFormErrors } from "@/lib/types/admin";
 import type { Tab } from "@/lib/types/admin";
 import type { Role } from "@/lib/types/admin";
+import type { Job, JobForm } from "@/lib/types/jobs";
 import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -35,6 +44,15 @@ const emptyBlog = (): BlogForm => ({
   author: "Élan Editorial",
   date: new Date().toISOString().split("T")[0],
   readTime: "5 min",
+});
+
+const emptyJob = (): JobForm => ({
+  title: "",
+  description: "",
+  location: "",
+  category: "",
+  type: "Full-time",
+  requirements: [],
 });
 
 const emptyProduct = (): ProductForm => ({
@@ -74,7 +92,6 @@ const validateAdmin = (af: AdminForm, isEdit = false): AdminFormErrors => {
   if (!af.name.trim()) errs.name = "Name is required.";
   if (!af.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(af.email))
     errs.email = "A valid email is required.";
-  // In create mode password is required; in edit mode blank = keep existing
   if (!isEdit && (!af.password || af.password.length < 8))
     errs.password = "Password must be at least 8 characters.";
   if (isEdit && af.password && af.password.length < 8)
@@ -142,17 +159,12 @@ export default function AdminClient({
   const [products, setProducts] = useState(initialProducts);
   const [admins, setAdmins] = useState<User[]>([]);
 
-  // Local display name — kept in sync with the session but updated optimistically
-  // so the sidebar footer reflects changes immediately without a page reload.
   const [displayName, setDisplayName] = useState<string>("");
 
   const [blogForm, setBlogForm] = useState<BlogForm | null>(null);
   const [productForm, setProductForm] = useState<ProductForm | null>(null);
   const [productErrors, setProductErrors] = useState<ProductErrors>({});
 
-  // Admin create / edit modal
-  // editAdminId is set when editing an existing admin; null means "create" mode.
-  // Keeping _id out of AdminForm so it stays clean and matches the type definition.
   const [adminForm, setAdminForm] = useState<AdminForm | null>(null);
   const [editAdminId, setEditAdminId] = useState<string | null>(null);
   const [adminErrors, setAdminErrors] = useState<AdminFormErrors>({});
@@ -163,12 +175,10 @@ export default function AdminClient({
   const [uploadingBlog, setUploadingBlog] = useState(false);
   const [uploadingProduct, setUploadingProduct] = useState(false);
 
-  // FAB + Toast
   const [toastVisible, setToastVisible] = useState(false);
   const [msg, setMsg] = useState("");
   const [open, setOpen] = useState(false);
 
-  // Messages
   const [messages, setMessages] = useState<Message[]>([]);
   const [unread, setUnread] = useState(0);
   const [archivedMessages, setArchivedMessages] = useState<Message[]>([]);
@@ -177,6 +187,11 @@ export default function AdminClient({
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [msgPanelOpen, setMsgPanelOpen] = useState(false);
   const [ellipsisOpen, setEllipsisOpen] = useState(false);
+
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobForm, setJobForm] = useState<JobForm | null>(null);
+
+  // ─── Data loaders (defined before useEffect calls that reference them) ────
 
   const loadMessages = async () => {
     try {
@@ -202,24 +217,25 @@ export default function AdminClient({
     }
   };
 
+  const loadJobs = async () => {
+    const data = await fetch("/api/jobs").then((r) => r.json());
+    setJobs(Array.isArray(data) ? data : []);
+  };
+
+  // ─── All useEffects together, before any early returns ────────────────────
+
   useEffect(() => {
     loadMessages();
     const interval = setInterval(loadMessages, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Load admins for ALL roles so that:
-  // (a) superadmin sees the Admins tab
-  // (b) every role can find their own record for the My Account profile card
   useEffect(() => {
     if (status === "authenticated") {
       loadAdmins();
     }
   }, [status]);
 
-  // Seed displayName from session once it arrives, then keep it local.
-  // Also fall back to the admins list (populated after auth) so the sidebar
-  // footer always shows the correct name even if the session token lags.
   useEffect(() => {
     if (session?.user?.name) {
       setDisplayName(session.user.name);
@@ -234,6 +250,10 @@ export default function AdminClient({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [admins]);
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
   // ─── EARLY RETURNS ────────────────────────────────────────────────────────
 
@@ -260,10 +280,6 @@ export default function AdminClient({
   const currentUserId = session.user?.id as string;
   const currentUserEmail = (session.user?.email as string | undefined) ?? "";
 
-  // Only the designated superadmin (name="Super Admin", email="superadmin@elanclimat.co.ke")
-  // may delete admin accounts. Check both the session token AND the loaded admins list
-  // (DB source of truth) with trim()+toLowerCase() so whitespace or session-lag can't
-  // cause false negatives.
   const dbRecord = admins.find((a) => a._id === currentUserId);
   const isTrueSuperadmin =
     role === "superadmin" &&
@@ -323,6 +339,31 @@ export default function AdminClient({
     toast("Post deleted.");
   };
 
+  const saveJob = async () => {
+    if (!jobForm) return;
+    setSaving(true);
+    await fetch("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jobForm),
+    });
+    await loadJobs();
+    setJobForm(null);
+    setSaving(false);
+    toast("Job saved!");
+  };
+
+  const deleteJob = async (id: string) => {
+    if (!confirm("Delete this vacancy?")) return;
+    await fetch("/api/jobs", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    setJobs((p) => p.filter((j) => j._id !== id));
+    toast("Vacancy deleted.");
+  };
+
   const saveProduct = async () => {
     if (!productForm) return;
     const errs = validateProduct(productForm);
@@ -375,7 +416,6 @@ export default function AdminClient({
   const saveAdmin = async () => {
     if (!adminForm) return;
     const isEdit = !!editAdminId;
-
     const errs = validateAdmin(adminForm, isEdit);
     if (Object.keys(errs).length > 0) {
       setAdminErrors(errs);
@@ -460,9 +500,6 @@ export default function AdminClient({
     }
   };
 
-  // Updates name in the DB, then optimistically refreshes local state so
-  // the sidebar footer and My Account profile card both reflect the new name
-  // without requiring a page reload.
   const changeAdminUsername = async (id: string, newName: string) => {
     const res = await fetch("/api/user", {
       method: "PATCH",
@@ -473,16 +510,11 @@ export default function AdminClient({
       const data = await res.json();
       throw new Error(data.error || "Failed to update name");
     }
-    // Update the admins list so the My Account profile card re-renders
     setAdmins((prev) =>
       prev.map((a) => (a._id === id ? { ...a, name: newName } : a)),
     );
-    // If the changed user is the currently logged-in user, update the sidebar
-    // display name immediately and attempt to refresh the NextAuth session.
     if (id === currentUserId) {
       setDisplayName(newName);
-      // updateSession triggers a session refresh so session.user.name stays
-      // accurate across the rest of the session lifecycle.
       try {
         await updateSession({ name: newName });
       } catch {
@@ -491,14 +523,7 @@ export default function AdminClient({
     }
   };
 
-  // Convenience wrappers for the sidebar footer popover — they always target
-  // the currently logged-in user so no target needs to be passed.
   const handleSidebarChangePassword = () => {
-    // Navigate to My Account tab and let AdminContentTabs open the modal
-    // by passing a synthetic trigger. Simplest approach: just navigate and
-    // let the user click the button there, OR we expose a ref/callback.
-    // Since AdminContentTabs owns all modal state, the cleanest solution is
-    // to navigate to the myaccount tab — the action cards are right there.
     setTab("myaccount");
   };
 
@@ -701,6 +726,11 @@ export default function AdminClient({
         role={role}
         currentUserId={currentUserId}
         isTrueSuperadmin={isTrueSuperadmin}
+        jobs={jobs}
+        jobForm={jobForm}
+        setJobForm={setJobForm}
+        saveJob={saveJob}
+        deleteJob={deleteJob}
         posts={posts}
         products={products}
         admins={admins}
@@ -726,7 +756,6 @@ export default function AdminClient({
         toast={toast}
         onOpenCreateAdmin={(admin) => {
           if (admin) {
-            // Edit mode — populate form fields only (no _id in the form)
             setAdminForm({
               name: admin.name,
               email: admin.email,
@@ -735,7 +764,6 @@ export default function AdminClient({
             });
             setEditAdminId(admin._id);
           } else {
-            // Create mode — blank form
             setAdminForm(emptyAdmin());
             setEditAdminId(null);
           }
@@ -1062,9 +1090,109 @@ export default function AdminClient({
       </AnimatePresence>
 
       {/* ── FAB + Toast ────────────────────────────────────────────────────── */}
+      {/* ── FAB + Toast ────────────────────────────────────────────────────── */}
       <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 999 }}>
+        <AnimatePresence>
+          {open &&
+            (() => {
+              const actions = [
+                {
+                  label: "New Blog Post",
+                  icon: <FileText size={18} />,
+                  onClick: handleNewBlog,
+                },
+                {
+                  label: "New Product",
+                  icon: <Package size={18} />,
+                  onClick: handleNewProduct,
+                },
+                {
+                  label: "New Vacancy",
+                  icon: <Briefcase size={18} />,
+                  onClick: () => {
+                    setJobForm(emptyJob());
+                    setTab("jobs");
+                    setOpen(false);
+                  },
+                },
+                ...(role === "superadmin"
+                  ? [
+                      {
+                        label: "New Admin",
+                        icon: <UserPlus size={18} />,
+                        onClick: handleNewAdmin,
+                      },
+                    ]
+                  : []),
+              ];
+
+              const RADIUS = 90;
+              const START_ANGLE = 270;
+              const END_ANGLE = 180;
+              const FAB_CENTER = 26;
+
+              return actions.map((action, i) => {
+                const total = actions.length - 1 || 1;
+                const angle =
+                  START_ANGLE - (i / total) * (START_ANGLE - END_ANGLE);
+                const rad = (angle * Math.PI) / 180;
+                const x = Math.cos(rad) * RADIUS - 24 + FAB_CENTER;
+                const y = Math.sin(rad) * RADIUS - 24 + FAB_CENTER;
+
+                return (
+                  <motion.div
+                    key={action.label}
+                    initial={{ opacity: 0, scale: 0.3 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.3 }}
+                    transition={{
+                      type: "spring",
+                      damping: 20,
+                      stiffness: 260,
+                      delay: i * 0.05,
+                    }}
+                    style={{
+                      position: "absolute",
+                      bottom: -y,
+                      right: -x,
+                    }}
+                  >
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={action.onClick}
+                        title={action.label}
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: "50%",
+                          background: "white",
+                          border: "none",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--charcoal)",
+                          boxShadow: "0 2px 14px rgba(0,0,0,0.13)",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#f3f4f6")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "white")
+                        }
+                      >
+                        {action.icon}
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              });
+            })()}
+        </AnimatePresence>
+
+        {/* Toast + FAB share the same pill container */}
         <motion.div
-          animate={{ width: open ? "auto" : toastVisible ? "auto" : 52 }}
+          animate={{ width: toastVisible && !open ? "auto" : 52 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           style={{
             height: 52,
@@ -1075,83 +1203,12 @@ export default function AdminClient({
             alignItems: "center",
             overflow: "hidden",
             boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
+            position: "relative",
+            zIndex: 1,
           }}
         >
           <AnimatePresence mode="wait" initial={false}>
-            {!open && !toastVisible && (
-              <motion.button
-                key="fab"
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.85 }}
-                transition={{ duration: 0.18 }}
-                onClick={() => setOpen(true)}
-                style={{
-                  width: 52,
-                  minWidth: 52,
-                  height: 52,
-                  border: "none",
-                  background: "transparent",
-                  color: "white",
-                  cursor: "pointer",
-                  display: "grid",
-                  placeItems: "center",
-                  flexShrink: 0,
-                  padding: 0,
-                  fontSize: "1.4rem",
-                }}
-              >
-                +
-              </motion.button>
-            )}
-
-            {open && (
-              <motion.div
-                key="actions"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{ display: "flex", alignItems: "center", height: 52 }}
-              >
-                <button className="sd-action" onClick={handleNewBlog}>
-                  New Blog Post
-                </button>
-                <div
-                  style={{
-                    width: 1,
-                    height: 24,
-                    background: "rgba(255,255,255,0.15)",
-                    flexShrink: 0,
-                  }}
-                />
-                <button className="sd-action" onClick={handleNewProduct}>
-                  New Product
-                </button>
-
-                {role === "superadmin" && (
-                  <>
-                    <div
-                      style={{
-                        width: 1,
-                        height: 24,
-                        background: "rgba(255,255,255,0.15)",
-                        flexShrink: 0,
-                      }}
-                    />
-                    <button className="sd-action" onClick={handleNewAdmin}>
-                      New Admin
-                    </button>
-                  </>
-                )}
-
-                <button className="sd-close" onClick={() => setOpen(false)}>
-                  ✕
-                </button>
-              </motion.div>
-            )}
-
-            {!open && toastVisible && (
+            {!open && toastVisible ? (
               <motion.div
                 key="toast"
                 initial={{ width: 52, opacity: 0 }}
@@ -1173,6 +1230,30 @@ export default function AdminClient({
                 <SquareCheckBig size={16} />
                 <span style={{ fontSize: "0.85rem" }}>{msg}</span>
               </motion.div>
+            ) : (
+              <motion.button
+                key="fab"
+                animate={{ rotate: open ? 45 : 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                onClick={() => setOpen((o) => !o)}
+                style={{
+                  width: 52,
+                  minWidth: 52,
+                  height: 52,
+                  border: "none",
+                  background: "transparent",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "grid",
+                  placeItems: "center",
+                  flexShrink: 0,
+                  padding: 0,
+                  fontSize: "1.5rem",
+                  lineHeight: 1,
+                }}
+              >
+                +
+              </motion.button>
             )}
           </AnimatePresence>
         </motion.div>

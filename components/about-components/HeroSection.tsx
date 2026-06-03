@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Eyebrow } from "@/components/about-components/Eyebrow";
-import { C, IMG } from "@/app/about/_tokens";
+import Eyebrow from "@/components/Eyebrow";
+import { C, IMG } from "@/lib/constants";
 
 export function HeroSection() {
   return (

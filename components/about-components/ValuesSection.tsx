@@ -1,7 +1,7 @@
-import { Eyebrow } from "@/components/about-components/Eyebrow";
+import Eyebrow from "@/components/Eyebrow";
 import { SectionHeading } from "@/components/about-components/SectionHeading";
 import { ValueRow } from "@/components/about-components/ValueRow";
-import { C } from "@/app/about/_tokens";
+import { C } from "@/lib/constants";
 
 const VALUES = [
   {

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import Navbar from "@/components/Navbar";
 
 // ─── Design tokens — exact match across all pages ─────────────────────────────
 const C = {
@@ -535,6 +536,8 @@ export default function TermsOfServicePage() {
 
   return (
     <main style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <Navbar />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
         *, *::before, *::after { box-sizing: border-box; }

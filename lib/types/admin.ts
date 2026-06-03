@@ -1,7 +1,13 @@
 // lib/types/admin.ts
 
 export type Role = "admin" | "superadmin";
-export type Tab = "dashboard" | "blog" | "products" | "admins" | "myaccount";
+export type Tab =
+  | "dashboard"
+  | "blog"
+  | "products"
+  | "admins"
+  | "myaccount"
+  | "jobs";
 
 export interface AdminForm {
   name: string;

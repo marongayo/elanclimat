@@ -3,6 +3,7 @@
 import {
   Bell,
   LayoutDashboard,
+  Briefcase,
   FileText,
   Package,
   Eye,
@@ -516,6 +517,12 @@ const SidebarContent = ({
           onClick={() => navTo("products")}
           icon={<Package size={15} />}
           label="Products"
+        />
+        <NavItem
+          active={tab === "jobs"}
+          onClick={() => navTo("jobs")}
+          icon={<Briefcase size={15} />}
+          label="Jobs"
         />
       </NavSection>
 

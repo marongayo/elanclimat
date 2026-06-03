@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
-import { C } from "@/app/about/_tokens";
+import { C } from "@/lib/constants";
 
 export function StatCounter({
   value,

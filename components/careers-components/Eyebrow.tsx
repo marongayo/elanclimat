@@ -1,4 +1,4 @@
-import { C } from "@/app/about/_tokens";
+import { C } from "@/components/careers-components/_tokens";
 
 export function Eyebrow({
   text,

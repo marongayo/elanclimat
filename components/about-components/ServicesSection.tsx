@@ -1,7 +1,7 @@
-import { Eyebrow } from "@/components/about-components/Eyebrow";
 import { SectionHeading } from "@/components/about-components/SectionHeading";
 import { ServiceCard } from "@/components/about-components/ServiceCard";
-import { C, IMG } from "@/app/about/_tokens";
+import Eyebrow from "@/components/Eyebrow";
+import { C, IMG } from "@/lib/constants";
 
 const SERVICES = [
   {

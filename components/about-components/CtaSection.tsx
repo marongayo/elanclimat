@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Eyebrow } from "@/components/about-components/Eyebrow";
-import { C } from "@/app/about/_tokens";
+import Eyebrow from "@/components/Eyebrow";
+import { C } from "@/lib/constants";
 
 export function CtaSection() {
   return (

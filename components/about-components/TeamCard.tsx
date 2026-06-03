@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { C } from "@/app/about/_tokens";
+import { C } from "@/lib/constants";
 
 export function TeamCard({
   name,

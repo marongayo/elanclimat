@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
 import {
@@ -15,6 +15,9 @@ import {
   Mail,
   Clock,
 } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import BackToTop from "@/components/BackToTop";
+import Eyebrow from "@/components/Eyebrow";
 
 // ─── Shared design tokens ─────────────────────────────────────────────────────
 const C = {
@@ -63,34 +66,6 @@ const CONTACT_DETAILS = [
     lines: ["Mon – Fri: 8:00 AM – 6:00 PM", "Sat: 9:00 AM – 1:00 PM"],
   },
 ];
-
-// ─── Eyebrow ──────────────────────────────────────────────────────────────────
-function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span
-        style={{
-          display: "inline-block",
-          width: 24,
-          height: 1,
-          background: light ? "rgba(255,255,255,0.35)" : C.ruleLight,
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.62rem",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase" as const,
-          color: light ? "rgba(255,255,255,0.45)" : C.sage,
-          fontWeight: 500,
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
 
 // ─── Form field wrapper ───────────────────────────────────────────────────────
 function Field({
@@ -466,6 +441,8 @@ function ContactForm() {
 export default function ContactPage() {
   return (
     <main style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <BackToTop />
+      <Navbar />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 

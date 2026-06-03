@@ -5,21 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-
-// ─── Design tokens ─────────────────────────────────────────────────────────────
-const C = {
-  charcoal: "#1a1a18",
-  warmWhite: "#f9f7f4",
-  offWhite: "#ede9e2",
-  sage: "#8fa68e",
-  sageDark: "#5a7a59",
-  accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e4dd",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
-};
+import Navbar from "@/components/Navbar";
+import BackToTop from "@/components/BackToTop";
+import Eyebrow from "@/components/Eyebrow";
+import { C } from "@/lib/constants";
 
 const LAST_UPDATED = "30 May 2025";
 
@@ -81,33 +70,6 @@ const SECTIONS = [
   },
 ];
 
-function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span
-        style={{
-          display: "inline-block",
-          width: 24,
-          height: 1,
-          background: light ? "rgba(255,255,255,0.35)" : C.ruleLight,
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.62rem",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase" as const,
-          color: light ? "rgba(255,255,255,0.45)" : C.sage,
-          fontWeight: 500,
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
-
 export default function PrivacyPolicyPage() {
   const [activeSection, setActiveSection] = useState("01");
 
@@ -132,6 +94,8 @@ export default function PrivacyPolicyPage() {
 
   return (
     <main style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <Navbar />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
@@ -518,42 +482,19 @@ export default function PrivacyPolicyPage() {
                 }}
                 style={{ scrollMarginTop: 80 }}
               >
+                {/* ── Section header row ── */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "space-between",
                     gap: 24,
-                    marginBottom: 28,
+                    marginBottom: 12, // ← was 28, now 12
                   }}
                 >
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 8 }}
                   >
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
-                    >
-                      <span
-                        style={{
-                          display: "inline-block",
-                          width: 24,
-                          height: 1,
-                          background: C.ruleLight,
-                        }}
-                      />
-                      <span
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.58rem",
-                          letterSpacing: "0.2em",
-                          textTransform: "uppercase",
-                          color: C.sage,
-                          fontWeight: 500,
-                        }}
-                      >
-                        {s.index}
-                      </span>
-                    </div>
                     <h2
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
@@ -573,7 +514,7 @@ export default function PrivacyPolicyPage() {
                     className="pp-section-numeral"
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
+                      fontSize: "clamp(6rem, 10vw, 10rem)",
                       fontWeight: 300,
                       color: C.rule,
                       lineHeight: 1,
@@ -585,12 +526,13 @@ export default function PrivacyPolicyPage() {
                   </span>
                 </div>
 
+                {/* ── Divider + content stacked tightly ── */}
                 <div
                   style={{
                     width: 32,
                     height: 1,
                     background: C.ruleLight,
-                    marginBottom: 24,
+                    marginBottom: 14, // ← was 24, now 14
                   }}
                 />
 
@@ -822,6 +764,7 @@ export default function PrivacyPolicyPage() {
           </div>
         </div>
       </section>
+      <BackToTop />
     </main>
   );
 }

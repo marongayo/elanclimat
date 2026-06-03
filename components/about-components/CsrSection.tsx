@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Eyebrow } from "@/components/about-components/Eyebrow";
+import Eyebrow from "@/components/Eyebrow";
 import { SectionHeading } from "@/components/about-components/SectionHeading";
-import { C, IMG } from "@/app/about/_tokens";
+import { C, IMG } from "@/lib/constants";
 
 const ESG_PILLARS = [
   {

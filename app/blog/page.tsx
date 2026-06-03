@@ -3,6 +3,8 @@ import { getBlogPosts } from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Calendar, Clock } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import BackToTop from "@/components/BackToTop";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -18,6 +20,8 @@ export default async function BlogPage() {
 
   return (
     <>
+      <Navbar />
+      <BackToTop />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
         *, *::before, *::after { box-sizing: border-box; }

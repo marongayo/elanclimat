@@ -1,4 +1,4 @@
-import { C } from "@/app/about/_tokens";
+import { C } from "@/lib/constants";
 
 export function SectionHeading({
   children,

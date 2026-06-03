@@ -1,6 +1,5 @@
 import { StatCounter } from "@/components/about-components/StatCounter";
-import { C } from "@/app/about/_tokens";
-
+import { C } from "@/lib/constants";
 const STATS = [
   { value: 6, suffix: "+", label: "Years in operation" },
   { value: 340, suffix: "+", label: "Projects completed" },
