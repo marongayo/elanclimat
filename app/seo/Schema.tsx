@@ -1,3 +1,4 @@
+// app/seo/Schema.tsx
 export default function Schema() {
   const schema = {
     "@context": "https://schema.org",
@@ -27,24 +28,61 @@ export default function Schema() {
     // Add your social media links here instead of your own website URL
     sameAs: [
       "https://www.facebook.com/elanclimat",
-      "https://www.linkedin.com/company/elanclimat"
+      "https://www.linkedin.com/company/elanclimat",
+      "https://twitter.com/elanclimat",
     ],
 
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Services",
       itemListElement: [
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Solar Panel Installation" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "HVAC Installation" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "HVAC Maintenance" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Refrigeration Systems" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cold Rooms" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Electrical Services" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Lithium Battery Storage Systems" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Generator Installation" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Generator Maintenance" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Lift Installation" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Elevator Installation" } },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Solar Panel Installation" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "HVAC Installation" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "HVAC Maintenance" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Refrigeration Systems" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Cold Rooms" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Electrical Services" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Lithium Battery Storage Systems",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Generator Installation" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Generator Maintenance" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Lift Installation" },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: "Elevator Installation" },
+        },
       ],
     },
   };

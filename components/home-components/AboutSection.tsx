@@ -4,45 +4,51 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const CONTENT = [
   {
-    title: "From a Vision to a Trusted Name",
-    subtitle: "Since 2018",
+    title: "Trusted HVAC & Energy Engineers in Kenya Since 2018",
+    subtitle: "Our Story",
     description:
-      "Established in 2018, what started as a passion for smarter, sustainable buildings has grown into a full-service engineering company, bringing precision, innovation, energy economics and dependability to every system we touch across Kenya.",
-    cta: "Partner With Us",
+      "Founded in 2018, Élan Climat & Énergie has grown from a local HVAC installer into one of Kenya's most trusted full-service engineering companies. We deliver precision-engineered climate, energy, and electrical solutions to residential, commercial, and industrial clients across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri — and across East Africa including Uganda, Tanzania, and Rwanda.",
+    cta: "Our Story",
     images: [
-      { src: "/images/fandymuch.jpg", alt: "Outdoor HVAC system" },
-      { src: "/images/coldroom.webp", alt: "Cold room facility" },
-      { src: "/images/solar.jpg", alt: "Solar panels installation" },
+      {
+        src: "/images/fandymuch.jpg",
+        alt: "HVAC installation project in Nairobi Kenya",
+      },
+      { src: "/images/coldroom.webp", alt: "Cold room installation Kenya" },
+      { src: "/images/solar.jpg", alt: "Solar panel installation Kenya" },
     ],
     href: "/about#our-story",
   },
   {
-    title: "Engineering for Every Building's Needs",
-    subtitle: "Unmatched Craftsmanship",
+    title: "HVAC, Solar, Refrigeration & Electrical Services in Kenya",
+    subtitle: "Our Services",
     description:
-      "We design, install, and maintain HVAC, solar, refrigeration, electrical, and elevator systems, delivering reliable, energy-efficient solutions that keep homes and businesses running at peak performance across Kenya.",
+      "We design, install, and maintain HVAC systems, solar panels, cold rooms, refrigeration units, electrical systems, and elevator installations across Kenya. Our certified engineers deliver energy-efficient, reliable solutions for hotels, hospitals, offices, warehouses, supermarkets, and homes throughout Nairobi, Mombasa, and beyond.",
     cta: "Explore Our Services",
     images: [
-      { src: "/images/lift.jpg", alt: "Elevator installation" },
-      { src: "/images/elevator.jpg", alt: "Elevator interior" },
-      { src: "/images/liftrpr.png", alt: "Elevator installation" },
+      { src: "/images/lift.jpg", alt: "Elevator installation Nairobi Kenya" },
+      { src: "/images/elevator.jpg", alt: "Lift installation Kenya" },
+      { src: "/images/liftrpr.png", alt: "Elevator maintenance Kenya" },
     ],
     href: "/about#our-services",
   },
   {
-    title: "Leading with Purpose, Building for Tomorrow",
-    subtitle: "CSR & ESG Strategies",
+    title: "Sustainable Engineering & ESG Leadership in East Africa",
+    subtitle: "Corporate Responsibility",
     description:
-      "We are committed to ethical leadership, environmental stewardship, and community impact, engineering sustainable systems that reduce carbon footprints, empower local talent, and build a cleaner, more resilient future for Kenya.",
+      "We are committed to sustainable engineering practices across Kenya and East Africa — reducing carbon footprints through solar energy systems, energy-efficient HVAC installations, and green refrigeration solutions. Our CSR and ESG programmes empower local engineers, support community development, and help businesses meet environmental standards across the region.",
     cta: "Learn More",
     images: [
-      { src: "/images/boadroom.jpg", alt: "Boardroom" },
-      { src: "/images/treeplanting.jpg", alt: "Tree planting activity" },
-      { src: "/images/social.jpg", alt: "Social engagement activity" },
+      { src: "/images/boadroom.jpg", alt: "Élan Climat boardroom Nairobi" },
+      {
+        src: "/images/treeplanting.jpg",
+        alt: "Environmental CSR tree planting Kenya",
+      },
+      { src: "/images/social.jpg", alt: "Community engagement East Africa" },
     ],
     href: "/about#csr-esg",
   },
@@ -55,6 +61,7 @@ export default function AboutSection() {
 
   return (
     <section
+      aria-label="About Élan Climat — HVAC and Energy Services Kenya"
       style={{
         backgroundColor: "#f9f7f4",
         padding: "96px 0",
@@ -78,6 +85,27 @@ export default function AboutSection() {
         @media (max-width: 640px) {
           .about-home-grid { padding: 0 24px; }
         }
+        .about-cta-link {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.72rem;
+          font-weight: 500;
+          color: #1a1a18;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border-bottom: 1px solid #1a1a18;
+          padding-bottom: 2px;
+          align-self: flex-start;
+          margin-top: 8px;
+          transition: color 0.2s, border-color 0.2s;
+        }
+        .about-cta-link:hover {
+          color: #888580;
+          border-color: #888580;
+        }
       `}</style>
 
       <div className="about-home-grid">
@@ -92,85 +120,76 @@ export default function AboutSection() {
             height: 560,
           }}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`main-${currentIndex}`}
-              style={{
-                gridColumn: "1 / -1",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.02 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Image
-                src={CONTENT[currentIndex].images[0].src}
-                alt={CONTENT[currentIndex].images[0].alt}
-                fill
-                className="object-cover"
-                priority={currentIndex === 0}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                quality={80}
-              />
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={`main-${currentIndex}`}
+            style={{
+              gridColumn: "1 / -1",
+              position: "relative",
+              overflow: "hidden",
+            }}
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Image
+              src={CONTENT[currentIndex].images[0].src}
+              alt={CONTENT[currentIndex].images[0].alt}
+              fill
+              className="object-cover"
+              priority={currentIndex === 0}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              quality={80}
+            />
+          </motion.div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`bl-${currentIndex}`}
-              style={{ position: "relative", overflow: "hidden" }}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-                delay: 0.08,
-              }}
-            >
-              <Image
-                src={CONTENT[currentIndex].images[1].src}
-                alt={CONTENT[currentIndex].images[1].alt}
-                fill
-                className="object-cover"
-                loading="lazy"
-                sizes="(max-width: 1024px) 50vw, 25vw"
-                quality={80}
-              />
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={`bl-${currentIndex}`}
+            style={{ position: "relative", overflow: "hidden" }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+              delay: 0.08,
+            }}
+          >
+            <Image
+              src={CONTENT[currentIndex].images[1].src}
+              alt={CONTENT[currentIndex].images[1].alt}
+              fill
+              className="object-cover"
+              loading="lazy"
+              sizes="(max-width: 1024px) 50vw, 25vw"
+              quality={80}
+            />
+          </motion.div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`br-${currentIndex}`}
-              style={{ position: "relative", overflow: "hidden" }}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-                delay: 0.14,
-              }}
-            >
-              <Image
-                src={CONTENT[currentIndex].images[2].src}
-                alt={CONTENT[currentIndex].images[2].alt}
-                fill
-                className="object-cover"
-                loading="lazy"
-                sizes="(max-width: 1024px) 50vw, 25vw"
-                quality={80}
-              />
-            </motion.div>
-          </AnimatePresence>
+          <motion.div
+            key={`br-${currentIndex}`}
+            style={{ position: "relative", overflow: "hidden" }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+              delay: 0.14,
+            }}
+          >
+            <Image
+              src={CONTENT[currentIndex].images[2].src}
+              alt={CONTENT[currentIndex].images[2].alt}
+              fill
+              className="object-cover"
+              loading="lazy"
+              sizes="(max-width: 1024px) 50vw, 25vw"
+              quality={80}
+            />
+          </motion.div>
         </div>
 
         {/* Right: text + tab nav */}
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          {/* Tab nav — matches shop's borderless pill style */}
+          {/* Tab nav */}
           <div
             style={{
               display: "inline-flex",
@@ -178,17 +197,17 @@ export default function AboutSection() {
               gap: 2,
               padding: "3px",
               background: "#ffffff",
-              border: "1px solid #e8e8e4",
+              border: "1px solid #8fa68e",
               borderRadius: 9999,
               alignSelf: "flex-start",
               marginBottom: 40,
-              borderColor: "#8fa68e",
             }}
           >
             {TAB_LABELS.map((label, i) => (
               <button
                 key={label}
                 onClick={() => setCurrentIndex(i)}
+                aria-pressed={currentIndex === i}
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.72rem",
@@ -201,7 +220,6 @@ export default function AboutSection() {
                   transition: "all 0.2s",
                   background: currentIndex === i ? "#1a1a18" : "transparent",
                   color: currentIndex === i ? "#ffffff" : "#888580",
-                  borderColor: currentIndex === i ? "#8fa68e" : "transparent",
                 }}
               >
                 {label}
@@ -209,102 +227,87 @@ export default function AboutSection() {
             ))}
           </div>
 
-          {/* Animated content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`text-${currentIndex}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              style={{ display: "flex", flexDirection: "column", gap: 20 }}
-            >
-              {/* Eyebrow */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 24, height: 1, background: "#c8c8c4" }} />
-                <span
+          {/*
+            SEO FIX: All tab content is rendered in the DOM at all times.
+            Inactive tabs are visually hidden but remain readable by Google.
+          */}
+          <div style={{ position: "relative" }}>
+            {CONTENT.map((item, i) => (
+              <div
+                key={i}
+                aria-hidden={currentIndex !== i}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 20,
+                  position: currentIndex !== i ? "absolute" : "relative",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  opacity: currentIndex === i ? 1 : 0,
+                  pointerEvents: currentIndex === i ? "auto" : "none",
+                  transition: "opacity 0.4s ease",
+                  visibility: currentIndex !== i ? "hidden" : "visible",
+                }}
+              >
+                {/* Eyebrow */}
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div
+                    style={{ width: 24, height: 1, background: "#c8c8c4" }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.62rem",
+                      letterSpacing: "0.22em",
+                      textTransform: "uppercase",
+                      color: "#8fa68e",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {item.subtitle}
+                  </span>
+                </div>
+
+                {/* Headline */}
+                <h2
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.62rem",
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    color: "#8fa68e",
-                    fontWeight: 700,
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(2rem, 3.5vw, 2.8rem)",
+                    fontWeight: 400,
+                    color: "#1a1a18",
+                    lineHeight: 1.12,
+                    letterSpacing: "-0.015em",
+                    margin: 0,
                   }}
                 >
-                  {CONTENT[currentIndex].subtitle}
-                </span>
+                  {item.title}
+                </h2>
+
+                {/* Divider */}
+                <div style={{ width: 32, height: 1, background: "#c8c8c4" }} />
+
+                {/* Body */}
+                <p
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.88rem",
+                    color: "#6b6b68",
+                    lineHeight: 1.8,
+                    margin: 0,
+                    fontWeight: 300,
+                  }}
+                >
+                  {item.description}
+                </p>
+
+                {/* CTA — hover handled via CSS class to avoid shorthand conflict */}
+                <Link href={item.href} className="about-cta-link">
+                  {item.cta}
+                </Link>
               </div>
-
-              {/* Headline */}
-              <h2
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(2rem, 3.5vw, 2.8rem)",
-                  fontWeight: 400,
-                  color: "#1a1a18",
-                  lineHeight: 1.12,
-                  letterSpacing: "-0.015em",
-                  margin: 0,
-                }}
-              >
-                {CONTENT[currentIndex].title}
-              </h2>
-
-              {/* Divider */}
-              <div style={{ width: 32, height: 1, background: "#c8c8c4" }} />
-
-              {/* Body */}
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.88rem",
-                  color: "#6b6b68",
-                  lineHeight: 1.8,
-                  margin: 0,
-                  fontWeight: 300,
-                }}
-              >
-                {CONTENT[currentIndex].description}
-              </p>
-
-              {/* CTA */}
-              <Link
-                href={CONTENT[currentIndex].href}
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.72rem",
-                  fontWeight: 500,
-                  color: "#1a1a18",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  borderBottom: "1px solid #1a1a18",
-                  paddingBottom: 2,
-                  alignSelf: "flex-start",
-                  marginTop: 8,
-                  transition: "color 0.2s, border-color 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
-                    "#888580";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "#888580";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color =
-                    "#1a1a18";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                    "#1a1a18";
-                }}
-              >
-                {CONTENT[currentIndex].cta}
-              </Link>
-            </motion.div>
-          </AnimatePresence>
+            ))}
+          </div>
         </div>
       </div>
     </section>

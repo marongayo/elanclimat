@@ -96,7 +96,7 @@ export default function Hero() {
       <div className="relative w-full min-h-screen overflow-hidden">
         <Image
           src="/images/qwerty.png"
-          alt="Hero background"
+          alt="HVAC and solar installation services in Kenya"
           fill
           priority
           className="object-cover object-[center_40%]"
@@ -151,9 +151,11 @@ export default function Hero() {
                   fontWeight: 300,
                 }}
               >
-                A climate solution shaped by precision, innovation, and
-                reliability — where every installation is designed to deliver
-                effortless comfort and lasting performance.
+                Professional HVAC, solar, and refrigeration installation
+                services across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and
+                Nyeri. Our services are engineered for homes, offices, hotels,
+                and cold storage facilities in Kenya and across Uganda, Tanzania
+                and Rwanda.
               </p>
 
               <Link href="/contact" className="hero-cta">
