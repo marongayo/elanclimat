@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Eyebrow } from "@/components/careers-components/Eyebrow";
-import { C } from "@/components/careers-components/_tokens";
+import { C } from "@/lib/constants";
 
 const PERKS = [
   "Competitive compensation and growth path",

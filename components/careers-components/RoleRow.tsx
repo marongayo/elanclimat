@@ -3,7 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { ApplicationForm } from "./ApplicationForm";
-import { C, Role, AppStatus } from "@/components/careers-components/_tokens";
+import { Role, AppStatus } from "@/components/careers-components/_tokens";
+import { C } from "@/lib/constants";
 
 export function RoleRow({
   role,

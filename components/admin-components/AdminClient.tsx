@@ -190,6 +190,7 @@ export default function AdminClient({
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [jobForm, setJobForm] = useState<JobForm | null>(null);
+  const [editJobId, setEditJobId] = useState<string | null>(null);
 
   // ─── Data loaders (defined before useEffect calls that reference them) ────
 
@@ -338,17 +339,19 @@ export default function AdminClient({
     setPosts((p) => p.filter((x) => x._id !== id));
     toast("Post deleted.");
   };
-
   const saveJob = async () => {
     if (!jobForm) return;
     setSaving(true);
     await fetch("/api/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(jobForm),
+      body: JSON.stringify(
+        editJobId ? { ...jobForm, _id: editJobId } : jobForm,
+      ),
     });
     await loadJobs();
     setJobForm(null);
+    setEditJobId(null);
     setSaving(false);
     toast("Job saved!");
   };
@@ -731,6 +734,8 @@ export default function AdminClient({
         setJobForm={setJobForm}
         saveJob={saveJob}
         deleteJob={deleteJob}
+        editJobId={editJobId}
+        setEditJobId={setEditJobId}
         posts={posts}
         products={products}
         admins={admins}
@@ -1089,7 +1094,6 @@ export default function AdminClient({
         )}
       </AnimatePresence>
 
-      {/* ── FAB + Toast ────────────────────────────────────────────────────── */}
       {/* ── FAB + Toast ────────────────────────────────────────────────────── */}
       <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 999 }}>
         <AnimatePresence>

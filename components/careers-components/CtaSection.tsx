@@ -1,5 +1,5 @@
 import { Eyebrow } from "@/components/careers-components/Eyebrow";
-import { C } from "@/components/careers-components/_tokens";
+import { C } from "@/lib/constants";
 
 export function CtaSection() {
   return (

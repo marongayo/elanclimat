@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import type { Job, JobForm } from "@/lib/types/jobs";
-import { Briefcase, Plus, X as XIcon } from "lucide-react";
 import Image from "next/image";
 import { BlogPost } from "@/lib/types/blog";
 import { User } from "@/lib/types/admin";
@@ -12,14 +11,21 @@ import {
   X,
   Save,
   FileText,
+  Briefcase,
   Package,
   Eye,
   Users,
   KeyRound,
   ShieldCheck,
+  Plus,
+  X as XIcon,
   Shield,
   UserCircle,
   UserPen,
+  ChevronDown,
+  ExternalLink,
+  Mail,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
@@ -27,6 +33,7 @@ import type { BlogForm } from "@/lib/types/blog";
 import type { ProductForm, ProductErrors } from "@/lib/types/product";
 import type { Tab } from "@/lib/types/admin";
 import type { Role } from "@/lib/types/admin";
+import type { Applicant } from "@/lib/types/jobs";
 
 const INPUT_STYLE: React.CSSProperties = {
   width: "100%",
@@ -64,6 +71,405 @@ const ERROR_TEXT: React.CSSProperties = {
   display: "block",
 };
 
+function getInlineCvUrl(url: string) {
+  console.log("Original CV URL:", url);
+  return `/api/cv?url=${encodeURIComponent(url)}`;
+}
+function JobCard({
+  job,
+  saving,
+  onEdit,
+  onDelete,
+}: {
+  job: Job;
+  saving: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(
+    null,
+  );
+  const applicants = job.applicants ?? [];
+
+  return (
+    <div style={{ background: "white", border: "1px solid var(--off-white)" }}>
+      {/* Job header row */}
+      <div
+        style={{
+          padding: "20px 24px",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 16,
+        }}
+      >
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 4,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.92rem",
+                fontWeight: 600,
+                color: "var(--charcoal)",
+              }}
+            >
+              {job.title}
+            </span>
+            <span
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.62rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" as const,
+                background: "var(--off-white)",
+                color: "var(--text-muted)",
+                padding: "2px 8px",
+                borderRadius: 9999,
+              }}
+            >
+              {job.type}
+            </span>
+          </div>
+          <div
+            style={{
+              fontFamily: "DM Sans",
+              fontSize: "0.78rem",
+              color: "var(--text-muted)",
+            }}
+          >
+            {job.category} · {job.location}
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            flexShrink: 0,
+            alignItems: "center",
+          }}
+        >
+          {/* Applicants toggle */}
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "7px 14px",
+              background:
+                applicants.length > 0 ? "var(--sage-pale)" : "var(--off-white)",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "DM Sans",
+              fontSize: "0.78rem",
+              color:
+                applicants.length > 0
+                  ? "var(--sage-dark)"
+                  : "var(--text-muted)",
+              borderRadius: 2,
+            }}
+          >
+            <Users size={12} />
+            {applicants.length}{" "}
+            {applicants.length === 1 ? "applicant" : "applicants"}
+            <ChevronDown
+              size={12}
+              style={{
+                transform: expanded ? "rotate(180deg)" : "none",
+                transition: "transform 0.2s",
+              }}
+            />
+          </button>
+          <button
+            onClick={onEdit}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "7px 14px",
+              background: "none",
+              border: "1px solid var(--off-white)",
+              cursor: "pointer",
+              fontFamily: "DM Sans",
+              fontSize: "0.78rem",
+              color: "var(--charcoal)",
+            }}
+          >
+            <Edit3 size={12} /> Edit
+          </button>
+          <button
+            onClick={onDelete}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "7px 14px",
+              background: "none",
+              border: "1px solid #fde8e8",
+              cursor: "pointer",
+              fontFamily: "DM Sans",
+              fontSize: "0.78rem",
+              color: "#c0392b",
+            }}
+          >
+            <Trash2 size={12} /> Delete
+          </button>
+        </div>
+      </div>
+
+      {/* Applicants panel */}
+      {expanded && (
+        <div
+          style={{
+            borderTop: "1px solid var(--off-white)",
+            padding: "0 24px 24px",
+          }}
+        >
+          {applicants.length === 0 ? (
+            <p
+              style={{
+                fontFamily: "DM Sans",
+                fontSize: "0.82rem",
+                color: "var(--text-muted)",
+                paddingTop: 20,
+                margin: 0,
+              }}
+            >
+              No applications yet.
+            </p>
+          ) : (
+            <div style={{ display: "grid", gap: 2, marginTop: 16 }}>
+              {applicants.map((applicant, i) => (
+                <div key={applicant._id ?? i}>
+                  {/* Applicant row */}
+                  <div
+                    onClick={() =>
+                      setSelectedApplicant(
+                        selectedApplicant?._id === applicant._id
+                          ? null
+                          : applicant,
+                      )
+                    }
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 14,
+                      padding: "14px 16px",
+                      background:
+                        selectedApplicant?._id === applicant._id
+                          ? "var(--off-white)"
+                          : "#fafafa",
+                      cursor: "pointer",
+                      borderLeft:
+                        selectedApplicant?._id === applicant._id
+                          ? "3px solid var(--sage-dark)"
+                          : "3px solid transparent",
+                    }}
+                  >
+                    {/* Avatar */}
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        background: "var(--charcoal)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        color: "white",
+                        fontFamily: "DM Sans",
+                        fontSize: "0.78rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {applicant.fullName.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontFamily: "DM Sans",
+                          fontSize: "0.86rem",
+                          fontWeight: 600,
+                          color: "var(--charcoal)",
+                        }}
+                      >
+                        {applicant.fullName}
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "DM Sans",
+                          fontSize: "0.74rem",
+                          color: "var(--text-muted)",
+                          marginTop: 2,
+                        }}
+                      >
+                        {applicant.email}
+                        {applicant.appliedAt && (
+                          <span style={{ marginLeft: 10, color: "var(--dim)" }}>
+                            ·{" "}
+                            {new Date(applicant.appliedAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <ChevronDown
+                      size={14}
+                      style={{
+                        color: "var(--text-muted)",
+                        transform:
+                          selectedApplicant?._id === applicant._id
+                            ? "rotate(180deg)"
+                            : "none",
+                        transition: "transform 0.2s",
+                        flexShrink: 0,
+                      }}
+                    />
+                  </div>
+
+                  {/* Applicant detail */}
+                  {selectedApplicant?._id === applicant._id && (
+                    <div
+                      style={{
+                        background: "white",
+                        padding: "20px 24px",
+                        borderLeft: "3px solid var(--sage-dark)",
+                        display: "grid",
+                        gap: 20,
+                      }}
+                    >
+                      {/* Contact row */}
+                      <div
+                        style={{ display: "flex", flexWrap: "wrap", gap: 16 }}
+                      >
+                        <a
+                          href={`mailto:${applicant.email}`}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            fontFamily: "DM Sans",
+                            fontSize: "0.78rem",
+                            color: "var(--charcoal)",
+                            textDecoration: "none",
+                          }}
+                        >
+                          <Mail size={13} /> {applicant.email}
+                        </a>
+                        {applicant.phone && (
+                          <a
+                            href={`tel:${applicant.phone}`}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontFamily: "DM Sans",
+                              fontSize: "0.78rem",
+                              color: "var(--charcoal)",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <Phone size={13} /> {applicant.phone}
+                          </a>
+                        )}
+                        {applicant.linkedin && (
+                          <a
+                            href={
+                              applicant.linkedin.startsWith("http")
+                                ? applicant.linkedin
+                                : `https://${applicant.linkedin}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontFamily: "DM Sans",
+                              fontSize: "0.78rem",
+                              color: "var(--charcoal)",
+                              textDecoration: "none",
+                            }}
+                          >
+                            <Briefcase size={13} /> LinkedIn
+                          </a>
+                        )}
+                        <a
+                          href={getInlineCvUrl(applicant.cvUrl)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            fontFamily: "DM Sans",
+                            fontSize: "0.78rem",
+                            color: "var(--sage-dark)",
+                            fontWeight: 600,
+                            textDecoration: "none",
+                            marginLeft: "auto",
+                          }}
+                        >
+                          <ExternalLink size={13} /> View CV
+                        </a>
+                      </div>
+
+                      {/* Cover letter */}
+                      <div>
+                        <div
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.62rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.12em",
+                            textTransform: "uppercase" as const,
+                            color: "var(--text-muted)",
+                            marginBottom: 10,
+                          }}
+                        >
+                          Cover Letter
+                        </div>
+                        <p
+                          style={{
+                            fontFamily: "DM Sans",
+                            fontSize: "0.84rem",
+                            color: "var(--body)",
+                            lineHeight: 1.8,
+                            fontWeight: 300,
+                            margin: 0,
+                            whiteSpace: "pre-wrap",
+                          }}
+                        >
+                          {applicant.coverLetter}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 export default function AdminContentTabs({
   tab,
   role,
@@ -72,6 +478,8 @@ export default function AdminContentTabs({
   jobs,
   jobForm,
   setJobForm,
+  editJobId,
+  setEditJobId,
   saveJob,
   deleteJob,
   posts,
@@ -102,11 +510,12 @@ export default function AdminContentTabs({
   tab: Tab;
   role: Role;
   currentUserId: string;
-
   isTrueSuperadmin: boolean;
   jobs: Job[];
   jobForm: JobForm | null;
   setJobForm: (f: JobForm | null) => void;
+  editJobId: string | null;
+  setEditJobId: (id: string | null) => void;
   saveJob: () => void;
   deleteJob: (id: string) => void;
   posts: BlogPost[];
@@ -673,7 +1082,7 @@ export default function AdminContentTabs({
                     <Edit3 size={14} />
                   </div>
                   <div
-                    onClick={() => deleteBlog(p._id)}
+                    onClick={() => p._id && deleteBlog(p._id)}
                     style={{
                       padding: "7px",
                       background: "#fef2f2",
@@ -695,7 +1104,7 @@ export default function AdminContentTabs({
 
       {/* ── VACANCIES ───────────────────────────────────────────────────────────── */}
       {tab === "jobs" && (
-        <div style={{ maxWidth: 860 }}>
+        <div style={{ maxWidth: 900 }}>
           <div
             style={{
               display: "flex",
@@ -716,7 +1125,8 @@ export default function AdminContentTabs({
               Vacancies
             </h2>
             <button
-              onClick={() =>
+              onClick={() => {
+                setEditJobId(null);
                 setJobForm({
                   title: "",
                   description: "",
@@ -724,8 +1134,8 @@ export default function AdminContentTabs({
                   category: "",
                   type: "Full-time",
                   requirements: [],
-                })
-              }
+                });
+              }}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -769,10 +1179,13 @@ export default function AdminContentTabs({
                     color: "var(--charcoal)",
                   }}
                 >
-                  {(jobForm as any)._id ? "Edit Vacancy" : "New Vacancy"}
+                  {editJobId ? "Edit Vacancy" : "New Vacancy"}
                 </span>
                 <button
-                  onClick={() => setJobForm(null)}
+                  onClick={() => {
+                    setJobForm(null);
+                    setEditJobId(null);
+                  }}
                   style={{
                     background: "none",
                     border: "none",
@@ -892,7 +1305,10 @@ export default function AdminContentTabs({
                   }}
                 >
                   <button
-                    onClick={() => setJobForm(null)}
+                    onClick={() => {
+                      setJobForm(null);
+                      setEditJobId(null);
+                    }}
                     style={{
                       padding: "9px 20px",
                       background: "none",
@@ -923,8 +1339,7 @@ export default function AdminContentTabs({
                       fontSize: "0.84rem",
                     }}
                   >
-                    <Save size={14} />
-                    {saving ? "Saving..." : "Save Vacancy"}
+                    <Save size={14} /> {saving ? "Saving..." : "Save Vacancy"}
                   </button>
                 </div>
               </div>
@@ -948,113 +1363,28 @@ export default function AdminContentTabs({
           ) : (
             <div style={{ display: "grid", gap: 2 }}>
               {jobs.map((job) => (
-                <div
+                <JobCard
                   key={job._id}
-                  style={{
-                    background: "white",
-                    padding: "20px 24px",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 16,
+                  job={job}
+                  saving={saving}
+                  onEdit={() => {
+                    setEditJobId(job._id!);
+                    setJobForm({
+                      title: job.title,
+                      description: job.description,
+                      location: job.location,
+                      category: job.category,
+                      type: job.type,
+                      requirements: job.requirements,
+                    });
                   }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        marginBottom: 4,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.92rem",
-                          fontWeight: 600,
-                          color: "var(--charcoal)",
-                        }}
-                      >
-                        {job.title}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "DM Sans",
-                          fontSize: "0.62rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase" as const,
-                          background: "var(--off-white)",
-                          color: "var(--text-muted)",
-                          padding: "2px 8px",
-                          borderRadius: 9999,
-                        }}
-                      >
-                        {job.type}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "DM Sans",
-                        fontSize: "0.78rem",
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      {job.category} · {job.location}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                    <button
-                      onClick={() =>
-                        setJobForm({
-                          title: job.title,
-                          description: job.description,
-                          location: job.location,
-                          category: job.category,
-                          type: job.type,
-                          requirements: job.requirements,
-                        })
-                      }
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        padding: "7px 14px",
-                        background: "none",
-                        border: "1px solid var(--off-white)",
-                        cursor: "pointer",
-                        fontFamily: "DM Sans",
-                        fontSize: "0.78rem",
-                        color: "var(--charcoal)",
-                      }}
-                    >
-                      <Edit3 size={12} /> Edit
-                    </button>
-                    <button
-                      onClick={() => deleteJob(job._id)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        padding: "7px 14px",
-                        background: "none",
-                        border: "1px solid #fde8e8",
-                        cursor: "pointer",
-                        fontFamily: "DM Sans",
-                        fontSize: "0.78rem",
-                        color: "#c0392b",
-                      }}
-                    >
-                      <Trash2 size={12} /> Delete
-                    </button>
-                  </div>
-                </div>
+                  onDelete={() => job._id && deleteJob(job._id)}
+                />
               ))}
             </div>
           )}
         </div>
       )}
-
       {/* ── PRODUCTS ───────────────────────────────────────────────────────── */}
       {tab === "products" && (
         <div>

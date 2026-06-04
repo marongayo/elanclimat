@@ -1,10 +1,12 @@
+// components/careers-components/ApplicationForm.tsx
 "use client";
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Loader2 } from "lucide-react";
 import { Eyebrow } from "./Eyebrow";
-import { C, Role } from "@/components/careers-components/_tokens";
+import { Role } from "@/components/careers-components/_tokens";
+import { C } from "@/lib/constants";
 
 interface AppForm {
   fullName: string;
@@ -25,6 +27,12 @@ const EMPTY_FORM: AppForm = {
   cvFile: null,
   cvFileName: "",
 };
+
+// ─── Helper functions ─────────────────────────────────────────────────────────
+// helper at the top of the file, outside the component
+function fireToast(msg: string) {
+  window.dispatchEvent(new CustomEvent("app-toast", { detail: msg }));
+}
 
 // ─── Field wrapper ────────────────────────────────────────────────────────────
 function Field({
@@ -159,6 +167,9 @@ export function ApplicationForm({
     return e;
   }
 
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+
   async function handleSubmit() {
     const e = validate();
     if (Object.keys(e).length) {
@@ -167,11 +178,68 @@ export function ApplicationForm({
     }
     setErrors({});
     setSending(true);
-    await new Promise((r) => setTimeout(r, 1600));
-    setSending(false);
-    onSuccess();
+
+    try {
+      const fd = new FormData();
+      fd.append("jobId", role._id!);
+      fd.append("fullName", form.fullName);
+      fd.append("email", form.email);
+      fd.append("phone", form.phone);
+      fd.append("linkedin", form.linkedin);
+      fd.append("coverLetter", form.coverLetter);
+      fd.append("cvFile", form.cvFile!);
+
+      const res = await fetch("/api/jobs", { method: "PATCH", body: fd });
+
+      if (res.status === 409) {
+        // Email already exists for this role
+        setAlreadyApplied(true);
+        setSending(false);
+        return;
+      }
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Submission failed");
+      }
+
+      // in handleSubmit, replace onSuccess():
+      fireToast("Application submitted successfully!");
+      onSuccess();
+
+      // in handleWithdraw, after successful withdraw:
+      fireToast("Application withdrawn.");
+      setAlreadyApplied(false);
+      setForm(EMPTY_FORM);
+    } catch (err: any) {
+      setErrors({
+        coverLetter: err.message ?? "Something went wrong. Please try again.",
+      });
+    } finally {
+      setSending(false);
+    }
   }
 
+  async function handleWithdraw() {
+    setWithdrawing(true);
+    try {
+      const res = await fetch("/api/jobs", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId: role._id, email: form.email }),
+      });
+      if (!res.ok) throw new Error("Failed to withdraw");
+      fireToast("Application withdrawn.");
+      setAlreadyApplied(false);
+      setForm(EMPTY_FORM);
+    } catch (err) {
+      setErrors({
+        coverLetter: "Failed to withdraw application. Please try again.",
+      });
+    } finally {
+      setWithdrawing(false);
+    }
+  }
   const charCount = form.coverLetter.trim().length;
 
   return (
@@ -228,9 +296,9 @@ export function ApplicationForm({
         <div
           style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: 4 }}
         >
-          {[role.location, role.type, role.category].map((tag) => (
+          {[role.location, role.type, role.category].map((tag, i) => (
             <span
-              key={tag}
+              key={i}
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: "0.58rem",
@@ -533,101 +601,198 @@ export function ApplicationForm({
           flexWrap: "wrap",
         }}
       >
-        <button
-          onClick={handleSubmit}
-          disabled={sending}
-          onMouseEnter={(e) => {
-            if (!sending)
-              (e.currentTarget as HTMLButtonElement).style.transform =
-                "translateY(-1px)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform =
-              "translateY(0)";
-          }}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 12,
-            background: sending ? C.muted : C.charcoal,
-            color: "#fff",
-            border: "none",
-            cursor: sending ? "not-allowed" : "pointer",
-            padding: "13px 12px 13px 26px",
-            borderRadius: 9999,
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.7rem",
-            fontWeight: 500,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase" as const,
-            transition: "background 0.25s, transform 0.15s",
-            transform: "translateY(0)",
-          }}
-        >
-          {sending ? "Submitting…" : "Submit Application"}
-          <span
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            {sending ? (
-              <Loader2
-                size={13}
-                strokeWidth={2}
-                style={{ animation: "careers-spin 0.9s linear infinite" }}
-              />
-            ) : (
-              <ArrowUpRight size={13} strokeWidth={2} />
-            )}
-          </span>
-        </button>
-
-        <button
-          onClick={onCancel}
-          disabled={sending}
-          onMouseEnter={(e) => {
-            if (!sending)
-              (e.currentTarget as HTMLButtonElement).style.color = C.muted;
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.color = C.dim;
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: sending ? "not-allowed" : "pointer",
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.65rem",
-            color: C.dim,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase" as const,
-            paddingBottom: 2,
-            borderBottom: `1px solid ${C.rule}`,
-            opacity: sending ? 0.4 : 1,
-            transition: "color 0.2s, opacity 0.2s",
-          }}
-        >
-          Cancel
-        </button>
-
-        <span
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.58rem",
-            color: C.dim,
-            letterSpacing: "0.06em",
-            marginLeft: "auto",
-          }}
-        >
-          · required fields
-        </span>
+        {alreadyApplied ? (
+          <>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.82rem",
+                  fontWeight: 500,
+                  color: C.charcoal,
+                  marginBottom: 4,
+                }}
+              >
+                You have already applied for this role
+              </div>
+              <div
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.74rem",
+                  color: C.muted,
+                  fontWeight: 300,
+                }}
+              >
+                Application with email address{" "}
+                <span style={{ color: C.charcoal, fontWeight: 500 }}>
+                  {form.email}
+                </span>{" "}
+                is already on file.
+              </div>
+            </div>
+            <button
+              onClick={onCancel}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.65rem",
+                color: C.dim,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase" as const,
+                paddingBottom: 2,
+                borderBottom: `1px solid ${C.rule}`,
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = C.muted)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = C.dim)}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleWithdraw}
+              disabled={withdrawing}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 12,
+                background: withdrawing ? C.muted : "#b05a45",
+                color: "#fff",
+                border: "none",
+                cursor: withdrawing ? "not-allowed" : "pointer",
+                padding: "13px 12px 13px 26px",
+                borderRadius: 9999,
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.7rem",
+                fontWeight: 500,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase" as const,
+                transition: "background 0.25s",
+              }}
+            >
+              {withdrawing ? "Withdrawing…" : "Withdraw Application"}
+              <span
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {withdrawing ? (
+                  <Loader2
+                    size={13}
+                    strokeWidth={2}
+                    style={{ animation: "careers-spin 0.9s linear infinite" }}
+                  />
+                ) : (
+                  <ArrowUpRight size={13} strokeWidth={2} />
+                )}
+              </span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleSubmit}
+              disabled={sending}
+              onMouseEnter={(e) => {
+                if (!sending)
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform =
+                  "translateY(0)";
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 12,
+                background: sending ? C.muted : C.charcoal,
+                color: "#fff",
+                border: "none",
+                cursor: sending ? "not-allowed" : "pointer",
+                padding: "13px 12px 13px 26px",
+                borderRadius: 9999,
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.7rem",
+                fontWeight: 500,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase" as const,
+                transition: "background 0.25s, transform 0.15s",
+                transform: "translateY(0)",
+              }}
+            >
+              {sending ? "Submitting…" : "Submit Application"}
+              <span
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {sending ? (
+                  <Loader2
+                    size={13}
+                    strokeWidth={2}
+                    style={{ animation: "careers-spin 0.9s linear infinite" }}
+                  />
+                ) : (
+                  <ArrowUpRight size={13} strokeWidth={2} />
+                )}
+              </span>
+            </button>
+            <button
+              onClick={onCancel}
+              disabled={sending}
+              onMouseEnter={(e) => {
+                if (!sending)
+                  (e.currentTarget as HTMLButtonElement).style.color = C.muted;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.color = C.dim;
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: sending ? "not-allowed" : "pointer",
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.65rem",
+                color: C.dim,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase" as const,
+                paddingBottom: 2,
+                borderBottom: `1px solid ${C.rule}`,
+                opacity: sending ? 0.4 : 1,
+                transition: "color 0.2s, opacity 0.2s",
+              }}
+            >
+              Cancel
+            </button>
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.58rem",
+                color: C.dim,
+                letterSpacing: "0.06em",
+                marginLeft: "auto",
+              }}
+            >
+              · required fields
+            </span>
+          </>
+        )}
       </div>
     </motion.div>
   );

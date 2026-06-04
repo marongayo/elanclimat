@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { Eyebrow } from "@/components/careers-components/Eyebrow";
 import { RoleRow } from "@/components/careers-components/RoleRow";
-import { C, Role, AppStatus } from "@/components/careers-components/_tokens";
+import { AppStatus, Role } from "@/components/careers-components/_tokens";
+import type { Job } from "@/lib/types/jobs";
+import { C } from "@/lib/constants";
 
 export function RolesSection() {
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [openRole, setOpenRole] = useState<string | null>(null);
   const [appStatus, setAppStatus] = useState<Record<string, AppStatus>>({});
@@ -22,8 +24,8 @@ export function RolesSection() {
     setAppStatus((p) => ({ ...p, [id]: s }));
   }
 
-  function toggle(role: Role) {
-    setOpenRole((prev) => (prev === role._id ? null : role._id));
+  function toggle(role: Job) {
+    setOpenRole((prev) => (prev === role._id ? null : role._id!));
   }
 
   const empty = !loading && roles.length === 0;
@@ -78,7 +80,7 @@ export function RolesSection() {
           >
             {empty
               ? "We don't have any advertised vacancies at the moment, but we're always interested in meeting great people. Send us a note at careers@example.com and tell us what you do."
-              : "Roles across technical, operations, sales, and creative each one real. We are looking for people, not just CVs. Click any role to read more and apply directly below."}
+              : "Roles across technical, operations, sales, and creative — each one real. We are looking for people, not just CVs. Click any role to read more and apply directly below."}
           </p>
         </div>
 
@@ -96,18 +98,26 @@ export function RolesSection() {
 
         {!loading && !empty && (
           <div>
-            {roles.map((role) => (
-              <RoleRow
-                key={role._id}
-                role={role}
-                isOpen={openRole === role._id}
-                status={appStatus[role._id] ?? "idle"}
-                onToggle={() => toggle(role)}
-                onOpenForm={() => setStatus(role._id, "form")}
-                onFormSuccess={() => setStatus(role._id, "success")}
-                onFormCancel={() => setStatus(role._id, "idle")}
-              />
-            ))}
+            {roles.map((job, i) => {
+              const role: Role = {
+                ...job,
+                index: String(i + 1).padStart(2, "0"),
+              };
+              return (
+                <RoleRow
+                  key={job._id}
+                  role={role}
+                  isOpen={openRole === job._id}
+                  status={appStatus[job._id!] ?? "idle"}
+                  onToggle={() =>
+                    setOpenRole((prev) => (prev === job._id ? null : job._id!))
+                  }
+                  onOpenForm={() => setStatus(job._id!, "form")}
+                  onFormSuccess={() => setStatus(job._id!, "success")}
+                  onFormCancel={() => setStatus(job._id!, "idle")}
+                />
+              );
+            })}
           </div>
         )}
       </div>

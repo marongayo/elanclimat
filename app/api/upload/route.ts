@@ -1,5 +1,3 @@
-// upload/route.ts
-
 import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,11 +7,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET as string,
 });
 
-console.log("Cloudinary configured with:", {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET ? "****" : "",
-})
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File;
@@ -21,12 +14,21 @@ export async function POST(req: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      { folder: "elan", resource_type: "image" },
-      (err, res) => (err ? reject(err) : resolve(res!))
-    ).end(buffer);
-  });
+  const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
+
+  const result = await new Promise<{ secure_url: string }>(
+    (resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: "elan",
+            resource_type: isPdf ? "raw" : "auto",
+          },
+          (err, res) => (err ? reject(err) : resolve(res!)),
+        )
+        .end(buffer);
+    },
+  );
 
   return NextResponse.json({ url: result.secure_url });
 }

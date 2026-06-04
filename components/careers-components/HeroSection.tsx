@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eyebrow } from "@/components/careers-components/Eyebrow";
-import { C, VALUES, STATS } from "@/components/careers-components/_tokens";
+import { VALUES, STATS } from "@/components/careers-components/_tokens";
+import { C } from "@/lib/constants";
 
 export function HeroSection() {
   return (
