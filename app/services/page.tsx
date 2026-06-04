@@ -29,10 +29,8 @@ const IMG = {
 
   // HVAC
   hvacHero: "/everett.jpg",
-  hvacA:
-    "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?w=700&q=80",
-  hvacB:
-    "https://images.unsplash.com/photo-1504309092620-4d0ec726efa4?w=700&q=80",
+  hvacA: "/sticky.png",
+  hvacB: "/images/HVAC.jpg",
 
   // Plumbing
   plumbingHero:
