@@ -53,8 +53,8 @@ const emptyJob = (): JobForm => ({
   category: "",
   type: "Full-time",
   requirements: [],
+  applicationDeadline: "",
 });
-
 const emptyProduct = (): ProductForm => ({
   name: "",
   fullName: "",

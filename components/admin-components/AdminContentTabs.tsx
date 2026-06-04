@@ -226,6 +226,27 @@ function JobCard({
         </div>
       </div>
 
+      {job.applicationDeadline && (
+        <div
+          style={{
+            fontFamily: "DM Sans",
+            fontSize: "0.72rem",
+            color:
+              new Date(job.applicationDeadline) < new Date()
+                ? "#c0392b"
+                : "var(--text-muted)",
+            marginTop: 4,
+          }}
+        >
+          Deadline:{" "}
+          {new Date(job.applicationDeadline).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+          {new Date(job.applicationDeadline) < new Date() && " — Closed"}
+        </div>
+      )}
       {/* Applicants panel */}
       {expanded && (
         <div
@@ -1134,6 +1155,7 @@ export default function AdminContentTabs({
                   category: "",
                   type: "Full-time",
                   requirements: [],
+                  applicationDeadline: "",
                 });
               }}
               style={{
@@ -1278,6 +1300,21 @@ export default function AdminContentTabs({
                   />
                 </div>
                 <div>
+                  <label style={LABEL_STYLE}>Application Deadline *</label>
+                  <input
+                    type="date"
+                    value={jobForm.applicationDeadline ?? ""}
+                    onChange={(e) =>
+                      setJobForm({
+                        ...jobForm,
+                        applicationDeadline: e.target.value,
+                      })
+                    }
+                    style={INPUT_STYLE}
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+                <div>
                   <label style={LABEL_STYLE}>Requirements (one per line)</label>
                   <textarea
                     value={jobForm.requirements.join("\n")}
@@ -1374,6 +1411,7 @@ export default function AdminContentTabs({
                       description: job.description,
                       location: job.location,
                       category: job.category,
+                      applicationDeadline: job.applicationDeadline,
                       type: job.type,
                       requirements: job.requirements,
                     });

@@ -22,6 +22,7 @@ export interface Job {
   applicants?: Applicant[];
   created_at?: string;
   updated_at?: string;
+  applicationDeadline: string;
 }
 
 export type JobForm = Omit<Job, "_id" | "applicants">;

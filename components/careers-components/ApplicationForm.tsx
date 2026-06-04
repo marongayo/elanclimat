@@ -192,7 +192,6 @@ export function ApplicationForm({
       const res = await fetch("/api/jobs", { method: "PATCH", body: fd });
 
       if (res.status === 409) {
-        // Email already exists for this role
         setAlreadyApplied(true);
         setSending(false);
         return;
@@ -203,14 +202,8 @@ export function ApplicationForm({
         throw new Error(data.error || "Submission failed");
       }
 
-      // in handleSubmit, replace onSuccess():
       fireToast("Application submitted successfully!");
-      onSuccess();
-
-      // in handleWithdraw, after successful withdraw:
-      fireToast("Application withdrawn.");
-      setAlreadyApplied(false);
-      setForm(EMPTY_FORM);
+      setTimeout(() => onSuccess(), 50);
     } catch (err: any) {
       setErrors({
         coverLetter: err.message ?? "Something went wrong. Please try again.",

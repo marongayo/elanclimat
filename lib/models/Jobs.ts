@@ -21,6 +21,7 @@ const JobSchema = new mongoose.Schema(
     type: { type: String, required: true },
     requirements: { type: [String], required: true },
     applicants: { type: [ApplicantSchema], default: [] },
+    applicationDeadline: { type: Date, required: true },
   },
   {
     timestamps: {

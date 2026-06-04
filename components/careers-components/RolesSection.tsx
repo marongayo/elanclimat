@@ -16,7 +16,14 @@ export function RolesSection() {
   useEffect(() => {
     fetch("/api/jobs")
       .then((r) => r.json())
-      .then((data) => setRoles(data))
+      .then((data) => {
+        const active = Array.isArray(data)
+          ? data.filter(
+              (j: Job) => new Date(j.applicationDeadline) >= new Date(),
+            )
+          : [];
+        setRoles(active);
+      })
       .finally(() => setLoading(false));
   }, []);
 

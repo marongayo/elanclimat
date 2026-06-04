@@ -211,6 +211,29 @@ export async function saveJob(job: Job) {
 
 export async function deleteJob(id: string) {
   await connectDB();
+
+  // Fetch all applicants first to get their CVs
+  const job = await JobModel.findById(new Types.ObjectId(id)).lean();
+
+  if (job?.applicants?.length) {
+    const cloudinaryModule = await import("cloudinary");
+    const cloudinary = cloudinaryModule.v2;
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    for (const applicant of job.applicants as any[]) {
+      if (applicant?.cvUrl) {
+        const afterUpload = applicant.cvUrl.split("/upload/")[1];
+        const withoutVersion = afterUpload.replace(/^v\d+\//, "");
+        const publicId = withoutVersion.replace(/\.[^/.]+$/, "");
+        await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+      }
+    }
+  }
+
   await JobModel.findByIdAndDelete(new Types.ObjectId(id));
 }
 
@@ -234,7 +257,6 @@ export async function addApplicant(
 export async function removeApplicant(jobId: string, email: string) {
   await connectDB();
 
-  // Get the cvUrl before removing
   const job = await JobModel.findById(new Types.ObjectId(jobId)).lean();
   const applicant = job?.applicants?.find((a: any) => a.email === email);
 
@@ -247,12 +269,10 @@ export async function removeApplicant(jobId: string, email: string) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    // e.g. https://res.cloudinary.com/cloud/image/upload/v123/elan/cvs/filename.pdf
-    const urlParts = applicant.cvUrl.split("/");
-    const fileWithExt = urlParts[urlParts.length - 1];
-    const fileName = fileWithExt.replace(/\.[^/.]+$/, "");
-    const folder = urlParts[urlParts.length - 2];
-    const publicId = `${folder}/${fileName}`;
+    // Extract public ID — strip version prefix and extension
+    const afterUpload = applicant.cvUrl.split("/upload/")[1];
+    const withoutVersion = afterUpload.replace(/^v\d+\//, "");
+    const publicId = withoutVersion.replace(/\.[^/.]+$/, "");
 
     await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
   }
