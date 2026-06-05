@@ -173,8 +173,6 @@ const SOCIALS = [
 // Services with keyword-rich labels AND descriptive hrefs
 const SERVICES = [
   { label: "HVAC Installation Kenya", href: "/services#hvac-systems" },
-  { label: "HVAC", href: "/services#hvac-systems" },
-  { label: "HVAC installation", href: "/services#hvac-systems" },
   { label: "Solar Panel Installation", href: "/services#solar-installation" },
   { label: "Solar Water Heaters", href: "/services#solar-water-heaters" },
   { label: "Cold Room Installation", href: "/services#cold-room-installation" },
@@ -186,7 +184,6 @@ const SERVICES = [
   { label: "Plumbing Services", href: "/services#plumbing" },
   { label: "HVAC Maintenance & Repair", href: "/services#maintenance-repair" },
 ];
-
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
