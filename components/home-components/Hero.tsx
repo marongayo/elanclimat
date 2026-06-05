@@ -18,8 +18,6 @@ export default function Hero() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-
         .hero-tag {
           background: rgba(255,255,255,0.08);
           backdrop-filter: blur(8px);

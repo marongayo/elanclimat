@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { BlogPost } from "@/lib/types/blog";
 
 export default function BlogSection({ posts }: { posts: BlogPost[] }) {
@@ -12,13 +12,13 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
 
   if (!posts || posts.length === 0) return null;
 
-  const post = posts[activeIndex];
-
   return (
     <section
+      aria-label="Latest engineering insights and articles from Élan Climat Kenya"
       style={{
-        backgroundColor: "#ffffff",
-        padding: "70px 0",
+        backgroundColor: "#f9f7f4",
+        padding: "96px 0",
+        fontFamily: "'DM Sans', sans-serif",
       }}
     >
       <style>{`
@@ -27,31 +27,26 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
           margin: 0 auto;
           padding: 0 64px;
         }
-
         @media (max-width: 768px) {
           .blog-section-inner { padding: 0 28px; }
           .blog-grid { grid-template-columns: 1fr !important; }
           .blog-image-col { display: none !important; }
         }
-
         .blog-post-tab {
           background: none;
           border: none;
           cursor: pointer;
-          padding: 0;
+          padding: 18px 0;
           text-align: left;
           display: flex;
           flex-direction: column;
           gap: 4px;
           transition: opacity 0.2s;
+          border-bottom: 1px solid rgba(26,26,24,0.1);
+          width: 100%;
         }
-
         .blog-post-tab:hover { opacity: 1 !important; }
-
         .blog-read-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
           font-family: 'DM Sans', sans-serif;
           font-size: 0.72rem;
           font-weight: 500;
@@ -59,70 +54,95 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
           text-transform: uppercase;
           color: #1a1a18;
           text-decoration: none;
-          background: white;
-          padding: 10px 10px 10px 20px;
-          border-radius: 9999px;
-          transition: background 0.2s, color 0.2s;
-          border: 1.5px solid #1a1a18;
-          align-self: flex-start;
+          borderBottomWidth: 1px;
+          borderBottomStyle: solid;
+          borderBottomColor: rgba(26,26,24,0.2);
+          padding-bottom: 2px;
+          transition: color 0.2s, border-color 0.2s;
         }
-
         .blog-read-link:hover {
-          background: #1a1a18;
-          color: white;
+          color: rgba(26,26,24,0.6);
+          border-color: rgba(26,26,24,0.4);
         }
-
-        .blog-read-link:hover .blog-link-icon {
-          background: white;
+        .blog-all-link {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.72rem;
+          font-weight: 500;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(26,26,24,0.5);
+          text-decoration: none;
+          border-bottom: 1px solid rgba(26,26,24,0.15);
+          padding-bottom: 2px;
+          transition: color 0.2s, border-color 0.2s;
+        }
+        .blog-all-link:hover {
           color: #1a1a18;
-          transform: rotate(45deg);
-        }
-
-        .blog-link-icon {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: #1a1a18;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.2s, color 0.2s, transform 0.3s;
-          flex-shrink: 0;
+          border-color: rgba(26,26,24,0.4);
         }
       `}</style>
 
       <div className="blog-section-inner">
-        {/* Section eyebrow */}
+        {/* ── Section header ── */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: 10,
-            marginBottom: 28,
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 24,
+            flexWrap: "wrap",
+            marginBottom: 48,
           }}
         >
-          <div
-            style={{
-              width: 24,
-              height: 1,
-              background: "rgba(26,26,24,0.15)",
-            }}
-          />
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.62rem",
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: "rgba(26,26,24,0.55)",
-              fontWeight: 500,
-            }}
-          >
-            Latest Insights
-          </span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {/* Eyebrow */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 24,
+                  height: 1,
+                  background: "#c8c8c4",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.62rem",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "#8fa68e",
+                  fontWeight: 500,
+                }}
+              >
+                Latest Insights
+              </span>
+            </div>
+
+            {/* h2 — keyword rich */}
+            <h2
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(1.8rem, 3vw, 2.6rem)",
+                fontWeight: 400,
+                color: "#1a1a18",
+                lineHeight: 1.1,
+                letterSpacing: "-0.015em",
+                margin: 0,
+              }}
+            >
+              HVAC, Solar & Energy
+              <br />
+              <span style={{ fontWeight: 300 }}>Insights from Kenya</span>
+            </h2>
+          </div>
+
+          <Link href="/blog" className="blog-all-link">
+            All Articles
+          </Link>
         </div>
 
+        {/* ── Main grid ── */}
         <div
           className="blog-grid"
           style={{
@@ -132,16 +152,16 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
             alignItems: "start",
           }}
         >
-          {/* LEFT */}
+          {/* LEFT — post list + active content */}
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {/* Tabs */}
+            {/* Post tabs — always rendered, Google indexes all titles */}
             {posts.length > 1 && (
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   borderTop: "1px solid rgba(26,26,24,0.1)",
-                  marginBottom: 28,
+                  marginBottom: 32,
                 }}
               >
                 {posts.map((p, i) => (
@@ -149,11 +169,8 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                     key={p.slug}
                     className="blog-post-tab"
                     onClick={() => setActiveIndex(i)}
-                    style={{
-                      borderBottom: "1px solid rgba(26,26,24,0.1)",
-                      padding: "18px 0",
-                      opacity: activeIndex === i ? 1 : 0.5,
-                    }}
+                    aria-pressed={activeIndex === i}
+                    style={{ opacity: activeIndex === i ? 1 : 0.5 }}
                   >
                     <span
                       style={{
@@ -168,7 +185,7 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
                     >
                       {p.category}
                     </span>
-
+                    {/* Post title always in DOM — Google indexes all of them */}
                     <span
                       style={{
                         fontFamily: "'Cormorant Garamond', serif",
@@ -187,189 +204,143 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
               </div>
             )}
 
-            {/* Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={post.slug}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 12,
-                }}
-              >
-                {/* Meta */}
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                  <span
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.65rem",
-                      letterSpacing: "0.18em",
-                      textTransform: "uppercase",
-                      color: "#8fa68e",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {new Date(post.date).toLocaleDateString("en-KE", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
-
-                  <span
-                    style={{
-                      width: 1,
-                      height: 12,
-                      background: "rgba(26,26,24,0.15)",
-                    }}
-                  />
-
-                  <span
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.65rem",
-                      color: "rgba(26,26,24,0.5)",
-                      letterSpacing: "0.06em",
-                    }}
-                  >
-                    {post.readTime}
-                  </span>
-                </div>
-
-                {/* Title (single post mode only) */}
-                {posts.length === 1 && (
-                  <h2
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
-                      fontWeight: 400,
-                      color: "#1a1a18",
-                      lineHeight: 1.15,
-                      letterSpacing: "-0.015em",
-                      margin: 0,
-                    }}
-                  >
-                    {post.title}
-                  </h2>
-                )}
-
-                {/* Excerpt */}
-                <p
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.88rem",
-                    color: "#1a1a18",
-                    lineHeight: 1.8,
-                    margin: 0,
-                    fontWeight: 300,
-                  }}
-                >
-                  {post.excerpt}
-                </p>
-
-                {/* CTA */}
+            {/*
+              SEO FIX: All post excerpts rendered in DOM, inactive ones
+              visually hidden but fully readable by Google.
+            */}
+            <div style={{ position: "relative" }}>
+              {posts.map((p, i) => (
                 <div
+                  key={p.slug}
+                  aria-hidden={activeIndex !== i}
                   style={{
                     display: "flex",
-                    alignItems: "center",
-                    gap: 24,
-                    marginTop: 8,
+                    flexDirection: "column",
+                    gap: 12,
+                    position: activeIndex !== i ? "absolute" : "relative",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    opacity: activeIndex === i ? 1 : 0,
+                    pointerEvents: activeIndex === i ? "auto" : "none",
+                    visibility: activeIndex !== i ? "hidden" : "visible",
+                    transition: "opacity 0.35s ease",
                   }}
                 >
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.72rem",
-                      fontWeight: 500,
-                      color: "#1a1a18",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      textDecoration: "none",
-                      borderBottom: "1px solid rgba(26,26,24,0.2)",
-                      paddingBottom: 2,
-                      transition: "color 0.2s, border-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color =
-                        "rgba(26,26,24,0.7)";
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(26,26,24,0.4)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color =
-                        "#1a1a18";
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(26,26,24,0.2)";
-                    }}
+                  {/* Meta */}
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 16 }}
                   >
-                    Read Article
-                  </Link>
+                    <span
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.65rem",
+                        letterSpacing: "0.18em",
+                        textTransform: "uppercase",
+                        color: "#8fa68e",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {new Date(p.date).toLocaleDateString("en-KE", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <span
+                      style={{
+                        width: 1,
+                        height: 12,
+                        background: "rgba(26,26,24,0.15)",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.65rem",
+                        color: "rgba(26,26,24,0.5)",
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      {p.readTime}
+                    </span>
+                  </div>
 
-                  <Link
-                    href="/blog"
+                  {/* Title for single-post mode */}
+                  {posts.length === 1 && (
+                    <h3
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "clamp(1.8rem, 3vw, 2.4rem)",
+                        fontWeight: 400,
+                        color: "#1a1a18",
+                        lineHeight: 1.15,
+                        letterSpacing: "-0.015em",
+                        margin: 0,
+                      }}
+                    >
+                      {p.title}
+                    </h3>
+                  )}
+
+                  {/* Excerpt — SEO body copy, all in DOM */}
+                  <p
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.72rem",
-                      fontWeight: 500,
-                      color: "rgba(26,26,24,0.6)",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      textDecoration: "none",
-                      borderBottom: "1px solid rgba(26,26,24,0.2)",
-                      paddingBottom: 2,
-                      transition: "color 0.2s, border-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color =
-                        "#1a1a18";
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(26,26,24,0.4)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLAnchorElement).style.color =
-                        "rgba(26,26,24,0.6)";
-                      (e.currentTarget as HTMLAnchorElement).style.borderColor =
-                        "rgba(26,26,24,0.2)";
+                      fontSize: "0.88rem",
+                      color: "#6b6b68",
+                      lineHeight: 1.8,
+                      margin: 0,
+                      fontWeight: 300,
                     }}
                   >
-                    All Articles
-                  </Link>
+                    {p.excerpt}
+                  </p>
+
+                  {/* CTAs */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 24,
+                      marginTop: 8,
+                    }}
+                  >
+                    <Link href={`/blog/${p.slug}`} className="blog-read-link">
+                      Read Article
+                    </Link>
+                    <Link href="/blog" className="blog-all-link">
+                      All Articles
+                    </Link>
+                  </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              ))}
+            </div>
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT — image, animates on tab switch */}
           <div className="blog-image-col">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={post.slug + "-img"}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  position: "relative",
-                  aspectRatio: "16 / 12",
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  src={post.image}
-                  alt={post.title}
-                  fill
-                  className="object-cover object-center"
-                  loading="lazy"
-                  sizes="520px"
-                  quality={80}
-                />
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              key={posts[activeIndex]?.slug + "-img"}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: "relative",
+                aspectRatio: "16 / 12",
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                src={posts[activeIndex]?.image}
+                alt={`${posts[activeIndex]?.title} — Élan Climat Kenya`}
+                fill
+                className="object-cover object-center"
+                loading="lazy"
+                sizes="520px"
+                quality={80}
+              />
+            </motion.div>
 
             {posts.length > 1 && (
               <div

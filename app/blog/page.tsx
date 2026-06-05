@@ -1,17 +1,42 @@
 // app/blog/page.tsx
+// SERVER COMPONENT — no "use client", fully static and indexable
+
 import { getBlogPosts } from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Calendar, Clock } from "lucide-react";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import BackToTop from "@/components/BackToTop";
 
-export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Blog  ",
+// ─── Metadata — shown in Google search results ────────────────────────────────
+export const metadata: Metadata = {
+  title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
   description:
-    "Expert insights on HVAC, solar energy, battery storage, and sustainable living from our team of engineers.",
+    "Expert articles on HVAC installation, solar energy systems, cold rooms, electrical engineering, and sustainable building solutions from Élan Climat's engineers in Kenya.",
+  keywords: [
+    "HVAC blog Kenya",
+    "solar energy articles Kenya",
+    "cold room installation guide",
+    "electrical engineering Kenya",
+    "energy efficiency Kenya",
+    "sustainable buildings Kenya",
+    "HVAC maintenance tips",
+    "solar panels Kenya guide",
+  ],
+  alternates: {
+    canonical: "https://www.elanclimat.co.ke/blog",
+  },
+  openGraph: {
+    title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
+    description:
+      "Expert articles on HVAC, solar energy, cold rooms, and sustainable engineering from Élan Climat's team across Kenya.",
+    url: "https://www.elanclimat.co.ke/blog",
+    type: "website",
+  },
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const posts = await getBlogPosts();
@@ -23,22 +48,18 @@ export default async function BlogPage() {
       <Navbar />
       <BackToTop />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
 
-        /* ── Layout ── */
         .blog-inner {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 64px;
         }
-
-        /* ── Category pill — same as services/careers badges ── */
         .blog-pill {
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-sans), sans-serif;
           font-size: 0.58rem;
           font-weight: 500;
           letter-spacing: 0.16em;
@@ -56,8 +77,6 @@ export default async function BlogPage() {
           flex-shrink: 0;
           display: inline-block;
         }
-
-        /* ── Featured card ── */
         .featured-card {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -71,8 +90,6 @@ export default async function BlogPage() {
           transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
         }
         .featured-card:hover .featured-card-img img { transform: scale(1.04); }
-
-        /* ── Grid cards ── */
         .blog-card {
           background: #ffffff;
           overflow: hidden;
@@ -87,8 +104,6 @@ export default async function BlogPage() {
           transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
         }
         .blog-card:hover .blog-card-img img { transform: scale(1.04); }
-
-        /* ── Arrow button — same rotating pill from services/blog ── */
         .blog-arrow {
           width: 32px; height: 32px;
           border-radius: 50%;
@@ -106,8 +121,6 @@ export default async function BlogPage() {
           border-color: #1a1a18;
           transform: rotate(45deg);
         }
-
-        /* ── CTA pill — same as contact/services ── */
         .blog-cta {
           display: inline-flex;
           align-items: center;
@@ -117,7 +130,7 @@ export default async function BlogPage() {
           text-decoration: none;
           padding: 11px 10px 11px 22px;
           border-radius: 9999px;
-          font-family: 'DM Sans', sans-serif;
+          font-family: var(--font-sans), sans-serif;
           font-size: 0.72rem;
           font-weight: 500;
           letter-spacing: 0.1em;
@@ -136,8 +149,17 @@ export default async function BlogPage() {
           transition: background 0.25s, color 0.25s, transform 0.3s;
           flex-shrink: 0;
         }
-
-        /* ── Responsive ── */
+        .explore-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 0;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          text-decoration: none;
+          gap: 16px;
+          transition: border-color 0.2s;
+        }
+        .explore-link:hover { border-bottom-color: rgba(255,255,255,0.2); }
         @media (max-width: 1100px) {
           .blog-inner { padding: 0 32px; }
           .featured-card { grid-template-columns: 1fr; }
@@ -149,25 +171,22 @@ export default async function BlogPage() {
           .blog-grid-3 { grid-template-columns: 1fr !important; }
           .blog-hero-grid { grid-template-columns: 1fr !important; }
           .blog-hero-right { display: none !important; }
-
-          .explore-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  text-decoration: none;
-  gap: 16px;
-  transition: border-color 0.2s;
-}
-.explore-link:hover { border-bottom-color: rgba(255,255,255,0.2); }
         }
       `}</style>
 
-      <main style={{ background: "#f9f7f4", minHeight: "100vh" }}>
-        {/* ══════════════════════════════════════════════════════════════════
-            HERO — full-bleed image matching contact/services/careers
-        ══════════════════════════════════════════════════════════════════ */}
+      <main
+        style={{ background: "#f9f7f4", minHeight: "100vh" }}
+        itemScope
+        itemType="https://schema.org/Blog"
+      >
+        {/* Hidden schema metadata — read by Google, invisible to users */}
+        <meta itemProp="name" content="Élan Climat Engineering Blog — Kenya" />
+        <meta
+          itemProp="description"
+          content="Expert articles on HVAC installation, solar energy, cold rooms, and sustainable building engineering from Kenya."
+        />
+
+        {/* ── Hero ── */}
         <div
           style={{
             position: "relative",
@@ -179,7 +198,7 @@ export default async function BlogPage() {
           {featured ? (
             <Image
               src={featured.image}
-              alt="Blog hero"
+              alt={`${featured.title} — Élan Climat Kenya engineering blog`}
               fill
               priority
               sizes="100vw"
@@ -192,7 +211,6 @@ export default async function BlogPage() {
             />
           )}
 
-          {/* Same gradient as all other pages */}
           <div
             style={{
               position: "absolute",
@@ -214,42 +232,71 @@ export default async function BlogPage() {
               padding: "48px 0 56px",
             }}
           >
-            {/* Breadcrumb */}
+            {/* Breadcrumb with schema */}
             <div className="blog-inner">
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Link
-                  href="/"
+              <nav aria-label="Breadcrumb">
+                <ol
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.4)",
-                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    listStyle: "none",
+                    margin: 0,
+                    padding: 0,
                   }}
+                  itemScope
+                  itemType="https://schema.org/BreadcrumbList"
                 >
-                  Home
-                </Link>
-                <span
-                  style={{
-                    color: "rgba(255,255,255,0.25)",
-                    fontSize: "0.6rem",
-                  }}
-                >
-                  /
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "#8fa68e",
-                  }}
-                >
-                  Insights
-                </span>
-              </div>
+                  <li
+                    itemScope
+                    itemType="https://schema.org/ListItem"
+                    itemProp="itemListElement"
+                  >
+                    <Link
+                      href="/"
+                      itemProp="item"
+                      style={{
+                        fontFamily: "var(--font-sans), sans-serif",
+                        fontSize: "0.65rem",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "rgba(255,255,255,0.4)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <span itemProp="name">Home</span>
+                    </Link>
+                    <meta itemProp="position" content="1" />
+                  </li>
+                  <li
+                    style={{
+                      color: "rgba(255,255,255,0.25)",
+                      fontSize: "0.6rem",
+                    }}
+                  >
+                    /
+                  </li>
+                  <li
+                    itemScope
+                    itemType="https://schema.org/ListItem"
+                    itemProp="itemListElement"
+                  >
+                    <span
+                      itemProp="name"
+                      style={{
+                        fontFamily: "var(--font-sans), sans-serif",
+                        fontSize: "0.65rem",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "#8fa68e",
+                      }}
+                    >
+                      Blog
+                    </span>
+                    <meta itemProp="position" content="2" />
+                  </li>
+                </ol>
+              </nav>
             </div>
 
             {/* Hero copy */}
@@ -263,11 +310,9 @@ export default async function BlogPage() {
                   alignItems: "flex-end",
                 }}
               >
-                {/* Left */}
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 16 }}
                 >
-                  {/* Eyebrow — same component pattern */}
                   <div
                     style={{ display: "flex", alignItems: "center", gap: 10 }}
                   >
@@ -281,7 +326,7 @@ export default async function BlogPage() {
                     />
                     <span
                       style={{
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "var(--font-sans), sans-serif",
                         fontSize: "0.62rem",
                         letterSpacing: "0.22em",
                         textTransform: "uppercase",
@@ -289,13 +334,14 @@ export default async function BlogPage() {
                         fontWeight: 500,
                       }}
                     >
-                      Insights
+                      Engineering Insights
                     </span>
                   </div>
 
+                  {/* h1 — keyword rich */}
                   <h1
                     style={{
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: "var(--font-serif), serif",
                       fontSize: "clamp(2.6rem, 5vw, 4rem)",
                       fontWeight: 400,
                       lineHeight: 1.05,
@@ -304,7 +350,7 @@ export default async function BlogPage() {
                       margin: 0,
                     }}
                   >
-                    The Élan
+                    HVAC, Solar & Energy
                     <br />
                     <em
                       style={{
@@ -313,27 +359,29 @@ export default async function BlogPage() {
                         color: "#c9a96e",
                       }}
                     >
-                      Blog
+                      Insights from Kenya
                     </em>
                   </h1>
 
+                  {/* Supporting copy — adds keyword depth */}
                   <p
                     style={{
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "var(--font-sans), sans-serif",
                       fontSize: "0.84rem",
                       color: "rgba(255,255,255,0.55)",
                       lineHeight: 1.85,
-                      maxWidth: 380,
+                      maxWidth: 400,
                       margin: 0,
                       fontWeight: 300,
                     }}
                   >
-                    Expert insights on HVAC, solar energy, battery storage, and
-                    sustainable living from our team of engineers.
+                    Expert guides on HVAC installation, solar panel systems,
+                    cold room design, electrical engineering, and sustainable
+                    building solutions across Nairobi, Mombasa, and Kenya.
                   </p>
                 </div>
 
-                {/* Right — post count stat */}
+                {/* Post count */}
                 <div
                   className="blog-hero-right"
                   style={{
@@ -345,7 +393,7 @@ export default async function BlogPage() {
                 >
                   <span
                     style={{
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: "var(--font-serif), serif",
                       fontSize: "4rem",
                       fontWeight: 300,
                       color: "rgba(255,255,255,0.12)",
@@ -357,7 +405,7 @@ export default async function BlogPage() {
                   </span>
                   <span
                     style={{
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "var(--font-sans), sans-serif",
                       fontSize: "0.58rem",
                       letterSpacing: "0.2em",
                       textTransform: "uppercase",
@@ -372,7 +420,7 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        {/* Sage-to-accent gradient bar — same visual signature as terms page */}
+        {/* Gradient bar */}
         <div
           style={{
             height: 3,
@@ -381,13 +429,33 @@ export default async function BlogPage() {
           }}
         />
 
-        {/* ══════════════════════════════════════════════════════════════════
-            FEATURED POST
-        ══════════════════════════════════════════════════════════════════ */}
+        {/* ── Featured post ── */}
         {featured && (
-          <section style={{ backgroundColor: "#f9f7f4", padding: "72px 0 0" }}>
+          <section
+            aria-label="Featured article"
+            style={{ backgroundColor: "#f9f7f4", padding: "72px 0 0" }}
+            itemScope
+            itemType="https://schema.org/BlogPosting"
+          >
+            {/* Schema metadata for featured post */}
+            <meta itemProp="headline" content={featured.title} />
+            <meta itemProp="description" content={featured.excerpt} />
+            <meta itemProp="datePublished" content={featured.date} />
+            <meta itemProp="image" content={featured.image} />
+            <meta
+              itemProp="url"
+              content={`https://www.elanclimat.co.ke/blog/${featured.slug}`}
+            />
+            <div
+              itemProp="publisher"
+              itemScope
+              itemType="https://schema.org/Organization"
+            >
+              <meta itemProp="name" content="Élan Climat & Énergie" />
+              <meta itemProp="url" content="https://www.elanclimat.co.ke" />
+            </div>
+
             <div className="blog-inner">
-              {/* Section eyebrow */}
               <div
                 style={{
                   display: "flex",
@@ -396,32 +464,34 @@ export default async function BlogPage() {
                   marginBottom: 32,
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 24,
-                      height: 1,
-                      background: "#c8c8c4",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.62rem",
-                      letterSpacing: "0.22em",
-                      textTransform: "uppercase",
-                      color: "#8fa68e",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Featured
-                  </span>
-                </div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 24,
+                    height: 1,
+                    background: "#c8c8c4",
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--font-sans), sans-serif",
+                    fontSize: "0.62rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#8fa68e",
+                    fontWeight: 500,
+                  }}
+                >
+                  Featured
+                </span>
                 <div style={{ flex: 1, height: 1, background: "#e8e4dd" }} />
               </div>
 
-              <Link href={`/blog/${featured.slug}`} className="featured-card">
+              <Link
+                href={`/blog/${featured.slug}`}
+                className="featured-card"
+                aria-label={`Read: ${featured.title}`}
+              >
                 {/* Image */}
                 <div
                   className="featured-card-img featured-img-col"
@@ -433,13 +503,12 @@ export default async function BlogPage() {
                 >
                   <Image
                     src={featured.image}
-                    alt={featured.title}
+                    alt={`${featured.title} — Élan Climat Kenya`}
                     fill
                     style={{ objectFit: "cover" }}
                     priority
                     sizes="(max-width:1100px) 100vw, 50vw"
                   />
-                  {/* Category badge — same frosted pill as services/careers */}
                   <div
                     style={{
                       position: "absolute",
@@ -466,7 +535,7 @@ export default async function BlogPage() {
                     />
                     <span
                       style={{
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "var(--font-sans), sans-serif",
                         fontSize: "0.62rem",
                         color: "rgba(255,255,255,0.85)",
                         letterSpacing: "0.12em",
@@ -488,7 +557,6 @@ export default async function BlogPage() {
                     background: "#ffffff",
                   }}
                 >
-                  {/* Eyebrow */}
                   <div
                     style={{
                       display: "flex",
@@ -507,7 +575,7 @@ export default async function BlogPage() {
                     />
                     <span
                       style={{
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "var(--font-sans), sans-serif",
                         fontSize: "0.62rem",
                         letterSpacing: "0.22em",
                         textTransform: "uppercase",
@@ -519,9 +587,10 @@ export default async function BlogPage() {
                     </span>
                   </div>
 
+                  {/* h2 — post title, fully indexable */}
                   <h2
                     style={{
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: "var(--font-serif), serif",
                       fontSize: "clamp(1.6rem, 2.5vw, 2.4rem)",
                       fontWeight: 400,
                       color: "#1a1a18",
@@ -533,7 +602,6 @@ export default async function BlogPage() {
                     {featured.title}
                   </h2>
 
-                  {/* 32px divider — same as about/contact */}
                   <div
                     style={{
                       width: 32,
@@ -545,7 +613,7 @@ export default async function BlogPage() {
 
                   <p
                     style={{
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "var(--font-sans), sans-serif",
                       fontSize: "0.86rem",
                       color: "#6b6b68",
                       lineHeight: 1.85,
@@ -556,7 +624,6 @@ export default async function BlogPage() {
                     {featured.excerpt}
                   </p>
 
-                  {/* Meta */}
                   <div
                     style={{
                       display: "flex",
@@ -565,12 +632,13 @@ export default async function BlogPage() {
                       marginBottom: 32,
                     }}
                   >
-                    <span
+                    <time
+                      dateTime={featured.date}
                       style={{
                         display: "flex",
                         alignItems: "center",
                         gap: 6,
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "var(--font-sans), sans-serif",
                         fontSize: "0.68rem",
                         color: "#b0b0a8",
                       }}
@@ -581,7 +649,7 @@ export default async function BlogPage() {
                         month: "long",
                         day: "numeric",
                       })}
-                    </span>
+                    </time>
                     <span
                       style={{ width: 1, height: 12, background: "#e8e4dd" }}
                     />
@@ -590,7 +658,7 @@ export default async function BlogPage() {
                         display: "flex",
                         alignItems: "center",
                         gap: 6,
-                        fontFamily: "'DM Sans', sans-serif",
+                        fontFamily: "var(--font-sans), sans-serif",
                         fontSize: "0.68rem",
                         color: "#b0b0a8",
                       }}
@@ -612,13 +680,13 @@ export default async function BlogPage() {
           </section>
         )}
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ALL ARTICLES GRID
-        ══════════════════════════════════════════════════════════════════ */}
+        {/* ── All articles grid ── */}
         {rest.length > 0 && (
-          <section style={{ padding: "72px 0 96px" }}>
+          <section
+            aria-label="All engineering articles from Élan Climat Kenya"
+            style={{ padding: "72px 0 96px" }}
+          >
             <div className="blog-inner">
-              {/* Section label — same divider pattern */}
               <div
                 style={{
                   display: "flex",
@@ -627,32 +695,30 @@ export default async function BlogPage() {
                   marginBottom: 40,
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 24,
-                      height: 1,
-                      background: "#c8c8c4",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "0.62rem",
-                      letterSpacing: "0.22em",
-                      textTransform: "uppercase",
-                      color: "#8fa68e",
-                      fontWeight: 500,
-                    }}
-                  >
-                    All Articles
-                  </span>
-                </div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 24,
+                    height: 1,
+                    background: "#c8c8c4",
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--font-sans), sans-serif",
+                    fontSize: "0.62rem",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    color: "#8fa68e",
+                    fontWeight: 500,
+                  }}
+                >
+                  All Articles
+                </span>
                 <div style={{ flex: 1, height: 1, background: "#e8e4dd" }} />
                 <span
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-sans), sans-serif",
                     fontSize: "0.62rem",
                     color: "#b0b0a8",
                     letterSpacing: "0.1em",
@@ -662,7 +728,7 @@ export default async function BlogPage() {
                 </span>
               </div>
 
-              {/* 3-column grid */}
+              {/* 3-column grid — all cards server-rendered, fully indexed */}
               <div
                 className="blog-grid-3"
                 style={{
@@ -670,173 +736,193 @@ export default async function BlogPage() {
                   gridTemplateColumns: "repeat(3, 1fr)",
                   gap: 16,
                 }}
+                role="list"
               >
                 {rest.map((post) => (
-                  <Link
+                  <article
                     key={post._id}
-                    href={`/blog/${post.slug}`}
-                    className="blog-card"
+                    role="listitem"
+                    itemScope
+                    itemType="https://schema.org/BlogPosting"
                   >
-                    {/* Thumbnail */}
-                    <div
-                      className="blog-card-img"
-                      style={{
-                        position: "relative",
-                        aspectRatio: "16/10",
-                        overflow: "hidden",
-                      }}
+                    {/* Schema metadata per card */}
+                    <meta itemProp="headline" content={post.title} />
+                    <meta itemProp="description" content={post.excerpt} />
+                    <meta itemProp="datePublished" content={post.date} />
+                    <meta itemProp="image" content={post.image} />
+                    <meta
+                      itemProp="url"
+                      content={`https://www.elanclimat.co.ke/blog/${post.slug}`}
+                    />
+
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="blog-card"
+                      aria-label={`Read article: ${post.title}`}
+                      style={{ height: "100%" }}
                     >
-                      <Image
-                        src={post.image}
-                        alt={post.title}
-                        fill
-                        style={{ objectFit: "cover" }}
-                        sizes="(max-width:640px) 100vw, (max-width:1100px) 50vw, 33vw"
-                      />
-                      {/* Frosted category badge */}
+                      {/* Thumbnail */}
                       <div
+                        className="blog-card-img"
                         style={{
-                          position: "absolute",
-                          bottom: 12,
-                          left: 12,
-                          background: "rgba(26,26,24,0.72)",
-                          backdropFilter: "blur(6px)",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          padding: "4px 10px",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 6,
-                          borderRadius: 9999,
+                          position: "relative",
+                          aspectRatio: "16/10",
+                          overflow: "hidden",
                         }}
                       >
-                        <span
-                          style={{
-                            width: 4,
-                            height: 4,
-                            borderRadius: "50%",
-                            background: "#8fa68e",
-                            display: "inline-block",
-                          }}
+                        <Image
+                          src={post.image}
+                          alt={`${post.title} — Élan Climat Kenya`}
+                          fill
+                          style={{ objectFit: "cover" }}
+                          sizes="(max-width:640px) 100vw, (max-width:1100px) 50vw, 33vw"
                         />
-                        <span
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: "0.56rem",
-                            color: "rgba(255,255,255,0.8)",
-                            letterSpacing: "0.12em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {post.category}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Body */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        flex: 1,
-                        padding: "24px 24px 20px",
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: "1.2rem",
-                          fontWeight: 400,
-                          color: "#1a1a18",
-                          lineHeight: 1.2,
-                          letterSpacing: "-0.01em",
-                          margin: "0 0 10px",
-                        }}
-                      >
-                        {post.title}
-                      </h3>
-
-                      <p
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.78rem",
-                          color: "#888580",
-                          lineHeight: 1.75,
-                          margin: "0 0 20px",
-                          flex: 1,
-                          fontWeight: 300,
-                        }}
-                      >
-                        {post.excerpt}
-                      </p>
-
-                      {/* Footer row */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingTop: 16,
-                          borderTop: "1px solid #e8e4dd",
-                        }}
-                      >
                         <div
                           style={{
-                            display: "flex",
+                            position: "absolute",
+                            bottom: 12,
+                            left: 12,
+                            background: "rgba(26,26,24,0.72)",
+                            backdropFilter: "blur(6px)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            padding: "4px 10px",
+                            display: "inline-flex",
                             alignItems: "center",
-                            gap: 14,
+                            gap: 6,
+                            borderRadius: 9999,
                           }}
                         >
                           <span
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontSize: "0.65rem",
-                              color: "#b0b0a8",
-                            }}
-                          >
-                            <Calendar size={10} strokeWidth={1.5} />
-                            {new Date(post.date).toLocaleDateString("en-KE", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </span>
-                          <span
-                            style={{
-                              width: 1,
-                              height: 10,
-                              background: "#e8e4dd",
+                              width: 4,
+                              height: 4,
+                              borderRadius: "50%",
+                              background: "#8fa68e",
+                              display: "inline-block",
                             }}
                           />
                           <span
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontSize: "0.65rem",
-                              color: "#b0b0a8",
+                              fontFamily: "var(--font-sans), sans-serif",
+                              fontSize: "0.56rem",
+                              color: "rgba(255,255,255,0.8)",
+                              letterSpacing: "0.12em",
+                              textTransform: "uppercase",
                             }}
                           >
-                            <Clock size={10} strokeWidth={1.5} />
-                            {post.readTime}
+                            {post.category}
                           </span>
                         </div>
-                        <span className="blog-arrow">
-                          <ArrowUpRight size={13} strokeWidth={1.5} />
-                        </span>
                       </div>
-                    </div>
-                  </Link>
+
+                      {/* Body */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          flex: 1,
+                          padding: "24px 24px 20px",
+                        }}
+                      >
+                        <h3
+                          itemProp="name"
+                          style={{
+                            fontFamily: "var(--font-serif), serif",
+                            fontSize: "1.2rem",
+                            fontWeight: 400,
+                            color: "#1a1a18",
+                            lineHeight: 1.2,
+                            letterSpacing: "-0.01em",
+                            margin: "0 0 10px",
+                          }}
+                        >
+                          {post.title}
+                        </h3>
+
+                        <p
+                          itemProp="description"
+                          style={{
+                            fontFamily: "var(--font-sans), sans-serif",
+                            fontSize: "0.78rem",
+                            color: "#888580",
+                            lineHeight: 1.75,
+                            margin: "0 0 20px",
+                            flex: 1,
+                            fontWeight: 300,
+                          }}
+                        >
+                          {post.excerpt}
+                        </p>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingTop: 16,
+                            borderTop: "1px solid #e8e4dd",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 14,
+                            }}
+                          >
+                            <time
+                              dateTime={post.date}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                                fontFamily: "var(--font-sans), sans-serif",
+                                fontSize: "0.65rem",
+                                color: "#b0b0a8",
+                              }}
+                            >
+                              <Calendar size={10} strokeWidth={1.5} />
+                              {new Date(post.date).toLocaleDateString("en-KE", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </time>
+                            <span
+                              style={{
+                                width: 1,
+                                height: 10,
+                                background: "#e8e4dd",
+                              }}
+                            />
+                            <span
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                                fontFamily: "var(--font-sans), sans-serif",
+                                fontSize: "0.65rem",
+                                color: "#b0b0a8",
+                              }}
+                            >
+                              <Clock size={10} strokeWidth={1.5} />
+                              {post.readTime}
+                            </span>
+                          </div>
+                          <span className="blog-arrow">
+                            <ArrowUpRight size={13} strokeWidth={1.5} />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
                 ))}
               </div>
             </div>
           </section>
         )}
 
-        {/* Empty state */}
+        {/* ── Empty state ── */}
         {posts.length === 0 && (
           <section style={{ padding: "96px 0", textAlign: "center" }}>
             <div className="blog-inner">
@@ -859,7 +945,7 @@ export default async function BlogPage() {
                 />
                 <span
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-sans), sans-serif",
                     fontSize: "0.62rem",
                     letterSpacing: "0.22em",
                     textTransform: "uppercase",
@@ -880,7 +966,7 @@ export default async function BlogPage() {
               </div>
               <h2
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "var(--font-serif), serif",
                   fontSize: "2.4rem",
                   fontWeight: 400,
                   color: "#1a1a18",
@@ -888,11 +974,11 @@ export default async function BlogPage() {
                   margin: "0 0 12px",
                 }}
               >
-                Articles are on their way.
+                Engineering Articles Coming Soon
               </h2>
               <p
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "var(--font-sans), sans-serif",
                   fontSize: "0.84rem",
                   color: "#888580",
                   lineHeight: 1.8,
@@ -901,8 +987,8 @@ export default async function BlogPage() {
                   fontWeight: 300,
                 }}
               >
-                Our engineers are writing. Check back soon for insights on HVAC,
-                solar, and sustainable systems.
+                Our engineers are writing guides on HVAC, solar panels, and
+                sustainable systems across Kenya. Check back soon.
               </p>
               <Link
                 href="/contact"
@@ -915,7 +1001,7 @@ export default async function BlogPage() {
                   textDecoration: "none",
                   padding: "12px 10px 12px 24px",
                   borderRadius: 9999,
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "var(--font-sans), sans-serif",
                   fontSize: "0.72rem",
                   fontWeight: 500,
                   letterSpacing: "0.1em",
@@ -941,10 +1027,11 @@ export default async function BlogPage() {
           </section>
         )}
 
-        {/* ══════════════════════════════════════════════════════════════════
-            CTA BAND — same dark band as contact/services/careers/terms
-        ══════════════════════════════════════════════════════════════════ */}
-        <section style={{ background: "#1a1a18" }}>
+        {/* ── CTA band ── */}
+        <section
+          aria-label="Contact Élan Climat for engineering services in Kenya"
+          style={{ background: "#1a1a18" }}
+        >
           <div
             style={{
               display: "grid",
@@ -954,10 +1041,9 @@ export default async function BlogPage() {
               padding: "0 64px",
             }}
           >
-            {/* Left */}
             <div
               style={{
-                padding: "72px 0 72px",
+                padding: "72px 0",
                 borderRight: "1px solid rgba(255,255,255,0.07)",
                 paddingRight: 64,
                 display: "flex",
@@ -976,7 +1062,7 @@ export default async function BlogPage() {
                 />
                 <span
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-sans), sans-serif",
                     fontSize: "0.62rem",
                     letterSpacing: "0.22em",
                     textTransform: "uppercase",
@@ -989,7 +1075,7 @@ export default async function BlogPage() {
               </div>
               <h2
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "var(--font-serif), serif",
                   fontSize: "clamp(1.8rem, 2.8vw, 2.6rem)",
                   fontWeight: 400,
                   color: "#ffffff",
@@ -998,7 +1084,7 @@ export default async function BlogPage() {
                   margin: 0,
                 }}
               >
-                Ready to work
+                Need HVAC or Solar
                 <br />
                 <em
                   style={{
@@ -1007,12 +1093,12 @@ export default async function BlogPage() {
                     fontWeight: 300,
                   }}
                 >
-                  with us?
+                  Services in Kenya?
                 </em>
               </h2>
               <p
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: "var(--font-sans), sans-serif",
                   fontSize: "0.8rem",
                   color: "rgba(255,255,255,0.38)",
                   lineHeight: 1.8,
@@ -1021,7 +1107,8 @@ export default async function BlogPage() {
                 }}
               >
                 Our engineers are on hand for site assessments, quotations, and
-                technical advice. No obligation, just a conversation.
+                technical advice across Nairobi, Mombasa, and Kenya. No
+                obligation, just a conversation.
               </p>
               <div style={{ marginTop: 8 }}>
                 <Link
@@ -1035,13 +1122,12 @@ export default async function BlogPage() {
                     textDecoration: "none",
                     padding: "12px 10px 12px 24px",
                     borderRadius: 9999,
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-sans), sans-serif",
                     fontSize: "0.72rem",
                     fontWeight: 500,
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
                     border: "1.5px solid #ffffff",
-                    transition: "background 0.25s, color 0.25s",
                   }}
                 >
                   Get in touch
@@ -1062,7 +1148,6 @@ export default async function BlogPage() {
               </div>
             </div>
 
-            {/* Right — related links */}
             <div
               style={{
                 padding: "72px 0 72px 64px",
@@ -1076,7 +1161,7 @@ export default async function BlogPage() {
               >
                 <span
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-sans), sans-serif",
                     fontSize: "0.58rem",
                     letterSpacing: "0.2em",
                     textTransform: "uppercase",
@@ -1086,7 +1171,6 @@ export default async function BlogPage() {
                 >
                   Explore
                 </span>
-
                 {[
                   {
                     label: "Our Services",
@@ -1112,7 +1196,7 @@ export default async function BlogPage() {
                     <div>
                       <div
                         style={{
-                          fontFamily: "'Cormorant Garamond', serif",
+                          fontFamily: "var(--font-serif), serif",
                           fontSize: "1.1rem",
                           fontWeight: 400,
                           color: "#ffffff",
@@ -1123,7 +1207,7 @@ export default async function BlogPage() {
                       </div>
                       <div
                         style={{
-                          fontFamily: "'DM Sans', sans-serif",
+                          fontFamily: "var(--font-sans), sans-serif",
                           fontSize: "0.72rem",
                           color: "rgba(255,255,255,0.3)",
                           fontWeight: 300,
@@ -1148,7 +1232,7 @@ export default async function BlogPage() {
 
               <div
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "var(--font-serif), serif",
                   fontSize: "0.88rem",
                   color: "rgba(255,255,255,0.18)",
                   lineHeight: 1.75,
@@ -1158,7 +1242,7 @@ export default async function BlogPage() {
               >
                 Élan Climat & Énergie
                 <br />
-                Nairobi, Kenya · Est. 2012
+                Nairobi, Kenya · Est. 2018
               </div>
             </div>
           </div>

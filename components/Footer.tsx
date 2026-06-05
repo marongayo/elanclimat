@@ -1,14 +1,130 @@
-// components/footer/Footer.tsx
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { Phone, Mail, Globe } from "lucide-react";
+import Script from "next/script";
+import { ArrowUpRight, Phone, Mail, Globe, MapPin } from "lucide-react";
 import ElanLogo from "./ElanLogo";
 
+// ---------------------------------------------------------------------------
+// JSON-LD — LocalBusiness + Organisation schema
+// Googlebot reads this on every page that renders the footer.
+// ---------------------------------------------------------------------------
+const SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["LocalBusiness", "ProfessionalService"],
+      "@id": "https://www.elanclimat.co.ke/#business",
+      name: "Élan Climat & Énergie",
+      alternateName: "Elan Climat Kenya",
+      url: "https://www.elanclimat.co.ke",
+      logo: "https://www.elanclimat.co.ke/images/logo.png",
+      image: "https://www.elanclimat.co.ke/images/og-image.jpg",
+      description:
+        "Kenya's trusted HVAC, solar, refrigeration, electrical, and elevator engineering company. Serving Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, Nyeri, and across East Africa since 2018.",
+      foundingDate: "2018",
+      telephone: "+254796952717",
+      email: "hello@elanclimat.co.ke",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Nairobi",
+        addressLocality: "Nairobi",
+        addressRegion: "Nairobi County",
+        addressCountry: "KE",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: -1.286389,
+        longitude: 36.817223,
+      },
+      areaServed: [
+        { "@type": "City", name: "Nairobi" },
+        { "@type": "City", name: "Mombasa" },
+        { "@type": "City", name: "Kisumu" },
+        { "@type": "City", name: "Eldoret" },
+        { "@type": "City", name: "Nakuru" },
+        { "@type": "City", name: "Nyeri" },
+        { "@type": "Country", name: "Uganda" },
+        { "@type": "Country", name: "Tanzania" },
+        { "@type": "Country", name: "Rwanda" },
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "HVAC & Energy Engineering Services Kenya",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "HVAC Installation Kenya",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Solar Panel Installation Kenya",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Solar Water Heater Installation",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Cold Room Installation Kenya",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Elevator Installation Nairobi",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Electrical Engineering Kenya",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Plumbing Services Kenya",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "HVAC Maintenance & Repair",
+            },
+          },
+        ],
+      },
+      sameAs: [
+        "https://www.instagram.com/elanclimat",
+        "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie",
+        "https://www.facebook.com/elanclimat",
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Data
+// ---------------------------------------------------------------------------
 const SOCIALS = [
   {
-    label: "Instagram",
+    label: "Follow Élan Climat on Instagram",
     href: "https://www.instagram.com/elanclimat",
     icon: (
       <svg
@@ -23,7 +139,7 @@ const SOCIALS = [
     ),
   },
   {
-    label: "LinkedIn",
+    label: "Connect with Élan Climat on LinkedIn",
     href: "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie/?viewAsMember=true",
     icon: (
       <svg
@@ -38,7 +154,7 @@ const SOCIALS = [
     ),
   },
   {
-    label: "Facebook",
+    label: "Follow Élan Climat on Facebook",
     href: "https://www.facebook.com/elanclimat",
     icon: (
       <svg
@@ -52,431 +168,424 @@ const SOCIALS = [
       </svg>
     ),
   },
-  {
-    label: "Call us",
-    href: "tel:+254796952717",
-    icon: (
-      <svg
-        width="14"
-        height="14"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
-      </svg>
-    ),
-  },
-  {
-    label: "Email us",
-    href: "mailto:hello@elanclimat.co.ke",
-    icon: (
-      <svg
-        width="14"
-        height="14"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path d="M12 12.713l-11.99-7.713v13.999h23.98v-13.999l-11.99 7.713zm0-2.425l10.99-7.088h-21.98l10.99 7.088z" />
-      </svg>
-    ),
-  },
 ];
 
+// Services with keyword-rich labels AND descriptive hrefs
 const SERVICES = [
-  "HVAC Systems",
-  "Solar Installation",
-  "Solar Water Heaters",
-  "Cold Room Installation",
-  "Elevator Installation",
-  "Electrical",
-  "Plumbing",
-  "Maintenance & Repair",
+  { label: "HVAC Installation Kenya", href: "/services#hvac-systems" },
+  { label: "HVAC", href: "/services#hvac-systems" },
+  { label: "HVAC installation", href: "/services#hvac-systems" },
+  { label: "Solar Panel Installation", href: "/services#solar-installation" },
+  { label: "Solar Water Heaters", href: "/services#solar-water-heaters" },
+  { label: "Cold Room Installation", href: "/services#cold-room-installation" },
+  {
+    label: "Elevator Installation Nairobi",
+    href: "/services#elevator-installation",
+  },
+  { label: "Electrical Engineering", href: "/services#electrical" },
+  { label: "Plumbing Services", href: "/services#plumbing" },
+  { label: "HVAC Maintenance & Repair", href: "/services#maintenance-repair" },
 ];
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
   { label: "Blog", href: "/blog" },
+  { label: "Careers in Kenya", href: "/careers" },
+  { label: "Contact Us", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
-  { label: "Careers", href: "/careers" },
-  { label: "Contact", href: "/contact" },
-  { label: "Admin", href: "/admin" },
 ];
 
-const CONTACT_INFO = [
-  {
-    icon: <Phone size={14} />,
-    label: "+254 796 952 717",
-    href: "tel:+254796952717",
-  },
-  {
-    icon: <Mail size={14} />,
-    label: "hello@elanclimat.co.ke",
-    href: "mailto:hello@elanclimat.co.ke",
-  },
-  {
-    icon: <Globe size={14} />,
-    label: "www.elanclimat.co.ke",
-    href: "https://www.elanclimat.co.ke",
-  },
-];
-
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer
-      style={{
-        backgroundColor: "#1a1a18",
-        fontFamily: "'DM Sans', sans-serif",
-        paddingTop: "40px",
-        marginTop: "60px",
-      }}
-    >
-      <style>{`
-        .footer-section-label {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.9rem;
-          font-weight: 900;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #b0b0a8;
-          display: block;
-          margin-bottom: 20px;
-        }
+    <>
+      {/*
+       * JSON-LD injected globally — parsed by Googlebot on every page.
+       * Covers LocalBusiness NAP, areaServed, and service catalogue.
+       */}
+      <Script
+        id="footer-local-business-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(SCHEMA) }}
+        strategy="afterInteractive"
+      />
 
-        .footer-link {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 400;
-          line-height: 1;
-          color: rgba(249,247,244,0.45);
-          text-decoration: none;
-          display: block;
-          transition: color 0.2s ease;
-          margin-bottom: 12px;
-        }
-        .footer-link:last-child { margin-bottom: 0; }
-        .footer-link:hover { color: #f9f7f4; }
-
-        .footer-brand-blurb {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 400;
-          color: rgba(249,247,244,0.38);
-          line-height: 1.8;
-          max-width: 240px;
-          margin: 0;
-        }
-
-        .footer-social-btn {
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
-          border: 1px solid rgba(249,247,244,0.12);
-          color: rgba(249,247,244,0.35);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s ease;
-          text-decoration: none;
-          flex-shrink: 0;
-        }
-        .footer-social-btn:hover {
-          border-color: #8fa68e;
-          color: #8fa68e;
-          background: rgba(143,166,142,0.08);
-        }
-
-        /* ── CTA card ── */
-        .footer-cta-card {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 52px 64px 48px;
-          gap: 32px;
-          background: #ffffff;
-          border-radius: 24px;
-          border: 1px solid rgba(0,0,0,0.06);
-          box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-          margin: 0 32px;
-          margin-top: -120px;
-          position: relative;
-          z-index: 10;
-        }
-
-        .footer-cta-eyebrow {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.6rem;
-          font-weight: 500;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          color: rgba(26,26,24,0.45);
-          display: block;
-          margin-bottom: 12px;
-        }
-
-        .footer-cta-heading {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-          font-weight: 400;
-          color: #1a1a18;
-          margin: 0;
-          line-height: 1.15;
-          letter-spacing: -0.015em;
-        }
-
-        .footer-cta-btn {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.72rem;
-          font-weight: 500;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #1a1a18;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 9px 9px 9px 20px;
-          border-radius: 9999px;
-          border: 1px solid rgba(26,26,24,0.15);
-          background: white;
-          text-decoration: none;
-          transition: all 0.25s ease;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-        .footer-cta-btn:hover {
-          background: rgba(143,166,142,0.08);
-          border-color: #8fa68e;
-        }
-        .footer-cta-icon {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: #8fa68e;
-          color: #1a1a18;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: transform 0.25s ease;
-        }
-        .footer-cta-btn:hover .footer-cta-icon {
-          transform: rotate(45deg);
-        }
-
-        /* ── Main grid ── */
-        .footer-main-grid {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
-          gap: 48px 40px;
-          padding: 52px 64px;
-        }
-
-        /* ── Divider ── */
-        .footer-divider {
-          border: none;
-          border-top: 1px solid rgba(249,247,244,0.07);
-          margin: 0;
-        }
-
-        /* ── Bottom bar ── */
-        .footer-bottom {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 12px;
-          padding: 20px 64px;
-        }
-        .footer-bottom-text {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.7rem;
-          font-weight: 400;
-          color: rgba(249,247,244,0.28);
-          margin: 0;
-        }
-
-        /* ── Responsive ── */
-
-        /* Tablet: 768px – 1023px */
-        @media (max-width: 1023px) {
-          .footer-cta-card {
-            padding: 40px 40px 36px;
-            margin: 0 24px;
-            margin-top: -100px;
+      <footer
+        aria-label="Élan Climat & Énergie — HVAC and Energy Engineering Kenya"
+        style={{
+          backgroundColor: "#1a1a18",
+          fontFamily: "'DM Sans', sans-serif",
+          paddingTop: "40px",
+          marginTop: "60px",
+        }}
+      >
+        <style>{`
+          /* ── Typography ── */
+          .f-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #8fa68e;
+            display: block;
+            margin-bottom: 20px;
           }
-          .footer-main-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 40px 32px;
-            padding: 44px 40px;
+          .f-link {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1;
+            color: rgba(249,247,244,0.42);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 13px;
+            transition: color 0.2s ease;
           }
-          .footer-brand-col {
-            grid-column: 1 / -1;
-          }
-          .footer-bottom {
-            padding: 20px 40px;
-          }
-        }
+          .f-link:last-child { margin-bottom: 0; }
+          .f-link:hover { color: #f9f7f4; }
 
-        /* Mobile: ≤ 640px */
-        @media (max-width: 640px) {
-          .footer-cta-card {
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 32px 24px 28px;
-            margin: 0 16px;
-            margin-top: -80px;
-            border-radius: 16px;
-            gap: 24px;
+          .f-blurb {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(249,247,244,0.36);
+            line-height: 1.85;
+            margin: 0;
+            max-width: 260px;
           }
-          .footer-main-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 36px 24px;
-            padding: 40px 24px;
+
+          /* ── Social buttons ── */
+          .f-social {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid rgba(249,247,244,0.1);
+            color: rgba(249,247,244,0.32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
           }
-          .footer-brand-col {
-            grid-column: 1 / -1;
+          .f-social:hover {
+            border-color: #8fa68e;
+            color: #8fa68e;
+            background: rgba(143,166,142,0.08);
           }
-          .footer-services-col {
-            grid-column: 1 / -1;
+
+          /* ── CTA card ── */
+          .f-cta-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            padding: 52px 64px 48px;
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+            margin: 0 32px;
+            margin-top: -120px;
+            position: relative;
+            z-index: 10;
           }
-          .footer-bottom {
-            padding: 18px 24px;
-            flex-direction: column;
+          .f-cta-eyebrow {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(26,26,24,0.4);
+            display: block;
+            margin-bottom: 12px;
+          }
+          /*
+           * SEO: h2 now names the service + geography so it carries
+           * keyword weight rather than generic "Let's design your solution".
+           */
+          .f-cta-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            font-weight: 400;
+            color: #1a1a18;
+            margin: 0;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+          }
+          .f-cta-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #1a1a18;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 9px 9px 20px;
+            border-radius: 9999px;
+            border: 1px solid rgba(26,26,24,0.15);
+            background: white;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+          .f-cta-btn:hover { background: rgba(143,166,142,0.08); border-color: #8fa68e; }
+          .f-cta-icon {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: #8fa68e;
+            color: #1a1a18;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.25s ease;
+          }
+          .f-cta-btn:hover .f-cta-icon { transform: rotate(45deg); }
+
+          /* ── Main grid ── */
+          .f-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px 40px;
+            padding: 52px 64px;
+          }
+
+          /* ── Divider ── */
+          .f-hr {
+            border: none;
+            border-top: 1px solid rgba(249,247,244,0.07);
+            margin: 0;
+          }
+
+          /* ── Contact address block ── */
+          .f-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(249,247,244,0.42);
+            text-decoration: none;
+            margin-bottom: 13px;
+            transition: color 0.2s;
+            word-break: break-word;
+          }
+          .f-contact-item:last-child { margin-bottom: 0; }
+          .f-contact-item:hover { color: #f9f7f4; }
+
+          /* ── Location chip ── */
+          .f-location-chip {
+            display: inline-flex;
+            align-items: center;
             gap: 6px;
-          }
-          .footer-bottom-text {
+            font-family: 'DM Sans', sans-serif;
             font-size: 0.68rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: rgba(249,247,244,0.3);
+            border: 1px solid rgba(249,247,244,0.08);
+            border-radius: 9999px;
+            padding: 4px 10px;
+            margin-top: 4px;
           }
-        }
 
-        /* Very small: ≤ 380px */
-        @media (max-width: 380px) {
-          .footer-main-grid {
-            grid-template-columns: 1fr;
-            padding: 36px 20px;
+          /* ── Bottom bar ── */
+          .f-bottom {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px 64px;
+            align-items: center;
           }
-          .footer-services-col {
-            grid-column: auto;
+          .f-bottom-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(249,247,244,0.25);
+            margin: 0;
           }
-          .footer-bottom {
-            padding: 16px 20px;
-          }
-          .footer-cta-card {
-            margin: 0 12px;
-            margin-top: -60px;
-          }
-        }
-      `}</style>
 
-      {/* ── CTA CARD ── */}
-      <div className="footer-cta-card">
-        <div style={{ maxWidth: 480 }}>
-          <span className="footer-cta-eyebrow">Get in touch</span>
-          <h2 className="footer-cta-heading">
-            Let&apos;s design your solution
-          </h2>
+          /* ── Responsive — tablet ── */
+          @media (max-width: 1023px) {
+            .f-cta-card { padding: 40px 40px 36px; margin: 0 24px; margin-top: -100px; }
+            .f-grid { grid-template-columns: 1fr 1fr; gap: 40px 32px; padding: 44px 40px; }
+            .f-brand-col { grid-column: 1 / -1; }
+            .f-bottom { padding: 20px 40px; }
+          }
+
+          /* ── Responsive — mobile ── */
+          @media (max-width: 640px) {
+            .f-cta-card {
+              flex-direction: column; align-items: flex-start;
+              padding: 32px 24px 28px; margin: 0 16px; margin-top: -80px;
+              border-radius: 16px; gap: 24px;
+            }
+            .f-grid { grid-template-columns: 1fr 1fr; gap: 36px 24px; padding: 40px 24px; }
+            .f-brand-col { grid-column: 1 / -1; }
+            .f-services-col { grid-column: 1 / -1; }
+            .f-bottom { padding: 18px 24px; flex-direction: column; gap: 6px; }
+            .f-blurb { max-width: 100%; }
+          }
+
+          /* ── Responsive — very small ── */
+          @media (max-width: 380px) {
+            .f-grid { grid-template-columns: 1fr; padding: 36px 20px; }
+            .f-services-col { grid-column: auto; }
+            .f-bottom { padding: 16px 20px; }
+            .f-cta-card { margin: 0 12px; margin-top: -60px; }
+          }
+        `}</style>
+
+        {/* ── CTA CARD ── */}
+        <div className="f-cta-card">
+          <div style={{ maxWidth: 520 }}>
+            <span className="f-cta-eyebrow">
+              HVAC · Solar · Refrigeration · Electrical · Lifts
+            </span>
+            {/*
+             * SEO: heading now names the core service + location.
+             * "Let's design your solution" had zero keyword value.
+             */}
+            <h2 className="f-cta-heading">
+              Get a Free Quote for HVAC &amp; Energy Services in Kenya
+            </h2>
+          </div>
+          <Link
+            href="/contact"
+            className="f-cta-btn"
+            aria-label="Request a call from Élan Climat Kenya"
+          >
+            Request a Call
+            <span className="f-cta-icon" aria-hidden="true">
+              <ArrowUpRight size={14} strokeWidth={2} />
+            </span>
+          </Link>
         </div>
 
-        <Link href="/contact" className="footer-cta-btn">
-          Request a Call
-          <span className="footer-cta-icon">
-            <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
-          </span>
-        </Link>
-      </div>
+        <hr className="f-hr" />
 
-      <hr className="footer-divider" />
+        {/* ── MAIN GRID ── */}
+        <div className="f-grid">
+          {/* Brand column */}
+          <div
+            className="f-brand-col"
+            style={{ display: "flex", flexDirection: "column", gap: 20 }}
+          >
+            <Link href="/" aria-label="Élan Climat & Énergie — Home">
+              <ElanLogo size={130} />
+            </Link>
 
-      {/* ── MAIN GRID ── */}
-      <div className="footer-main-grid">
-        {/* Brand column */}
-        <div
-          className="footer-brand-col"
-          style={{ display: "flex", flexDirection: "column", gap: 24 }}
-        >
-          <Link href="/">
-            <ElanLogo size={130} />
-          </Link>
+            {/*
+             * SEO: blurb now carries keyword-rich, location-specific copy
+             * instead of the vague "Smart solutions for..." original.
+             */}
+            <p className="f-blurb">
+              Kenya&apos;s leading HVAC, solar, cold room, refrigeration,
+              electrical, and elevator engineering company. Certified engineers
+              serving Nairobi, Mombasa, Kisumu, Eldoret, and across East Africa
+              since 2018.
+            </p>
 
-          <p className="footer-brand-blurb">
-            Smart solutions for HVAC, solar, refrigeration, electrical, and
-            elevator systems across Kenya.
-          </p>
+            {/* Location chip — reinforces geo signal */}
+            <div>
+              <span className="f-location-chip">
+                <MapPin size={11} aria-hidden="true" />
+                Nairobi, Kenya · Est. 2018
+              </span>
+            </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {SOCIALS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                className="footer-social-btn"
-                aria-label={s.label}
-                rel="noopener noreferrer"
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-              >
-                {s.icon}
-              </a>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {SOCIALS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  className="f-social"
+                  aria-label={s.label}
+                  rel="noopener noreferrer nofollow"
+                  target="_blank"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Company links */}
+          <div>
+            <span className="f-label">Company</span>
+            {QUICK_LINKS.map((l) => (
+              <Link key={l.label} href={l.href} className="f-link">
+                {l.label}
+              </Link>
             ))}
+          </div>
+
+          {/* Services — keyword-rich anchor text + descriptive hrefs */}
+          <div className="f-services-col">
+            <span className="f-label">Services</span>
+            {SERVICES.map((s) => (
+              <Link key={s.href} href={s.href} className="f-link">
+                {s.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Contact — wrapped in <address> for semantic NAP */}
+          <div>
+            <span className="f-label">Contact</span>
+            {/*
+             * <address> tells Google this block contains NAP
+             * (Name, Address, Phone) data — a direct local SEO signal.
+             */}
+            <address style={{ fontStyle: "normal" }}>
+              <a href="tel:+254796952717" className="f-contact-item">
+                <Phone size={13} aria-hidden="true" />
+                +254 796 952 717
+              </a>
+              <a
+                href="mailto:hello@elanclimat.co.ke"
+                className="f-contact-item"
+              >
+                <Mail size={13} aria-hidden="true" />
+                hello@elanclimat.co.ke
+              </a>
+              <a href="https://www.elanclimat.co.ke" className="f-contact-item">
+                <Globe size={13} aria-hidden="true" />
+                www.elanclimat.co.ke
+              </a>
+              <span className="f-contact-item" style={{ cursor: "default" }}>
+                <MapPin size={13} aria-hidden="true" />
+                Nairobi, Kenya
+              </span>
+            </address>
           </div>
         </div>
 
-        {/* Company links */}
-        <div>
-          <span className="footer-section-label">Company</span>
-          {QUICK_LINKS.map((l) => (
-            <Link key={l.label} href={l.href} className="footer-link">
-              {l.label}
-            </Link>
-          ))}
+        <hr className="f-hr" />
+
+        {/* ── BOTTOM BAR ── */}
+        <div className="f-bottom">
+          {/*
+           * SEO: copyright line now names the company explicitly,
+           * reinforcing the brand entity signal on every page.
+           */}
+          <p className="f-bottom-text">
+            © 2018–{year} Élan Climat &amp; Énergie Ltd · Nairobi, Kenya · All
+            rights reserved.
+          </p>
+          <p className="f-bottom-text">
+            HVAC · Solar · Refrigeration · Electrical · Lifts ·{" "}
+            <span style={{ color: "#8fa68e" }}>East Africa</span>
+          </p>
         </div>
-
-        {/* Services links */}
-        <div className="footer-services-col">
-          <span className="footer-section-label">Services</span>
-          {SERVICES.map((s) => (
-            <Link
-              key={s}
-              href={`/services#${s.toLowerCase().replace(/\s+/g, "-")}`}
-              className="footer-link"
-            >
-              {s}
-            </Link>
-          ))}
-        </div>
-
-        {/* Contact */}
-        <div>
-          <span className="footer-section-label">Contact</span>
-          {CONTACT_INFO.map((c) => (
-            <a
-              key={c.label}
-              href={c.href}
-              className="footer-link"
-              style={{
-                wordBreak: "break-word",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              {c.icon} {c.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <hr className="footer-divider" />
-
-      {/* ── BOTTOM BAR ── */}
-      <div className="footer-bottom">
-        <p className="footer-bottom-text">
-          © {`2018 - ${new Date().getFullYear()} `} Élan Climat &amp; Énergie |
-          All rights reserved.
-        </p>
-        <p className="footer-bottom-text">
-          smart solutions.{" "}
-          <span style={{ color: "#8fa68e" }}>sustainable future.</span>
-        </p>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
