@@ -10,13 +10,13 @@ import BackToTop from "@/components/BackToTop";
 import Navbar from "@/components/Navbar";
 import { getBlogPosts } from "@/lib/db";
 
-const SITE_URL = "https://www.elanclimat.co.ke";
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://elanclimat.co.ke";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Élan Climat — HVAC, Solar & Engineering Services in Kenya",
+    default: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
     template: "%s | Élan Climat",
   },
   description:

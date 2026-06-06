@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar";
 import ServiceSection from "@/components/services-components/ServiceSection";
 import ServicesClient from "@/components/services-components/ServiceClient";
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 // ─── Metadata — shows in Google search results ────────────────────────────────
 export const metadata: Metadata = {
   title: "HVAC, Solar, Cold Room & Electrical Services in Kenya ",
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
       "HVAC, Solar, Cold Room & Electrical Services in Kenya | Élan Climat",
     description:
       "Precision-engineered HVAC, solar, refrigeration, electrical, elevator and plumbing services across Kenya and East Africa.",
-    url: "https://www.elanclimat.co.ke/services",
+    url: `${BASE_URL}/services`,
   },
 };
 

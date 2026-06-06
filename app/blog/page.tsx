@@ -9,6 +9,8 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import BackToTop from "@/components/BackToTop";
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 // ─── Metadata — shown in Google search results ────────────────────────────────
 export const metadata: Metadata = {
   title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
@@ -25,13 +27,14 @@ export const metadata: Metadata = {
     "solar panels Kenya guide",
   ],
   alternates: {
-    canonical: "https://www.elanclimat.co.ke/blog",
+    canonical: `${BASE_URL}/blog`,
   },
   openGraph: {
     title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
     description:
       "Expert articles on HVAC, solar energy, cold rooms, and sustainable engineering from Élan Climat's team across Kenya.",
-    url: "https://www.elanclimat.co.ke/blog",
+    url: `${BASE_URL}/blog`,
+    siteName: "Élan Climat Engineering Blog",
     type: "website",
   },
 };
@@ -444,7 +447,7 @@ export default async function BlogPage() {
             <meta itemProp="image" content={featured.image} />
             <meta
               itemProp="url"
-              content={`https://www.elanclimat.co.ke/blog/${featured.slug}`}
+              content={`${BASE_URL}/blog/${featured.slug}`}
             />
             <div
               itemProp="publisher"
@@ -452,7 +455,7 @@ export default async function BlogPage() {
               itemType="https://schema.org/Organization"
             >
               <meta itemProp="name" content="Élan Climat & Énergie" />
-              <meta itemProp="url" content="https://www.elanclimat.co.ke" />
+              <meta itemProp="url" content={`${BASE_URL}/`} />
             </div>
 
             <div className="blog-inner">
@@ -752,7 +755,7 @@ export default async function BlogPage() {
                     <meta itemProp="image" content={post.image} />
                     <meta
                       itemProp="url"
-                      content={`https://www.elanclimat.co.ke/blog/${post.slug}`}
+                      content={`${BASE_URL}/blog/${post.slug}`}
                     />
 
                     <Link

@@ -1,8 +1,7 @@
 // app/seo/Schema.tsx
 // Rendered ONCE in the root layout only — do not duplicate in page components.
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.elanclimat.co.ke";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function Schema() {
   const schema = {
