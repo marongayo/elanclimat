@@ -4,11 +4,17 @@ import { getProducts, getProductById } from "@/lib/db";
 import Footer from "@/components/Footer";
 import ShopClient from "@/components/shop-components/ShopClient";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ _id: string }>;
+}
+
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((p) => ({ _id: p._id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -22,11 +28,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const title = `${product.fullName || product.name} | Élan Climat & Énergie`;
+  const description =
+    product.description?.slice(0, 155) ||
+    `Buy ${product.name} — ${product.category} equipment available in Kenya with professional installation.`;
+  const image = product.images?.[0] ?? "https://elanclimat.co.ke/og-shop.jpg";
+  const url = `https://elanclimat.co.ke/shop/${_id}`;
+
   return {
-    title: `${product.name} | Élan Climat & Énergie`,
-    description: product.description || "Explore our premium energy solutions.",
+    title,
+    description,
     openGraph: {
-      images: product.images?.[0] ? [{ url: product.images[0] }] : [],
+      title,
+      description,
+      url,
+      siteName: "Élan Climat & Énergie",
+      images: [{ url: image, width: 800, height: 800 }],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+    alternates: {
+      canonical: url,
     },
   };
 }
@@ -38,6 +65,8 @@ export default async function ProductPage({ params }: Props) {
     getProducts(),
     getProductById(_id),
   ]);
+
+  if (!initialProduct) notFound();
 
   return (
     <>

@@ -113,7 +113,7 @@ const SCHEMA = {
       sameAs: [
         "https://www.instagram.com/elanclimat",
         "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie",
-        "https://www.facebook.com/elanclimat",
+        "https://www.facebook.com/profile.php?id=61590493237677",
       ],
     },
   ],
@@ -155,7 +155,7 @@ const SOCIALS = [
   },
   {
     label: "Follow Élan Climat on Facebook",
-    href: "https://www.facebook.com/elanclimat",
+    href: "https://www.facebook.com/profile.php?id=61590493237677",
     icon: (
       <svg
         width="14"

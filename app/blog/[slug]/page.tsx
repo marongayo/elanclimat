@@ -6,9 +6,59 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, Calendar, Clock, Tag } from "lucide-react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 
 export const dynamic = "force-dynamic";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+
+  if (!post) {
+    return {
+      title: "Article Not Found | Élan Climat & Énergie",
+      description: "The requested article could not be found.",
+    };
+  }
+
+  const title = `${post.title} | Élan Climat & Énergie`;
+  const description = post.excerpt?.slice(0, 155) || post.title;
+  const url = `${BASE_URL}/blog/${slug}`;
+
+  return {
+    title,
+    description,
+    keywords: [post.category, "Kenya", "Élan Climat", post.title],
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "Élan Climat Engineering Blog",
+      type: "article",
+      publishedTime: post.date,
+      images: post.image ? [{ url: post.image, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: post.image ? [post.image] : [],
+    },
+  };
+}
 
 export default async function BlogPostPage({
   params,
@@ -18,6 +68,7 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) notFound();
+
   const related = await getBlogPosts();
   const filteredRelated = related.filter((p) => p._id !== post._id).slice(0, 2);
 
@@ -27,7 +78,6 @@ export default async function BlogPostPage({
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-        /* ── Back link ── */
         .blog-post-back {
           display: inline-flex;
           align-items: center;
@@ -42,7 +92,6 @@ export default async function BlogPostPage({
         }
         .blog-post-back:hover { color: rgba(249,247,244,0.9); }
 
-        /* ── Meta icons ── */
         .blog-meta-item {
           display: flex;
           align-items: center;
@@ -52,7 +101,6 @@ export default async function BlogPostPage({
           color: #888580;
         }
 
-        /* ── Excerpt blockquote ── */
         .blog-excerpt {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.15rem, 2vw, 1.35rem);
@@ -65,7 +113,6 @@ export default async function BlogPostPage({
           border-left: 2px solid #8fa68e;
         }
 
-        /* ── Prose ── */
         .blog-content {
           font-family: 'DM Sans', sans-serif;
           font-size: 0.92rem;
@@ -88,25 +135,11 @@ export default async function BlogPostPage({
           color: #1a1a18;
           margin: 36px 0 14px;
         }
-        .blog-content p {
-          margin: 0 0 24px;
-        }
-        .blog-content ul, .blog-content ol {
-          padding-left: 20px;
-          margin: 0 0 24px;
-        }
-        .blog-content li {
-          margin-bottom: 8px;
-        }
-        .blog-content strong {
-          color: #1a1a18;
-          font-weight: 600;
-        }
-        .blog-content a {
-          color: #5a7a59;
-          text-decoration: underline;
-          text-underline-offset: 3px;
-        }
+        .blog-content p { margin: 0 0 24px; }
+        .blog-content ul, .blog-content ol { padding-left: 20px; margin: 0 0 24px; }
+        .blog-content li { margin-bottom: 8px; }
+        .blog-content strong { color: #1a1a18; font-weight: 600; }
+        .blog-content a { color: #5a7a59; text-decoration: underline; text-underline-offset: 3px; }
         .blog-content a:hover { color: #1a1a18; }
         .blog-content blockquote {
           border-left: 2px solid #8fa68e;
@@ -115,41 +148,23 @@ export default async function BlogPostPage({
           color: #6b6b68;
           font-style: italic;
         }
-        .blog-content img {
-          width: 100%;
-          height: auto;
-          margin: 32px 0;
-        }
-        .blog-content hr {
-          border: none;
-          border-top: 1px solid #ede9e2;
-          margin: 40px 0;
-        }
+        .blog-content img { width: 100%; height: auto; margin: 32px 0; }
+        .blog-content hr { border: none; border-top: 1px solid #ede9e2; margin: 40px 0; }
 
-        /* ── Related card ── */
-        .related-card {
-          text-decoration: none;
-          display: block;
-        }
+        .related-card { text-decoration: none; display: block; }
         .related-card-img {
           position: relative;
           aspect-ratio: 16 / 10;
           overflow: hidden;
           margin-bottom: 18px;
         }
-        .related-card-img img {
-          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .related-card-img img { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .related-card:hover .related-card-img img { transform: scale(1.04); }
-
         .related-card-arrow {
-          width: 28px;
-          height: 28px;
+          width: 28px; height: 28px;
           border-radius: 50%;
           border: 1px solid rgba(26,26,24,0.18);
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          display: flex; align-items: center; justify-content: center;
           color: #1a1a18;
           flex-shrink: 0;
           transition: all 0.25s ease;
@@ -175,17 +190,32 @@ export default async function BlogPostPage({
           backgroundColor: "#f9f7f4",
           minHeight: "100vh",
         }}
+        itemScope
+        itemType="https://schema.org/BlogPosting"
       >
+        <meta itemProp="headline" content={post.title} />
+        <meta itemProp="description" content={post.excerpt} />
+        <meta itemProp="datePublished" content={post.date} />
+        <meta itemProp="image" content={post.image} />
+        <meta itemProp="url" content={`${BASE_URL}/blog/${post.slug}`} />
+        <div
+          itemProp="publisher"
+          itemScope
+          itemType="https://schema.org/Organization"
+        >
+          <meta itemProp="name" content="Élan Climat & Énergie" />
+          <meta itemProp="url" content={`${BASE_URL}/`} />
+        </div>
+
         {/* ── Hero ── */}
         <div style={{ position: "relative", height: 460, overflow: "hidden" }}>
           <Image
             src={post.image}
-            alt={post.title}
+            alt={`${post.title} — Élan Climat Kenya`}
             fill
             style={{ objectFit: "cover" }}
             priority
           />
-          {/* Gradient overlay */}
           <div
             style={{
               position: "absolute",
@@ -195,7 +225,6 @@ export default async function BlogPostPage({
             }}
           />
 
-          {/* Hero text */}
           <div
             className="blog-post-hero-text"
             style={{
@@ -252,7 +281,6 @@ export default async function BlogPostPage({
           className="blog-post-body"
           style={{ maxWidth: 800, margin: "0 auto", padding: "52px 64px 88px" }}
         >
-          {/* Meta row */}
           <div
             style={{
               display: "flex",
@@ -281,10 +309,8 @@ export default async function BlogPostPage({
             ))}
           </div>
 
-          {/* Excerpt */}
           <p className="blog-excerpt">{post.excerpt}</p>
 
-          {/* Content */}
           <div
             className="blog-content"
             dangerouslySetInnerHTML={{ __html: post.content }}
@@ -300,7 +326,6 @@ export default async function BlogPostPage({
               className="blog-related-inner"
               style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 64px" }}
             >
-              {/* Section label */}
               <div
                 style={{
                   display: "flex",
@@ -324,7 +349,7 @@ export default async function BlogPostPage({
                 <div style={{ flex: 1, height: 1, background: "#ede9e2" }} />
               </div>
 
-              <h3
+              <h2
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
@@ -336,7 +361,7 @@ export default async function BlogPostPage({
                 }}
               >
                 More Articles
-              </h3>
+              </h2>
 
               <div
                 className="blog-related-grid"
@@ -359,7 +384,7 @@ export default async function BlogPostPage({
                     >
                       <Image
                         src={p.image}
-                        alt={p.title}
+                        alt={`${p.title} — Élan Climat Kenya`}
                         fill
                         style={{ objectFit: "cover" }}
                       />
@@ -392,7 +417,7 @@ export default async function BlogPostPage({
                           {p.category}
                         </span>
 
-                        <h4
+                        <h3
                           style={{
                             fontFamily: "'Cormorant Garamond', serif",
                             fontSize: "1.2rem",
@@ -404,7 +429,7 @@ export default async function BlogPostPage({
                           }}
                         >
                           {p.title}
-                        </h4>
+                        </h3>
                       </div>
 
                       <span

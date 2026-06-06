@@ -79,7 +79,7 @@ export default function Schema() {
 
         // Verified social profiles only — unverified pages omitted
         sameAs: [
-          "https://www.facebook.com/elanclimat",
+          "https://www.facebook.com/profile.php?id=61590493237677",
           "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie",
           "https://www.instagram.com/elanclimat",
           "https://www.x.com/elanclimat",

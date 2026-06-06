@@ -11,7 +11,6 @@ import BackToTop from "@/components/BackToTop";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-// ─── Metadata — shown in Google search results ────────────────────────────────
 export const metadata: Metadata = {
   title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
   description:
@@ -36,6 +35,12 @@ export const metadata: Metadata = {
     url: `${BASE_URL}/blog`,
     siteName: "Élan Climat Engineering Blog",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
+    description:
+      "Expert articles on HVAC, solar energy, cold rooms, and sustainable engineering from Élan Climat's team across Kenya.",
   },
 };
 
@@ -182,7 +187,6 @@ export default async function BlogPage() {
         itemScope
         itemType="https://schema.org/Blog"
       >
-        {/* Hidden schema metadata — read by Google, invisible to users */}
         <meta itemProp="name" content="Élan Climat Engineering Blog — Kenya" />
         <meta
           itemProp="description"
@@ -235,7 +239,6 @@ export default async function BlogPage() {
               padding: "48px 0 56px",
             }}
           >
-            {/* Breadcrumb with schema */}
             <div className="blog-inner">
               <nav aria-label="Breadcrumb">
                 <ol
@@ -302,7 +305,6 @@ export default async function BlogPage() {
               </nav>
             </div>
 
-            {/* Hero copy */}
             <div className="blog-inner">
               <div
                 className="blog-hero-grid"
@@ -341,7 +343,6 @@ export default async function BlogPage() {
                     </span>
                   </div>
 
-                  {/* h1 — keyword rich */}
                   <h1
                     style={{
                       fontFamily: "var(--font-serif), serif",
@@ -366,7 +367,6 @@ export default async function BlogPage() {
                     </em>
                   </h1>
 
-                  {/* Supporting copy — adds keyword depth */}
                   <p
                     style={{
                       fontFamily: "var(--font-sans), sans-serif",
@@ -384,7 +384,6 @@ export default async function BlogPage() {
                   </p>
                 </div>
 
-                {/* Post count */}
                 <div
                   className="blog-hero-right"
                   style={{
@@ -423,7 +422,6 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        {/* Gradient bar */}
         <div
           style={{
             height: 3,
@@ -440,7 +438,6 @@ export default async function BlogPage() {
             itemScope
             itemType="https://schema.org/BlogPosting"
           >
-            {/* Schema metadata for featured post */}
             <meta itemProp="headline" content={featured.title} />
             <meta itemProp="description" content={featured.excerpt} />
             <meta itemProp="datePublished" content={featured.date} />
@@ -495,7 +492,6 @@ export default async function BlogPage() {
                 className="featured-card"
                 aria-label={`Read: ${featured.title}`}
               >
-                {/* Image */}
                 <div
                   className="featured-card-img featured-img-col"
                   style={{
@@ -550,7 +546,6 @@ export default async function BlogPage() {
                   </div>
                 </div>
 
-                {/* Text */}
                 <div
                   style={{
                     display: "flex",
@@ -590,7 +585,6 @@ export default async function BlogPage() {
                     </span>
                   </div>
 
-                  {/* h2 — post title, fully indexable */}
                   <h2
                     style={{
                       fontFamily: "var(--font-serif), serif",
@@ -731,7 +725,6 @@ export default async function BlogPage() {
                 </span>
               </div>
 
-              {/* 3-column grid — all cards server-rendered, fully indexed */}
               <div
                 className="blog-grid-3"
                 style={{
@@ -748,7 +741,6 @@ export default async function BlogPage() {
                     itemScope
                     itemType="https://schema.org/BlogPosting"
                   >
-                    {/* Schema metadata per card */}
                     <meta itemProp="headline" content={post.title} />
                     <meta itemProp="description" content={post.excerpt} />
                     <meta itemProp="datePublished" content={post.date} />
@@ -764,7 +756,6 @@ export default async function BlogPage() {
                       aria-label={`Read article: ${post.title}`}
                       style={{ height: "100%" }}
                     >
-                      {/* Thumbnail */}
                       <div
                         className="blog-card-img"
                         style={{
@@ -818,7 +809,6 @@ export default async function BlogPage() {
                         </div>
                       </div>
 
-                      {/* Body */}
                       <div
                         style={{
                           display: "flex",
