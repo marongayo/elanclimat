@@ -24,7 +24,7 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
+const SITE_URL = process.env.NEXTAUTH_URL!;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
