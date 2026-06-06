@@ -5,10 +5,8 @@ import "./globals.css";
 import Providers from "./providers";
 import Schema from "./seo/Schema";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 
-// DM Sans is a variable font — use weight: "variable" to unlock the opsz axis
 const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
@@ -18,7 +16,6 @@ const dmSans = DM_Sans({
   axes: ["opsz"],
 });
 
-// Cormorant Garamond is NOT a variable font on Google Fonts — explicit weights only, no axes
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   display: "swap",
@@ -27,60 +24,60 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const SITE_URL = "https://www.elanclimat.co.ke";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://elanclimat.co.ke"),
+  metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Élan Climat & Énergie ",
+    default: "Élan Climat & Énergie",
     template: "%s | Élan Climat & Énergie",
   },
 
   description:
     "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",
 
-  keywords: [
-    "solar panels",
-    "solar installation",
-    "HVAC",
-    "air conditioning",
-    "refrigeration",
-    "cold rooms",
-    "electrician services",
-    "electrical installation",
-    "lithium batteries",
-    "battery storage",
-    "backup generators",
-    "generator installation",
-    "generator maintenance",
-    "lift installation",
-    "elevator installation",
-    "elevator maintenance",
-    "renewable energy",
-    "commercial cooling",
-    "industrial refrigeration",
-    "energy solutions",
-  ],
-
   authors: [{ name: "Élan Climat & Énergie" }],
-
   creator: "Élan Climat & Énergie",
 
-  alternates: {
-    canonical: "/",
-  },
-
   openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Élan Climat & Énergie",
     title:
       "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
-
     description:
-      "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators.",
+      "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators across Kenya and East Africa.",
+    locale: "en_KE",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Élan Climat & Énergie — Engineering Services Kenya",
+      },
+    ],
+  },
 
-    url: "https://elanclimat.co.ke",
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
+    description:
+      "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators across Kenya and East Africa.",
+    images: ["/images/og-image.jpg"],
+  },
 
-    siteName: "Élan Climat & Énergie",
-    locale: "en_US",
-    type: "website",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -93,10 +90,11 @@ export default function RootLayout({
     <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
       <head>
         <Schema />
-        <SpeedInsights />
       </head>
       <body>
         <Providers>{children}</Providers>
+
+        <SpeedInsights />
       </body>
     </html>
   );

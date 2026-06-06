@@ -1,42 +1,61 @@
 // app/seo/Schema.tsx
-// Rendered ONCE in the root layout only — do not duplicate in Footer or page components.
+// Rendered ONCE in the root layout only — do not duplicate in page components.
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.elanclimat.co.ke";
 
 export default function Schema() {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
+      // ─── Primary business entity ───────────────────────────────────────────
       {
-        /*
-         * HVACBusiness is the most specific type — keep it.
-         * Stacking LocalBusiness + ProfessionalService maps the entity to
-         * both service and local search surfaces in Google's Knowledge Graph.
-         */
         "@type": ["HVACBusiness", "LocalBusiness", "ProfessionalService"],
         "@id": `${BASE_URL}/#business`,
         name: "Élan Climat & Énergie",
         alternateName: ["Elan Climat Kenya", "Élan Climat Énergie"],
         url: BASE_URL,
+        foundingDate: "2018",
+
         logo: {
           "@type": "ImageObject",
+          "@id": `${BASE_URL}/#logo`,
           url: `${BASE_URL}/logo.png`,
+          contentUrl: `${BASE_URL}/logo.png`,
+          width: 200,
+          height: 60,
+          caption: "Élan Climat & Énergie",
         },
-        image: `${BASE_URL}/images/og-image.jpg`,
+
+        image: {
+          "@type": "ImageObject",
+          url: `${BASE_URL}/images/HVAC.png`,
+          width: 1200,
+          height: 630,
+        },
+
         description:
           "Kenya's leading HVAC, solar energy, refrigeration, cold room, electrical, elevator, and generator engineering company. Certified engineers serving Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, Nyeri, and across East and Central Africa since 2018.",
-        foundingDate: "2018",
+
         telephone: "+254796952717",
         email: "hello@elanclimat.co.ke",
 
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+254796952717",
+          email: "hello@elanclimat.co.ke",
+          contactType: "customer service",
+          areaServed: "KE",
+          availableLanguage: ["English", "Swahili"],
+        },
+
         address: {
           "@type": "PostalAddress",
-          // ← Replace streetAddress with your actual street once confirmed.
-          // Leaving it vague triggers a Google Search Console warning.
-          streetAddress: "Nairobi",
           addressLocality: "Nairobi",
           addressRegion: "Nairobi County",
+          postalCode: "00100",
           addressCountry: "KE",
+          // streetAddress: "Your Street, Building Name" ← uncomment once confirmed
         },
 
         geo: {
@@ -45,10 +64,7 @@ export default function Schema() {
           longitude: 36.817223,
         },
 
-        /*
-         * areaServed: typed City/Country nodes link to Google's Knowledge
-         * Graph. Plain strings ("Kenya") do not — that was the original bug.
-         */
+        // Typed City/Country nodes — links to Google's Knowledge Graph
         areaServed: [
           { "@type": "City", name: "Nairobi" },
           { "@type": "City", name: "Mombasa" },
@@ -62,33 +78,17 @@ export default function Schema() {
           { "@type": "Country", name: "Rwanda" },
         ],
 
+        // Verified social profiles only — unverified pages omitted
         sameAs: [
           "https://www.facebook.com/elanclimat",
-          // Corrected slug — original had /company/elanclimat (wrong)
           "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie",
           "https://www.instagram.com/elanclimat",
-          // Uncomment only if the Twitter/X account is active:
-          // "https://twitter.com/elanclimat",
+          "https://www.x.com/elanclimat",
         ],
 
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "HVAC & Energy Engineering Services — Kenya & East Africa",
-          /*
-           * Each Service now has:
-           *   - "@id"  → a stable entity identifier Google can deduplicate
-           *   - "url"  → the exact anchor URL that resolves on your site
-           *
-           * Previously these were name-only strings. Without url/id, Google
-           * cannot connect the schema entity to the actual page content,
-           * meaning the service pages get zero schema benefit.
-           *
-           * Anchors here EXACTLY match the `anchor:` values in:
-           *   - ServicesSection.tsx  (home cards)
-           *   - ServiceSection.tsx   (id={service.anchor} on the section)
-           *   - Hero.tsx             (tag hrefs)
-           * so every internal link and schema entry point to the same fragment.
-           */
           itemListElement: [
             {
               "@type": "Offer",
@@ -99,17 +99,8 @@ export default function Schema() {
                 url: `${BASE_URL}/services#hvac`,
                 description:
                   "Split units, VRF systems, and ducted AC designed, installed, and serviced for homes, offices, and hotels across Nairobi, Mombasa, and Kisumu.",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Service",
-                "@id": `${BASE_URL}/services#plumbing`,
-                name: "Commercial & Residential Plumbing Kenya",
-                url: `${BASE_URL}/services#plumbing`,
-                description:
-                  "Supply lines, riser systems, and sanitary installations for commercial buildings, apartments, and hospitals across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
             {
@@ -121,6 +112,21 @@ export default function Schema() {
                 url: `${BASE_URL}/services#solar`,
                 description:
                   "Grid-tied, off-grid, and hybrid solar PV systems with battery storage for homes, businesses, and farms across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Service",
+                "@id": `${BASE_URL}/services#plumbing`,
+                name: "Commercial & Residential Plumbing Kenya",
+                url: `${BASE_URL}/services#plumbing`,
+                description:
+                  "Supply lines, riser systems, and sanitary installations for commercial buildings, apartments, and hospitals across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
             {
@@ -132,6 +138,8 @@ export default function Schema() {
                 url: `${BASE_URL}/services#cold-room`,
                 description:
                   "Walk-in cold rooms and blast freezers for food processors, hotels, and pharmaceuticals across Nairobi, Mombasa, and Nakuru.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
             {
@@ -143,6 +151,8 @@ export default function Schema() {
                 url: `${BASE_URL}/services#elevator`,
                 description:
                   "Passenger, goods, and hospital lifts for residential and commercial buildings across Nairobi. KEBS-compliant with 24/7 maintenance.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "City", name: "Nairobi" },
               },
             },
             {
@@ -154,11 +164,10 @@ export default function Schema() {
                 url: `${BASE_URL}/services#electrical`,
                 description:
                   "LV distribution, standby generators, earthing, and smart building automation for offices, hospitals, and industrial facilities across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
-            // These two services appear in your original Schema.tsx but have
-            // no dedicated anchor on the services page yet. Once you add them,
-            // give them anchors and update the url fields below.
             {
               "@type": "Offer",
               itemOffered: {
@@ -168,6 +177,8 @@ export default function Schema() {
                 url: `${BASE_URL}/services#lithium-batteries`,
                 description:
                   "Lithium-ion and LiFePO4 battery storage systems for solar, backup power, and off-grid applications across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
             {
@@ -179,22 +190,22 @@ export default function Schema() {
                 url: `${BASE_URL}/services#generators`,
                 description:
                   "Diesel and gas generator installation, servicing, and 24/7 maintenance for commercial and industrial clients across Kenya.",
+                provider: { "@id": `${BASE_URL}/#business` },
+                areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
           ],
         },
       },
 
-      /*
-       * WebSite entity — enables Google Sitelinks Searchbox.
-       * The SearchAction tells Google your site has internal search.
-       * Remove the SearchAction block if you don't have a /search route.
-       */
+      // ─── WebSite entity ────────────────────────────────────────────────────
       {
         "@type": "WebSite",
         "@id": `${BASE_URL}/#website`,
         url: BASE_URL,
         name: "Élan Climat & Énergie",
+        description:
+          "Certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Kenya and East Africa.",
         publisher: { "@id": `${BASE_URL}/#business` },
         inLanguage: "en-KE",
       },
