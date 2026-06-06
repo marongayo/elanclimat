@@ -24,7 +24,15 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const SITE_URL = "https://www.elanclimat.co.ke";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: SITE_URL,
+  },
+  // ...
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
