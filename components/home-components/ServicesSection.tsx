@@ -99,7 +99,7 @@ export default function ServicesSection() {
     <section
       aria-label="Engineering services offered by Élan Climat in Kenya"
       style={{
-        backgroundColor: C.warmWhite,
+        backgroundColor: "#ffffff",
         padding: "96px 0",
         fontFamily: "'DM Sans', sans-serif",
       }}
