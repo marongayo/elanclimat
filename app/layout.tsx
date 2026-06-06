@@ -32,11 +32,6 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   // ...
-}
-
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-
   title: {
     default: "Élan Climat & Énergie",
     template: "%s | Élan Climat & Énergie",
