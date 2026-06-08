@@ -1,4 +1,8 @@
+// app/robots.ts
+
 import { MetadataRoute } from "next";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,9 +10,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: "/admin",
+        disallow: ["/admin", "/api", "/careers/withdraw"],
       },
     ],
-    sitemap: "https://www.elanclimat.co.ke/sitemap.xml",
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

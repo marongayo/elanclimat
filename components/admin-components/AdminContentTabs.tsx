@@ -73,7 +73,7 @@ const ERROR_TEXT: React.CSSProperties = {
 
 function getInlineCvUrl(url: string) {
   console.log("Original CV URL:", url);
-  return `/api/cv?url=${encodeURIComponent(url)}`;
+  return `/api/jobs/cv?url=${encodeURIComponent(url)}`;
 }
 function JobCard({
   job,

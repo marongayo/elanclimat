@@ -7,21 +7,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
-
-// ─── Design tokens — exact match across all pages ─────────────────────────────
-const C = {
-  charcoal: "#1a1a18",
-  warmWhite: "#f9f7f4",
-  offWhite: "#ede9e2",
-  sage: "#8fa68e",
-  sageDark: "#5a7a59",
-  accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e4dd",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
-};
+import { C } from "@/lib/constants";
 
 const META = [
   { label: "Entity", value: "Élan Climat & Énergie Ltd" },
@@ -90,9 +76,9 @@ const SECTIONS: Section[] = [
         </p>
         <p>
           We reserve the right to update or amend these terms at any time. When
-          we do, we will update the "Last Revised" date at the top of this page.
-          Continued use of our services following any such change constitutes
-          your acceptance of the new terms.
+          we do, we will update the &quot;Last Revised&quot; date at the top of
+          this page. Continued use of our services following any such change
+          constitutes your acceptance of the new terms.
         </p>
       </>
     ),
@@ -143,11 +129,11 @@ const SECTIONS: Section[] = [
           availability, and lead times are subject to change without notice.
         </p>
         <p>
-          A project becomes binding only upon the client's written acceptance of
-          a quotation <em>and</em> the receipt of the agreed deposit payment
-          (typically 50% of the total project value). Verbal confirmations,
-          WhatsApp messages, or email replies of intent do not constitute a
-          binding agreement unless accompanied by payment.
+          A project becomes binding only upon the client&apos;s written
+          acceptance of a quotation <em>and</em> the receipt of the agreed
+          deposit payment (typically 50% of the total project value). Verbal
+          confirmations, WhatsApp messages, or email replies of intent do not
+          constitute a binding agreement unless accompanied by payment.
         </p>
         <p>
           We reserve the right to decline any order or enquiry at our
@@ -195,8 +181,8 @@ const SECTIONS: Section[] = [
       <>
         <p>
           Equipment supplied by Élan Climat &amp; Énergie carries the original
-          manufacturer's warranty, the terms and duration of which vary by brand
-          and product line and are communicated at point of sale.
+          manufacturer&apos;s warranty, the terms and duration of which vary by
+          brand and product line and are communicated at point of sale.
         </p>
         <p>
           Our workmanship warranty covers installation defects for a period of{" "}
@@ -256,8 +242,8 @@ const SECTIONS: Section[] = [
       <>
         <p>
           To the fullest extent permitted by Kenyan law, Élan Climat &amp;
-          Énergie's total liability to you shall not exceed the total value of
-          the fees paid by you in connection with the specific project giving
+          Énergie&apos;s total liability to you shall not exceed the total value
+          of the fees paid by you in connection with the specific project giving
           rise to the claim.
         </p>
         <p>
@@ -749,7 +735,7 @@ export default function TermsOfServicePage() {
                   }}
                 >
                   These terms govern your relationship with Élan Climat &amp;
-                  Énergie. We've written them to be clear and honest — not to
+                  Énergie. We have written them to be clear and honest — not to
                   obscure, but to set fair expectations on both sides.
                 </p>
                 <a
@@ -847,7 +833,7 @@ export default function TermsOfServicePage() {
                   fontWeight: 300,
                 }}
               >
-                These Terms of Service ("Terms") apply to all clients,
+                These Terms of Service (&quot;Terms&quot;) apply to all clients,
                 prospective clients, and visitors engaging with Élan Climat
                 &amp; Énergie Ltd, a company incorporated in Kenya. If you have
                 questions before engaging our services, write to us at{" "}
@@ -905,10 +891,11 @@ export default function TermsOfServicePage() {
                   fontStyle: "italic",
                 }}
               >
-                "We believe in long relationships — not fine print. These terms
-                exist to protect both parties fairly. If anything here feels
-                unclear or concerns you before a project, please reach out. We'd
-                rather have a conversation than a contract dispute."
+                &quot;We believe in long relationships — not fine print. These
+                terms exist to protect both parties fairly. If anything here
+                feels unclear or concerns you before a project, please reach
+                out. We&apos;d rather have a conversation than a contract
+                dispute.&quot;
               </p>
               <span
                 style={{
@@ -950,7 +937,7 @@ export default function TermsOfServicePage() {
                   margin: 0,
                 }}
               >
-                We'd rather talk
+                We&apos;d rather talk
                 <br />
                 <em
                   style={{
@@ -973,8 +960,8 @@ export default function TermsOfServicePage() {
                 }}
               >
                 If anything in these terms is unclear before you engage us,
-                reach out. We're a team of engineers, not lawyers — we'll give
-                you a straight answer.
+                reach out. We&apos;re a team of engineers, not lawyers —
+                we&apos;ll give you a straight answer.
               </p>
             </div>
             <a

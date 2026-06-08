@@ -10,7 +10,7 @@ import BackToTop from "@/components/BackToTop";
 import Navbar from "@/components/Navbar";
 import { getBlogPosts } from "@/lib/db";
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://elanclimat.co.ke";
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

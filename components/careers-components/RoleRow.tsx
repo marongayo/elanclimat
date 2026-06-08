@@ -6,6 +6,23 @@ import { ApplicationForm } from "./ApplicationForm";
 import { Role, AppStatus } from "@/components/careers-components/_tokens";
 import { C } from "@/lib/constants";
 
+// Formats "2025-03-31" → "31 Mar 2025"
+function formatDeadline(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+// Returns true if deadline is within 7 days
+function isUrgent(dateStr: string): boolean {
+  const diff = new Date(dateStr).getTime() - Date.now();
+  return diff > 0 && diff < 7 * 24 * 60 * 60 * 1000;
+}
+
 export function RoleRow({
   role,
   isOpen,
@@ -23,6 +40,8 @@ export function RoleRow({
   onFormSuccess: () => void;
   onFormCancel: () => void;
 }) {
+  const urgent = isUrgent(role.applicationDeadline);
+
   return (
     <div style={{ borderBottom: `1px solid ${C.rule}` }}>
       {/* Row header */}
@@ -117,6 +136,19 @@ export function RoleRow({
             }}
           >
             {role.type}
+          </span>
+          {/* Deadline pill in header — desktop only */}
+          <span
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.58rem",
+              letterSpacing: "0.08em",
+              color: urgent ? "#b05a45" : C.dim,
+              marginTop: 2,
+            }}
+          >
+            {urgent ? "⚠ " : ""}Closes{" "}
+            {formatDeadline(role.applicationDeadline)}
           </span>
         </div>
 
@@ -281,6 +313,33 @@ export function RoleRow({
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Deadline notice — always visible in expanded panel */}
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 16px",
+                    border: `1px solid ${urgent ? "rgba(176,90,69,0.25)" : C.rule}`,
+                    background: urgent ? "rgba(176,90,69,0.04)" : "transparent",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.68rem",
+                      color: urgent ? "#b05a45" : C.muted,
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {urgent ? "Closing soon — " : "Apply before "}
+                    <span style={{ fontWeight: 500 }}>
+                      {formatDeadline(role.applicationDeadline)}
+                    </span>
+                  </span>
                 </div>
 
                 {/* CTA — driven by status */}

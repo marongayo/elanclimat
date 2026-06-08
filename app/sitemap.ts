@@ -1,57 +1,58 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   return [
     {
-      url: "https://www.elanclimat.co.ke",
+      url: `${BASE_URL}`,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "monthly",
       priority: 1,
     },
     {
-      url: "https://www.elanclimat.co.ke/shop",
+      url: `${BASE_URL}/shop`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: "https://www.elanclimat.co.ke/careers",
+      url: `${BASE_URL}/careers`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
-      url: "https://www.elanclimat.co.ke/about",
+      url: `${BASE_URL}/about`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
-      url: "https://www.elanclimat.co.ke/services",
+      url: `${BASE_URL}/services`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://www.elanclimat.co.ke/contact",
+      url: `${BASE_URL}/contact`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: "https://www.elanclimat.co.ke/blog",
+      url: `${BASE_URL}/blog`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
-      url: "https://www.elanclimat.co.ke/privacy-policy",
+      url: `${BASE_URL}/privacy-policy`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: "https://www.elanclimat.co.ke/terms-of-service",
+      url: `${BASE_URL}/terms-of-service`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,

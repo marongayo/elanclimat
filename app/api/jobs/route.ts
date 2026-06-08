@@ -1,5 +1,6 @@
 // app/api/jobs/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 import {
   getJobs,
   saveJob,
@@ -8,6 +9,10 @@ import {
   removeApplicant,
   getJobById,
 } from "@/lib/db";
+import { applicationReceivedEmail } from "@/lib/emails/applicationReceived";
+import { generateWithdrawToken } from "@/lib/emails/generateWithdrawToken";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET() {
   try {
@@ -38,6 +43,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 export async function PATCH(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -57,12 +63,14 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Duplicate check
     const existingJob = await getJobById(jobId);
     const duplicate = existingJob?.applicants?.some((a) => a.email === email);
     if (duplicate) {
       return NextResponse.json({ error: "Already applied" }, { status: 409 });
     }
 
+    // Upload CV to Cloudinary
     const uploadForm = new FormData();
     uploadForm.append("file", cvFile);
 
@@ -77,6 +85,7 @@ export async function PATCH(request: NextRequest) {
 
     const { url: cvUrl } = await uploadRes.json();
 
+    // Save application to MongoDB
     await addApplicant(jobId, {
       fullName,
       email,
@@ -85,6 +94,30 @@ export async function PATCH(request: NextRequest) {
       coverLetter,
       cvUrl,
     });
+
+    // Send confirmation email — non-blocking, failure doesn't affect the response
+    const roleTitle = existingJob?.title ?? "the position";
+    const baseUrl =
+      process.env.NEXTAUTH_URL?.replace(
+        "http://localhost:3000",
+        "https://www.elanclimat.co.ke",
+      ) ?? "https://www.elanclimat.co.ke";
+    const withdrawToken = await generateWithdrawToken(jobId, email);
+    const withdrawUrl = `${baseUrl}/api/jobs/withdraw?token=${withdrawToken}`;
+    const { subject, html } = applicationReceivedEmail({
+      applicantName: fullName,
+      roleTitle,
+      withdrawUrl,
+    });
+
+    resend.emails
+      .send({
+        from: `Élan Careers <${process.env.RESEND_FROM}>`,
+        to: email,
+        subject,
+        html,
+      })
+      .catch((err) => console.error("Resend confirmation email failed:", err));
 
     return NextResponse.json(
       { message: "Application submitted successfully" },
@@ -98,6 +131,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
