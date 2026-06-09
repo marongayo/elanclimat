@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
+import { C } from "@/lib/constants";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -18,21 +19,6 @@ import {
 import Navbar from "@/components/Navbar";
 import BackToTop from "@/components/BackToTop";
 import Eyebrow from "@/components/Eyebrow";
-
-// ─── Shared design tokens ─────────────────────────────────────────────────────
-const C = {
-  charcoal: "#1a1a18",
-  warmWhite: "#f9f7f4",
-  offWhite: "#ede9e2",
-  sage: "#8fa68e",
-  sageDark: "#5a7a59",
-  accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e8e4",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
-};
 
 const SERVICES = [
   "HVAC Services",

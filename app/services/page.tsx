@@ -7,12 +7,15 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import ServiceSection from "@/components/services-components/ServiceSection";
 import ServicesClient from "@/components/services-components/ServiceClient";
+import { SERVICES } from "@/lib/services-data";
+import Eyebrow from "@/components/Eyebrow";
+import { C } from "@/lib/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-// ─── Metadata — shows in Google search results ────────────────────────────────
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "HVAC, Solar, Cold Room & Electrical Services in Kenya ",
+  title: "HVAC, Solar, Cold Room & Electrical Services in Kenya | Élan Climat",
   description:
     "Professional HVAC installation, solar panel systems, cold rooms, plumbing, elevator installation, and electrical services across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri. Request a quote today.",
   keywords: [
@@ -32,224 +35,10 @@ export const metadata: Metadata = {
       "Precision-engineered HVAC, solar, refrigeration, electrical, elevator and plumbing services across Kenya and East Africa.",
     url: `${BASE_URL}/services`,
   },
+  alternates: {
+    canonical: `${BASE_URL}/services`,
+  },
 };
-
-// ─── Shared design tokens ─────────────────────────────────────────────────────
-export const C = {
-  charcoal: "#1a1a18",
-  warmWhite: "#f9f7f4",
-  offWhite: "#ede9e2",
-  sage: "#8fa68e",
-  sageDark: "#5a7a59",
-  accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e8e4",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
-};
-
-// ─── Services data ────────────────────────────────────────────────────────────
-export const SERVICES = [
-  {
-    id: "hvac",
-    anchor: "hvac",
-    num: "01",
-    eyebrow: "Climate Control",
-    // seoTitle used in h2 — keyword rich
-    seoTitle: "HVAC Installation & Maintenance Services in Kenya",
-    // headline used as visual subheading below h2
-    headline: "Precision Climate, Every Season",
-    title: "HVAC Services",
-    description:
-      "From split units to full VRF systems, we design, install, and service HVAC solutions for homes, offices, hotels, hospitals, and industrial facilities across Nairobi, Mombasa, Kisumu, Eldoret, and Nakuru. Every system is sized and commissioned for peak energy efficiency in Kenya's climate.",
-    features: [
-      "Full system design & load calculations",
-      "VRF / VRV multi-split systems",
-      "Ducted central air systems",
-      "Preventive maintenance contracts",
-      "Air quality & filtration upgrades",
-    ],
-    heroImg: "/everett.jpg",
-    heroAlt: "HVAC installation project in Nairobi Kenya",
-    colA: "/sticky.png",
-    colB: "/images/HVAC.jpg",
-    colAlt: [
-      "HVAC ducting installation Kenya",
-      "Air conditioning system Nairobi",
-    ],
-    accent: "#8fa68e",
-    dark: false,
-  },
-  {
-    id: "plumbing",
-    anchor: "plumbing",
-    num: "02",
-    eyebrow: "Water Systems",
-    seoTitle: "Plumbing Services in Kenya — Commercial & Residential",
-    headline: "Flows Built to Last",
-    title: "Plumbing Services",
-    description:
-      "Complete plumbing solutions from underground supply lines to high-rise riser systems and sanitary installations across Nairobi, Mombasa, and Nyeri. We handle new builds, renovations, and emergency repairs for commercial buildings, apartments, hotels, and hospitals throughout Kenya.",
-    features: [
-      "Domestic & commercial supply lines",
-      "High-rise riser & stack systems",
-      "Sanitary & drainage installations",
-      "Hot-water system design",
-      "Leak detection & remediation",
-    ],
-    heroImg:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
-    heroAlt: "Commercial plumbing installation Kenya",
-    colA: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=700&q=80",
-    colB: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=700&q=80",
-    colAlt: ["Plumbing pipe installation Kenya", "Water supply system Nairobi"],
-    accent: "#8fa68e",
-    dark: true,
-  },
-  {
-    id: "solar",
-    anchor: "solar",
-    num: "03",
-    eyebrow: "Renewable Energy",
-    seoTitle:
-      "Solar Panel Installation in Kenya — Grid-Tied & Off-Grid Systems",
-    headline: "Harness Kenya's Sunshine",
-    title: "Solar Installation",
-    description:
-      "Grid-tied, off-grid, and hybrid solar PV systems engineered for maximum yield across Kenya. We handle site surveys, structural mounting, inverter sizing, lithium battery storage, and KPLC grid interconnection for homes, businesses, and farms in Nairobi, Mombasa, Kisumu, Nakuru, and rural Kenya.",
-    features: [
-      "Rooftop & ground-mount PV systems",
-      "Battery energy storage (BESS)",
-      "Hybrid grid-tied systems",
-      "Net-metering & KPLC liaison",
-      "Performance monitoring & O&M",
-    ],
-    heroImg:
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80",
-    heroAlt: "Solar panel installation Kenya",
-    colA: "/muhammed.jpg",
-    colB: "/newpowa.jpg",
-    colAlt: ["Solar PV system installation Nairobi", "Off-grid solar Kenya"],
-    accent: "#c9a96e",
-    dark: false,
-  },
-  {
-    id: "cold-room",
-    anchor: "cold-room",
-    num: "04",
-    eyebrow: "Refrigeration",
-    seoTitle: "Cold Room Installation & Refrigeration Services in Kenya",
-    headline: "Cold Chain, Zero Compromise",
-    title: "Cold Room Installation",
-    description:
-      "Purpose-built cold rooms, walk-in freezers, and blast chillers for food processing, hospitality, pharmaceuticals, and floriculture across Nairobi, Mombasa, Eldoret, and Nakuru. We engineer tight temperature tolerances, redundant compressors, and IoT-based remote monitoring for Kenya's cold chain industry.",
-    features: [
-      "Walk-in cold rooms & blast freezers",
-      "Modular panel system design",
-      "Remote temperature monitoring",
-      "Compressor & refrigerant servicing",
-      "Food-safe hygienic finishes",
-    ],
-    heroImg: "/images/coldroom.webp",
-    heroAlt: "Cold room installation Kenya",
-    colA: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=700&q=80",
-    colB: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=700&q=80",
-    colAlt: [
-      "Cold room refrigeration facility Kenya",
-      "Walk-in freezer installation Nairobi",
-    ],
-    accent: "#8fa68e",
-    dark: true,
-  },
-  {
-    id: "elevator",
-    anchor: "elevator",
-    num: "05",
-    eyebrow: "Vertical Transport",
-    seoTitle:
-      "Elevator & Lift Installation in Kenya — Residential & Commercial",
-    headline: "Moving People with Elegance",
-    title: "Elevator Installation",
-    description:
-      "Passenger, service, and goods lifts for residential apartments, commercial towers, and hospitals across Nairobi and Kenya. From machine-room-less (MRL) traction lifts to hydraulic systems — fully compliant with KEBS standards and Kenya's building codes. We also provide 24/7 maintenance and entrapment response.",
-    features: [
-      "MRL traction & hydraulic lifts",
-      "Passenger, goods & hospital elevators",
-      "Cab design & interior fit-out",
-      "KEBS-compliant annual inspections",
-      "24/7 entrapment emergency service",
-    ],
-    heroImg:
-      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80",
-    heroAlt: "Elevator installation Nairobi Kenya",
-    colA: "/images/elevator.jpg",
-    colB: "/images/lift.jpg",
-    colAlt: [
-      "Elevator interior installation Kenya",
-      "Lift installation Nairobi",
-    ],
-    accent: "#8fa68e",
-    dark: false,
-  },
-  {
-    id: "electrical",
-    anchor: "electrical",
-    num: "06",
-    eyebrow: "Power Systems",
-    seoTitle: "Electrical Installation & Engineering Services in Kenya",
-    headline: "Power Engineered for Reliability",
-    title: "Electrical",
-    description:
-      "Low-voltage distribution, standby generators, earthing systems, and smart building automation across Nairobi, Mombasa, and Kenya. We design and install electrical infrastructure that meets EPRA standards, protecting critical loads for hospitals, office parks, industrial facilities, and residential developments.",
-    features: [
-      "LV panel boards & distribution",
-      "Standby generator & ATS systems",
-      "Earthing, bonding & lightning protection",
-      "Building automation & smart controls",
-      "Infrared thermographic surveys",
-    ],
-    heroImg:
-      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80",
-    heroAlt: "Electrical installation Kenya",
-    colA: "https://images.unsplash.com/photo-1516849677043-ef67c9557e16?w=700&q=80",
-    colB: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=700&q=80",
-    colAlt: [
-      "Electrical panel installation Kenya",
-      "Power distribution system Nairobi",
-    ],
-    accent: "#c9a96e",
-    dark: true,
-  },
-];
-
-// ─── Eyebrow component (server-safe) ─────────────────────────────────────────
-function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span
-        style={{
-          display: "inline-block",
-          width: 24,
-          height: 1,
-          background: light ? "rgba(255,255,255,0.35)" : C.ruleLight,
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.62rem",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase" as const,
-          color: light ? "rgba(255,255,255,0.45)" : C.sage,
-          fontWeight: 500,
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ServicesPage() {
@@ -258,7 +47,6 @@ export default function ServicesPage() {
       <Navbar />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing: border-box; }
         .svc-nav-inner {
           max-width: 1200px;
@@ -284,7 +72,7 @@ export default function ServicesPage() {
           white-space: nowrap;
           border-bottom: 2px solid transparent;
           transition: color 0.2s, border-color 0.2s;
-          color: #888580;
+          color: #6b6b68;
         }
         .svc-nav-link:hover { color: #1a1a18; }
         .services-hero-inner {
@@ -304,7 +92,7 @@ export default function ServicesPage() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 0;
-          margin-top: 48px;
+          margin-top: 20px;
         }
         @media (max-width: 900px) {
           .process-inner { padding: 0 32px; }
@@ -356,7 +144,7 @@ export default function ServicesPage() {
         >
           <div className="services-hero-inner">
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* Breadcrumb with schema */}
+              {/* Breadcrumb */}
               <nav aria-label="Breadcrumb">
                 <ol
                   style={{
@@ -423,7 +211,6 @@ export default function ServicesPage() {
 
               <Eyebrow text="What We Do" light />
 
-              {/* h1 — keyword rich */}
               <h1
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
@@ -445,7 +232,7 @@ export default function ServicesPage() {
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.88rem",
-                  color: "rgba(255,255,255,0.65)",
+                  color: "rgba(255,255,255,0.7)",
                   lineHeight: 1.75,
                   maxWidth: 480,
                   margin: 0,
@@ -458,7 +245,7 @@ export default function ServicesPage() {
                 Nakuru, and Nyeri.
               </p>
 
-              {/* Quick-jump anchor tags — static links, fully indexable */}
+              {/* Quick-jump pills — link to dedicated pages for SEO, anchor for UX */}
               <div
                 style={{
                   display: "flex",
@@ -470,7 +257,7 @@ export default function ServicesPage() {
                 {SERVICES.map((s) => (
                   <a
                     key={s.id}
-                    href={`#${s.anchor}`}
+                    href={`/services/${s.slug}`}
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: "0.68rem",
@@ -507,7 +294,7 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* ── Sticky nav + back-to-top (client component) ── */}
+      {/* ── Sticky nav + back-to-top ── */}
       <ServicesClient
         services={SERVICES.map((s) => ({
           id: s.id,
@@ -516,7 +303,7 @@ export default function ServicesPage() {
         }))}
       />
 
-      {/* ── Service sections (server rendered) ── */}
+      {/* ── Service sections ── */}
       {SERVICES.map((service, index) => (
         <ServiceSection key={service.id} service={service} index={index} />
       ))}
@@ -535,7 +322,7 @@ export default function ServicesPage() {
               maxWidth: 560,
             }}
           >
-            <Eyebrow text="How We Work" />
+            <Eyebrow text="Our Engineering Process" />
             <h2
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
@@ -547,7 +334,7 @@ export default function ServicesPage() {
                 margin: 0,
               }}
             >
-              Our Engineering Process in Kenya
+              Our Way is a Truly Kenyan Process
             </h2>
           </div>
 
@@ -611,7 +398,7 @@ export default function ServicesPage() {
                 <p
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.78rem",
+                    fontSize: "0.82rem",
                     color: C.body,
                     lineHeight: 1.75,
                     margin: 0,
@@ -661,8 +448,8 @@ export default function ServicesPage() {
           <p
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.82rem",
-              color: "rgba(255,255,255,0.45)",
+              fontSize: "0.84rem",
+              color: "rgba(255,255,255,0.5)",
               lineHeight: 1.7,
               maxWidth: 420,
               margin: 0,

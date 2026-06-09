@@ -1,5 +1,4 @@
 // app/shop/[_id]/page.tsx
-
 import { getProducts, getProductById } from "@/lib/db";
 import Footer from "@/components/Footer";
 import ShopClient from "@/components/shop-components/ShopClient";
@@ -7,6 +6,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface Props {
   params: Promise<{ _id: string }>;
@@ -32,8 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     product.description?.slice(0, 155) ||
     `Buy ${product.name} — ${product.category} equipment available in Kenya with professional installation.`;
-  const image = product.images?.[0] ?? "https://elanclimat.co.ke/og-shop.jpg";
-  const url = `https://elanclimat.co.ke/shop/${_id}`;
+  const url = `${BASE_URL}/shop/${_id}`;
+  const ogImageUrl = `${BASE_URL}/shop/${_id}/opengraph-image`;
 
   return {
     title,
@@ -43,14 +44,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url,
       siteName: "Élan Climat & Énergie",
-      images: [{ url: image, width: 800, height: 800 }],
       type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: product.fullName || product.name,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: url,
@@ -60,7 +68,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { _id } = await params;
-
   const [products, initialProduct] = await Promise.all([
     getProducts(),
     getProductById(_id),

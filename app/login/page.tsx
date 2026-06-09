@@ -6,20 +6,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff, ArrowLeft, ArrowUpRight, Loader2 } from "lucide-react";
+import { C } from "@/lib/constants";
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
-const C = {
-  charcoal: "#1a1a18",
-  warmWhite: "#f9f7f4",
-  offWhite: "#ede9e2",
-  sage: "#8fa68e",
-  accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e4dd",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
-};
+// ─── Login page ───────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

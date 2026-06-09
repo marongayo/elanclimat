@@ -1,0 +1,232 @@
+/* ── ServicesSection ── */
+.section {
+  background-color: #ffffff;
+  padding: 96px 0;
+  font-family: "DM Sans", sans-serif;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 64px;
+}
+
+@media (max-width: 1024px) {
+  .inner {
+    padding: 0 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding: 0 24px;
+  }
+}
+
+/* ── Section header ── */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrowLine {
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: #c8c8c4;
+}
+
+.eyebrowText {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8fa68e;
+  font-weight: 500;
+}
+
+.heading {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 400;
+  color: #1a1a18;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.headingThin {
+  font-weight: 300;
+}
+
+.subheading {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.86rem;
+  color: #6b6b68;
+  line-height: 1.75;
+  margin: 0;
+  font-weight: 300;
+  max-width: 480px;
+}
+
+.viewAllLink {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #1a1a18;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #1a1a18;
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.viewAllLink:hover {
+  color: #888580;
+  border-color: #888580;
+}
+
+/* ── Service grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #e8e8e4;
+  border: 1px solid #e8e8e4;
+  margin-top: 56px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Service card ── */
+.card {
+  background: #f9f7f4;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: background 0.25s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  background: #ffffff;
+}
+
+.card:hover .cardImage {
+  transform: scale(1.04);
+}
+
+/* ── Card image ── */
+.imageWrapper {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.cardImage {
+  transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.numBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.12em;
+  background: rgba(26, 26, 24, 0.45);
+  backdrop-filter: blur(6px);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* ── Card body ── */
+.cardBody {
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.cardEyebrow {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8fa68e;
+  font-weight: 500;
+}
+
+.cardTitle {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #1a1a18;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.cardDescription {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.78rem;
+  color: #6b6b68;
+  line-height: 1.75;
+  margin: 0;
+  font-weight: 300;
+  flex: 1;
+}
+
+.cardCta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cardCtaLabel {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #1a1a18;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

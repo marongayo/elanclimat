@@ -1,3 +1,4 @@
+// ─── Shared design tokens ─────────────────────────────────────────────────────
 export const C = {
   charcoal: "#1a1a18",
   warmWhite: "#f9f7f4",
@@ -5,11 +6,11 @@ export const C = {
   sage: "#8fa68e",
   sageDark: "#5a7a59",
   accent: "#c9a96e",
-  muted: "#888580",
-  body: "#6b6b68",
-  rule: "#e8e4dd",
-  ruleLight: "#c8c8c4",
-  dim: "#b0b0a8",
+  muted: "#6b6b68",
+  body: "#4a4a47",
+  rule: "#e8e8e4",
+  ruleLight: "#c8c4be",
+  dim: "#9a9a92",
 };
 
 export const IMG = {

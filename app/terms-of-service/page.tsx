@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { C } from "@/lib/constants";
+import Eyebrow from "@/components/Eyebrow";
 
 const META = [
   { label: "Entity", value: "Élan Climat & Énergie Ltd" },
@@ -15,34 +16,6 @@ const META = [
   { label: "Last Revised", value: "31 May 2025" },
   { label: "Sections", value: "10" },
 ];
-
-// ─── Shared eyebrow ───────────────────────────────────────────────────────────
-function Eyebrow({ text, light = false }: { text: string; light?: boolean }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span
-        style={{
-          display: "inline-block",
-          width: 24,
-          height: 1,
-          background: light ? "rgba(255,255,255,0.35)" : C.ruleLight,
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.62rem",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase" as const,
-          color: light ? "rgba(255,255,255,0.45)" : C.sage,
-          fontWeight: 500,
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
 
 // ─── Section data ─────────────────────────────────────────────────────────────
 interface Section {
