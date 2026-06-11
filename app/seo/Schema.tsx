@@ -1,9 +1,17 @@
-// app/seo/Schema.tsx
-// Rendered ONCE in the root layout only — do not duplicate in page components.
+// components/Schema.tsx
+import { getProducts } from "@/lib/db";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function Schema() {
+export default async function Schema() {
+  const products = await getProducts();
+
+  // Derive price range dynamically from actual product prices
+  const prices = products.map((p) => p.price).filter(Boolean);
+  const minPrice = prices.length > 0 ? Math.min(...prices).toLocaleString() : "0";
+  const maxPrice = prices.length > 0 ? Math.max(...prices).toLocaleString() : "0";
+  const priceRange = `KES ${minPrice} – KES ${maxPrice}`;
+
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -15,6 +23,7 @@ export default function Schema() {
         alternateName: ["Elan Climat Kenya", "Élan Climat Énergie"],
         url: BASE_URL,
         foundingDate: "2018",
+        priceRange,
 
         logo: {
           "@type": "ImageObject",
@@ -77,7 +86,6 @@ export default function Schema() {
           { "@type": "Country", name: "Rwanda" },
         ],
 
-        // Verified social profiles only — unverified pages omitted
         sameAs: [
           "https://www.facebook.com/profile.php?id=61590493237677",
           "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie",
