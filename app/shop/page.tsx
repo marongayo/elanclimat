@@ -7,7 +7,8 @@ import { Product } from "@/lib/types/product";
 
 export const revalidate = 3600;
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://elanclimat.co.ke";
+// Standardised to match global Schema component
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://elanclimat.co.ke";
 
 // Static keywords that apply regardless of what's in the DB
 const STATIC_KEYWORDS = [
@@ -81,7 +82,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// JSON-LD structured data — derives category list and price range from live products
+// JSON-LD for the shop page — links back to the global business entity
+// defined in the homepage Schema component rather than redefining it.
 function ShopJsonLd({
   productCount,
   categories,
@@ -108,53 +110,19 @@ function ShopJsonLd({
       {
         "@type": "Store",
         "@id": `${BASE_URL}/shop`,
+        // Links to the global business entity on the homepage —
+        // avoids duplicating address, phone, geo, sameAs etc.
+        parentOrganization: { "@id": `${BASE_URL}/#business` },
         name: "Élan Climat & Énergie — Equipment Shop",
         description: `Professional ${categoryString} equipment for homes and businesses in Nairobi and across East Africa.`,
         url: `${BASE_URL}/shop`,
         image: `${BASE_URL}/og-shop.jpg`,
-        telephone: "+254796952717",
         priceRange,
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Nairobi",
-          addressCountry: "KE",
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: -1.2921,
-          longitude: 36.8219,
-        },
-        openingHoursSpecification: [
-          {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-            ],
-            opens: "08:00",
-            closes: "17:00",
-          },
-        ],
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: `${categoryString} Equipment`,
           numberOfItems: productCount,
         },
-        areaServed: {
-          "@type": "GeoCircle",
-          geoMidpoint: {
-            "@type": "GeoCoordinates",
-            latitude: -1.2921,
-            longitude: 36.8219,
-          },
-          geoRadius: "500000",
-        },
-        sameAs: [
-          "https://www.linkedin.com/company/elan-climat-energie",
-        ],
       },
       {
         "@type": "BreadcrumbList",
