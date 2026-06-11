@@ -3,6 +3,7 @@ import { getProducts } from "@/lib/db";
 import Footer from "@/components/Footer";
 import ShopClient from "@/components/shop-components/ShopClient";
 import { Metadata } from "next";
+import { Product } from "@/lib/types/product";
 
 export const revalidate = 3600;
 
@@ -58,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `${BASE_URL}/og-shop.jpg`,
           width: 1200,
           height: 630,
-          alt: `${categoryString} equipment, Élan Climat & Énergie, Nairobi`,
+          alt: `${categoryString} equipment — Élan Climat & Énergie, Nairobi`,
         },
       ],
       type: "website",
@@ -80,18 +81,26 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// JSON-LD structured data — derives category list from live products
+// JSON-LD structured data — derives category list and price range from live products
 function ShopJsonLd({
   productCount,
   categories,
+  products,
 }: {
   productCount: number;
   categories: string[];
+  products: Product[];
 }) {
   const categoryString =
     categories.length > 1
       ? categories.slice(0, -1).join(", ") + " & " + categories[categories.length - 1]
       : categories[0] ?? "Engineering Equipment";
+
+  // Derive price range dynamically from actual product prices
+  const prices = products.map((p) => p.price).filter(Boolean);
+  const minPrice = prices.length > 0 ? Math.min(...prices).toLocaleString() : "0";
+  const maxPrice = prices.length > 0 ? Math.max(...prices).toLocaleString() : "0";
+  const priceRange = `KES ${minPrice} – KES ${maxPrice}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -103,7 +112,8 @@ function ShopJsonLd({
         description: `Professional ${categoryString} equipment for homes and businesses in Nairobi and across East Africa.`,
         url: `${BASE_URL}/shop`,
         image: `${BASE_URL}/og-shop.jpg`,
-        telephone: "+254796952717", // ← replace with real number
+        telephone: "+254796952717",
+        priceRange,
         address: {
           "@type": "PostalAddress",
           addressLocality: "Nairobi",
@@ -143,7 +153,7 @@ function ShopJsonLd({
           geoRadius: "500000",
         },
         sameAs: [
-          "https://www.linkedin.com/company/elan-climat-energie", // ← update if different
+          "https://www.linkedin.com/company/elan-climat-energie",
         ],
       },
       {
@@ -180,7 +190,11 @@ export default async function ShopPage() {
 
   return (
     <>
-      <ShopJsonLd productCount={products.length} categories={categories} />
+      <ShopJsonLd
+        productCount={products.length}
+        categories={categories}
+        products={products}
+      />
       <ShopClient products={products} initialProduct={null} />
       <Footer />
     </>
