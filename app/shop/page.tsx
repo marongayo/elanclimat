@@ -2,42 +2,185 @@
 import { getProducts } from "@/lib/db";
 import Footer from "@/components/Footer";
 import ShopClient from "@/components/shop-components/ShopClient";
+import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://elanclimat.co.ke";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://elanclimat.co.ke";
 
-export const metadata = {
-  title: "Shop | Élan Climat & Énergie",
-  description:
-    "Browse our range of solar systems, HVAC units, batteries, and energy solutions for homes and businesses in Kenya.",
-  openGraph: {
-    title: "Shop | Élan Climat & Énergie",
-    description:
-      "Solar, HVAC, and energy solutions — shop professional-grade equipment with installation support.",
-    url: `${BASE_URL}/shop`,
-    siteName: "Élan Climat & Énergie",
-    images: [{ url: `${BASE_URL}/og-shop.jpg`, width: 1200, height: 630 }],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Shop | Élan Climat & Énergie",
-    description: "Solar, HVAC, and energy solutions available online.",
-    images: [`${BASE_URL}/og-shop.jpg`],
-  },
-  alternates: {
-    canonical: `${BASE_URL}/shop`,
-    languages: {
-      "en-US": `${BASE_URL}/shop`,
+// Static keywords that apply regardless of what's in the DB
+const STATIC_KEYWORDS = [
+  "engineering equipment Nairobi",
+  "building services equipment Kenya",
+  "professional installation Kenya",
+  "energy solutions East Africa",
+  "Élan Climat Énergie",
+  "buy equipment Nairobi",
+  "engineering supplies Kenya",
+];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const products = await getProducts();
+  const categories = [...new Set(products.map((p) => p.category))];
+
+  // Build dynamic keywords from whatever categories exist in the DB
+  const dynamicKeywords = categories.flatMap((c) => [
+    c,
+    `${c} Nairobi`,
+    `${c} Kenya`,
+    `buy ${c} Kenya`,
+    `${c} equipment Nairobi`,
+    `${c} installation Kenya`,
+  ]);
+
+  const allKeywords = [...dynamicKeywords, ...STATIC_KEYWORDS];
+
+  // Build a readable category string e.g. "HVAC, Solar, Batteries & Cold Rooms"
+  const categoryString =
+    categories.length > 1
+      ? categories.slice(0, -1).join(", ") + " & " + categories[categories.length - 1]
+      : categories[0] ?? "energy and engineering equipment";
+
+  const title = `${categoryString} Equipment in Nairobi, Kenya | Élan Climat & Énergie`;
+  const description = `Shop professional ${categoryString} equipment in Nairobi, Kenya. Premium engineering solutions with expert installation across East Africa — available at Élan Climat & Énergie.`;
+
+  return {
+    title,
+    description,
+    keywords: allKeywords,
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/shop`,
+      siteName: "Élan Climat & Énergie",
+      images: [
+        {
+          url: `${BASE_URL}/og-shop.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${categoryString} equipment, Élan Climat & Énergie, Nairobi`,
+        },
+      ],
+      type: "website",
+      locale: "en_KE",
     },
-  },
-};
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${BASE_URL}/og-shop.jpg`],
+    },
+    alternates: {
+      canonical: `${BASE_URL}/shop`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
+
+// JSON-LD structured data — derives category list from live products
+function ShopJsonLd({
+  productCount,
+  categories,
+}: {
+  productCount: number;
+  categories: string[];
+}) {
+  const categoryString =
+    categories.length > 1
+      ? categories.slice(0, -1).join(", ") + " & " + categories[categories.length - 1]
+      : categories[0] ?? "Engineering Equipment";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Store",
+        "@id": `${BASE_URL}/shop`,
+        name: "Élan Climat & Énergie — Equipment Shop",
+        description: `Professional ${categoryString} equipment for homes and businesses in Nairobi and across East Africa.`,
+        url: `${BASE_URL}/shop`,
+        image: `${BASE_URL}/og-shop.jpg`,
+        telephone: "+254796952717", // ← replace with real number
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Nairobi",
+          addressCountry: "KE",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: -1.2921,
+          longitude: 36.8219,
+        },
+        openingHoursSpecification: [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+            ],
+            opens: "08:00",
+            closes: "17:00",
+          },
+        ],
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: `${categoryString} Equipment`,
+          numberOfItems: productCount,
+        },
+        areaServed: {
+          "@type": "GeoCircle",
+          geoMidpoint: {
+            "@type": "GeoCoordinates",
+            latitude: -1.2921,
+            longitude: 36.8219,
+          },
+          geoRadius: "500000",
+        },
+        sameAs: [
+          "https://www.linkedin.com/company/elan-climat-energie", // ← update if different
+        ],
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: BASE_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Shop",
+            item: `${BASE_URL}/shop`,
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
 
 export default async function ShopPage() {
   const products = await getProducts();
+  const categories = [...new Set(products.map((p) => p.category))];
+
   return (
     <>
+      <ShopJsonLd productCount={products.length} categories={categories} />
       <ShopClient products={products} initialProduct={null} />
       <Footer />
     </>
