@@ -17,10 +17,58 @@ export default async function Schema() {
     "@graph": [
       // ─── Primary business entity ───────────────────────────────────────────
       {
-        "@type": ["HVACBusiness", "LocalBusiness", "ProfessionalService"],
+        // @type lists the closest Schema.org business classifications.
+        // HVACBusiness, ElectricalContractor, and Plumber are specific types.
+        // GeneralContractor covers cold rooms, elevators, and generators.
+        // LocalBusiness and ProfessionalService are broad fallbacks that
+        // ensure Google classifies Élan correctly for all engineering services.
+        "@type": [
+          "HVACBusiness",
+          "ElectricalContractor",
+          "Plumber",
+          "GeneralContractor",
+          "LocalBusiness",
+          "ProfessionalService",
+        ],
+
+        // /@id is NOT a real URL — it is a JSON-LD identifier used internally
+        // by Google to link related schema blocks across pages together.
+        // Other schemas (e.g. shop/page.tsx) reference this same @id to tell
+        // Google they belong to the same business entity. It never needs to
+        // exist as an actual page on the website.
         "@id": `${BASE_URL}/#business`,
+
         name: "Élan Climat & Énergie",
-        alternateName: ["Elan Climat Kenya", "Élan Climat Énergie"],
+
+        // All known name variants — French, English, shorthand, and common
+        // misspellings. Helps Google's Knowledge Graph resolve searches
+        // regardless of how users spell or translate the company name.
+        alternateName: [
+          // French variants (official name)
+          "Élan Climat Énergie",
+          "Elan Climat Energie",
+          "Élan Climat & Énergie",
+          "Elan Climat & Energie",
+
+          // English translations
+          "Elan Climate and Energy",
+          "Elan Climate & Energy",
+          "Élan Climate and Energy",
+          "Élan Climate & Energy",
+          "Elan Climate Energy",
+
+          // Kenyan market shorthand
+          "Elan Climat Kenya",
+          "Elan Climate Kenya",
+          "Élan Kenya",
+          "Elan Kenya",
+
+          // Common misspellings / no-accent variants
+          "Elan Climat",
+          "Elan Energie",
+          "Elan Energy Kenya",
+        ],
+
         url: BASE_URL,
         foundingDate: "2018",
         priceRange,
@@ -72,7 +120,6 @@ export default async function Schema() {
           longitude: 36.817223,
         },
 
-        // Typed City/Country nodes — links to Google's Knowledge Graph
         areaServed: [
           { "@type": "City", name: "Nairobi" },
           { "@type": "City", name: "Mombasa" },
@@ -93,10 +140,14 @@ export default async function Schema() {
           "https://www.x.com/elanclimat",
         ],
 
+        // hasOfferCatalog lists all 8 services in detail.
+        // This is where Google reads the full scope of what Élan does —
+        // the @type array above only covers broad business classifications.
         hasOfferCatalog: {
           "@type": "OfferCatalog",
-          name: "HVAC & Energy Engineering Services — Kenya & East Africa",
+          name: "Engineering Services — Kenya & East Africa",
           itemListElement: [
+            // 1. HVAC
             {
               "@type": "Offer",
               itemOffered: {
@@ -110,6 +161,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 2. Solar
             {
               "@type": "Offer",
               itemOffered: {
@@ -123,6 +175,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 3. Plumbing
             {
               "@type": "Offer",
               itemOffered: {
@@ -136,6 +189,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 4. Cold Room & Refrigeration
             {
               "@type": "Offer",
               itemOffered: {
@@ -149,6 +203,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 5. Elevator & Lift
             {
               "@type": "Offer",
               itemOffered: {
@@ -162,6 +217,7 @@ export default async function Schema() {
                 areaServed: { "@type": "City", name: "Nairobi" },
               },
             },
+            // 6. Electrical
             {
               "@type": "Offer",
               itemOffered: {
@@ -175,6 +231,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 7. Lithium Battery Storage
             {
               "@type": "Offer",
               itemOffered: {
@@ -188,6 +245,7 @@ export default async function Schema() {
                 areaServed: { "@type": "Country", name: "Kenya" },
               },
             },
+            // 8. Generators
             {
               "@type": "Offer",
               itemOffered: {
@@ -212,7 +270,7 @@ export default async function Schema() {
         url: BASE_URL,
         name: "Élan Climat & Énergie",
         description:
-          "Certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Kenya and East Africa.",
+          "Certified HVAC, solar, plumbing, cold room, elevator, electrical, battery storage, and generator engineering services across Kenya and East Africa.",
         publisher: { "@id": `${BASE_URL}/#business` },
         inLanguage: "en-KE",
       },
