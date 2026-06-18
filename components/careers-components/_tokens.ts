@@ -13,5 +13,5 @@ export const VALUES = [
 export const STATS = [
   { num: "12+", label: "Years Operating" },
   { num: "400+", label: "Projects Delivered" },
-  { num: "5", label: "Open Roles" },
+  { num: "6" , label: "progressive Departments" },
 ];
