@@ -9,17 +9,18 @@ import ElanLogo from "./ElanLogo";
 // JSON-LD — LocalBusiness + Organisation schema
 // Googlebot reads this on every page that renders the footer.
 // ---------------------------------------------------------------------------
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const SCHEMA = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": ["LocalBusiness", "ProfessionalService"],
-      "@id": "https://www.elanclimat.co.ke/#business",
+      "@id": `${BASE_URL}/#business`,
       name: "Élan Climat & Énergie",
       alternateName: "Elan Climat Kenya",
-      url: "https://www.elanclimat.co.ke",
-      logo: "https://www.elanclimat.co.ke/images/logo.png",
-      image: "https://www.elanclimat.co.ke/images/og-image.jpg",
+      url: BASE_URL,
+      logo: `${BASE_URL}/images/logo.png`,
+      image: `${BASE_URL}/images/og-image.jpg`,
       description:
         "Kenya's trusted HVAC, solar, refrigeration, electrical, and elevator engineering company. Serving Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, Nyeri, and across East Africa since 2018.",
       foundingDate: "2018",
@@ -38,7 +39,8 @@ const SCHEMA = {
         longitude: 36.817223,
       },
       areaServed: [
-        { "@type": "City", name: "Nairobi" },
+        //
+        { "@type": "City", name: "Nairobi" }, //
         { "@type": "City", name: "Mombasa" },
         { "@type": "City", name: "Kisumu" },
         { "@type": "City", name: "Eldoret" },
@@ -188,7 +190,7 @@ const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
   { label: "Blog", href: "/blog" },
-  { label: "Careers in Kenya", href: "/careers" },
+  { label: "Careers", href: "/careers" },
   { label: "Contact Us", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
@@ -553,7 +555,10 @@ export default function Footer() {
                 <Mail size={13} aria-hidden="true" />
                 hello@elanclimat.co.ke
               </a>
-              <a href="https://www.elanclimat.co.ke" className="f-contact-item">
+              <a
+                href={process.env.NEXT_PUBLIC_BASE_URL}
+                className="f-contact-item"
+              >
                 <Globe size={13} aria-hidden="true" />
                 www.elanclimat.co.ke
               </a>

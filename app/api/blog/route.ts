@@ -9,13 +9,18 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const post = {
-    ...body,
-    date: body.date || new Date().toISOString().split("T")[0],
-  };
-  await saveBlogPost(post);
-  return NextResponse.json(post, { status: 201 });
+  try {
+    const body = await req.json();
+    const post = {
+      ...body,
+      date: body.date || new Date().toISOString().split("T")[0],
+    };
+    await saveBlogPost(post);
+    return NextResponse.json(post, { status: 201 });
+  } catch (err: any) {
+    console.error("POST /api/blog error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest) {

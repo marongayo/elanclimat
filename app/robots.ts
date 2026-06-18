@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           "/admin",
           "/api",
-"/login",
+          "/login",
           "/careers/withdraw",
           "/_next/static/",
           "/favicon.ico",

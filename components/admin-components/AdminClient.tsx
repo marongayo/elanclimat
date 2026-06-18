@@ -7,7 +7,13 @@ import Image from "next/image";
 
 import type { BlogPost, BlogForm } from "@/lib/types/blog";
 import type { Product, ProductForm, ProductErrors } from "@/lib/types/product";
-import type { User, Tab, Role, AdminForm, AdminFormErrors } from "@/lib/types/admin";
+import type {
+  User,
+  Tab,
+  Role,
+  AdminForm,
+  AdminFormErrors,
+} from "@/lib/types/admin";
 import type { Message } from "@/lib/types/message";
 import type { Job, JobForm } from "@/lib/types/jobs";
 
@@ -193,13 +199,23 @@ export default function AdminClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [admins]);
 
-  useEffect(() => { loadJobs(); }, []);
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
   // ── Early returns ─────────────────────────────────────────────────────────
 
   if (status === "loading") {
     return (
-      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", fontFamily: "DM Sans", background: "var(--warm-white)" }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          fontFamily: "DM Sans",
+          background: "var(--warm-white)",
+        }}
+      >
         <Image src="/Elanlogo.svg" alt="Logo" width={300} height={300} />
         Loading admin dashboard...
       </div>
@@ -217,7 +233,8 @@ export default function AdminClient({
     ((session.user?.name ?? "").trim().toLowerCase() === "super admin" ||
       (dbRecord?.name ?? "").trim().toLowerCase() === "super admin") &&
     (currentUserEmail.trim().toLowerCase() === "superadmin@elanclinat.co.ke" ||
-      (dbRecord?.email ?? "").trim().toLowerCase() === "superadmin@elanclinat.co.ke");
+      (dbRecord?.email ?? "").trim().toLowerCase() ===
+        "superadmin@elanclinat.co.ke");
 
   // ── Toast ─────────────────────────────────────────────────────────────────
 
@@ -235,21 +252,43 @@ export default function AdminClient({
   const saveBlog = async () => {
     if (!blogForm) return;
     setSaving(true);
-    const post = {
-      ...blogForm,
-      slug: blogForm.slug || blogForm.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
-    };
-    await fetch("/api/blog", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(post) });
-    const updated = await fetch("/api/blog").then((r) => r.json());
-    setPosts(Array.isArray(updated) ? updated : []);
-    setBlogForm(null);
-    setSaving(false);
-    toast("Blog post saved successfully!");
+    try {
+      const post = {
+        ...blogForm,
+        slug:
+          blogForm.slug ||
+          blogForm.title
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, ""),
+      };
+      const res = await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(post),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || `Server error ${res.status}`);
+      }
+      const updated = await fetch("/api/blog").then((r) => r.json());
+      setPosts(Array.isArray(updated) ? updated : []);
+      setBlogForm(null);
+      toast("Blog post saved successfully!");
+    } catch (err: any) {
+      console.error("saveBlog error:", err);
+      toast(`Failed to save: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
   };
-
   const deleteBlog = async (id: string) => {
     if (!confirm("Delete this blog post?")) return;
-    await fetch("/api/blog", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/blog", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     setPosts((p) => p.filter((x) => x._id !== id));
     toast("Post deleted.");
   };
@@ -257,7 +296,13 @@ export default function AdminClient({
   const saveJob = async () => {
     if (!jobForm) return;
     setSaving(true);
-    await fetch("/api/jobs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(editJobId ? { ...jobForm, _id: editJobId } : jobForm) });
+    await fetch("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        editJobId ? { ...jobForm, _id: editJobId } : jobForm,
+      ),
+    });
     await loadJobs();
     setJobForm(null);
     setEditJobId(null);
@@ -267,7 +312,11 @@ export default function AdminClient({
 
   const deleteJob = async (id: string) => {
     if (!confirm("Delete this vacancy?")) return;
-    await fetch("/api/jobs", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/jobs", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     setJobs((p) => p.filter((j) => j._id !== id));
     toast("Vacancy deleted.");
   };
@@ -277,13 +326,26 @@ export default function AdminClient({
     const errs = validateProduct(productForm);
     if (Object.keys(errs).length > 0) {
       setProductErrors(errs);
-      setTimeout(() => document.querySelector("[data-product-error]")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+      setTimeout(
+        () =>
+          document
+            .querySelector("[data-product-error]")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+        50,
+      );
       return;
     }
     setProductErrors({});
     setSaving(true);
-    const product = { ...productForm, price: parseFloat(productForm.price) || 0 };
-    await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(product) });
+    const product = {
+      ...productForm,
+      price: parseFloat(productForm.price) || 0,
+    };
+    await fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(product),
+    });
     const updated = await fetch("/api/products").then((r) => r.json());
     setProducts(Array.isArray(updated) ? updated : []);
     setProductForm(null);
@@ -294,32 +356,59 @@ export default function AdminClient({
 
   const deleteProduct = async (id: string) => {
     if (!confirm("Delete this product?")) return;
-    await fetch("/api/products", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/products", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     setProducts((p) => p.filter((x) => x._id !== id));
     toast("Product deleted.");
   };
 
   const clearError = (field: keyof ProductErrors) => {
-    if (productErrors[field]) setProductErrors((e) => ({ ...e, [field]: undefined }));
+    if (productErrors[field])
+      setProductErrors((e) => ({ ...e, [field]: undefined }));
   };
 
   const saveAdmin = async () => {
     if (!adminForm) return;
     const isEdit = !!editAdminId;
     const errs = validateAdmin(adminForm, isEdit);
-    if (Object.keys(errs).length > 0) { setAdminErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setAdminErrors(errs);
+      return;
+    }
     setAdminErrors({});
     setSavingAdmin(true);
     try {
       if (isEdit) {
-        const patch: Record<string, string> = { id: editAdminId, name: adminForm.name, email: adminForm.email, role: adminForm.role };
+        const patch: Record<string, string> = {
+          id: editAdminId,
+          name: adminForm.name,
+          email: adminForm.email,
+          role: adminForm.role,
+        };
         if (adminForm.password) patch.password = adminForm.password;
-        const res = await fetch("/api/user", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
-        if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to update admin"); }
+        const res = await fetch("/api/user", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          throw new Error(d.error || "Failed to update admin");
+        }
         toast(`${adminForm.name}'s details have been updated.`);
       } else {
-        const res = await fetch("/api/user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(adminForm) });
-        if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to create admin"); }
+        const res = await fetch("/api/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(adminForm),
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          throw new Error(d.error || "Failed to create admin");
+        }
         toast(`${adminForm.name}'s admin account has been created!`);
       }
       setAdminForm(null);
@@ -333,10 +422,17 @@ export default function AdminClient({
   };
 
   const deleteAdmin = async (id: string) => {
-    if (!isTrueSuperadmin) { toast("Only the designated Super Admin can delete admin accounts."); return; }
+    if (!isTrueSuperadmin) {
+      toast("Only the designated Super Admin can delete admin accounts.");
+      return;
+    }
     if (!confirm("Delete this admin account? This cannot be undone.")) return;
     try {
-      const res = await fetch("/api/user", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+      const res = await fetch("/api/user", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
       if (!res.ok) throw new Error("Failed to delete admin");
       setAdmins((prev) => prev.filter((a) => a._id !== id));
       toast("Admin account deleted.");
@@ -347,32 +443,62 @@ export default function AdminClient({
   };
 
   const changeAdminPassword = async (id: string, newPassword: string) => {
-    const res = await fetch("/api/user", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, password: newPassword }) });
-    if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to update password"); }
+    const res = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, password: newPassword }),
+    });
+    if (!res.ok) {
+      const d = await res.json();
+      throw new Error(d.error || "Failed to update password");
+    }
   };
 
   const changeAdminUsername = async (id: string, newName: string) => {
-    const res = await fetch("/api/user", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, name: newName }) });
-    if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed to update name"); }
-    setAdmins((prev) => prev.map((a) => (a._id === id ? { ...a, name: newName } : a)));
+    const res = await fetch("/api/user", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, name: newName }),
+    });
+    if (!res.ok) {
+      const d = await res.json();
+      throw new Error(d.error || "Failed to update name");
+    }
+    setAdmins((prev) =>
+      prev.map((a) => (a._id === id ? { ...a, name: newName } : a)),
+    );
     if (id === currentUserId) {
       setDisplayName(newName);
-      try { await updateSession({ name: newName }); } catch { /* non-fatal */ }
+      try {
+        await updateSession({ name: newName });
+      } catch {
+        /* non-fatal */
+      }
     }
   };
 
   const markRead = async (id: string) => {
     const m = messages.find((m) => m._id === id);
     if (!m) return;
-    await fetch("/api/messages", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...m, read: true }) });
-    setMessages((prev) => prev.map((m) => (m._id === id ? { ...m, read: true } : m)));
+    await fetch("/api/messages", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...m, read: true }),
+    });
+    setMessages((prev) =>
+      prev.map((m) => (m._id === id ? { ...m, read: true } : m)),
+    );
     setUnread((n) => Math.max(0, n - 1));
   };
 
   const deleteMessage = async (id: string, fromArchive = false) => {
     if (!confirm("Delete this message?")) return;
     const wasUnread = messages.find((m) => m._id === id)?.read === false;
-    await fetch("/api/messages", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    await fetch("/api/messages", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
     if (fromArchive) {
       setArchivedMessages((prev) => prev.filter((m) => m._id !== id));
     } else {
@@ -383,7 +509,10 @@ export default function AdminClient({
   };
 
   const toggleArchive = async () => {
-    if (showingArchive) { setShowingArchive(false); return; }
+    if (showingArchive) {
+      setShowingArchive(false);
+      return;
+    }
     setShowingArchive(true);
     if (!archiveLoaded) {
       setLoadingArchive(true);
@@ -404,7 +533,13 @@ export default function AdminClient({
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "var(--warm-white)" }}>
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        background: "var(--warm-white)",
+      }}
+    >
       <style>{`
         @media (min-width: 768px) {
           .admin-sidebar-desktop { display: flex !important; }
@@ -433,8 +568,15 @@ export default function AdminClient({
       <AdminSidebar
         tab={tab}
         unread={unread}
-        navTo={(t) => { setTab(t); setSidebarOpen(false); }}
-        onBell={() => { setMsgPanelOpen(true); setEllipsisOpen(false); loadMessages(); }}
+        navTo={(t) => {
+          setTab(t);
+          setSidebarOpen(false);
+        }}
+        onBell={() => {
+          setMsgPanelOpen(true);
+          setEllipsisOpen(false);
+          loadMessages();
+        }}
         role={role}
         onLogout={() => setShowLogoutModal(true)}
         sidebarOpen={sidebarOpen}
@@ -495,7 +637,12 @@ export default function AdminClient({
         toast={toast}
         onOpenCreateAdmin={(admin) => {
           if (admin) {
-            setAdminForm({ name: admin.name, email: admin.email, password: "", role: admin.role as Role });
+            setAdminForm({
+              name: admin.name,
+              email: admin.email,
+              password: "",
+              role: admin.role as Role,
+            });
             setEditAdminId(admin._id);
           } else {
             setAdminForm(emptyAdmin());
@@ -510,27 +657,48 @@ export default function AdminClient({
         adminErrors={adminErrors}
         editAdminId={editAdminId}
         savingAdmin={savingAdmin}
-        onClose={() => { setAdminForm(null); setEditAdminId(null); setAdminErrors({}); }}
+        onClose={() => {
+          setAdminForm(null);
+          setEditAdminId(null);
+          setAdminErrors({});
+        }}
         onSave={saveAdmin}
         onChange={setAdminForm}
-        onErrorClear={(field) => setAdminErrors((e) => ({ ...e, [field]: undefined }))}
+        onErrorClear={(field) =>
+          setAdminErrors((e) => ({ ...e, [field]: undefined }))
+        }
       />
 
       <AdminLogoutModal
         open={showLogoutModal}
         displayName={displayName || session.user?.name || ""}
         onClose={() => setShowLogoutModal(false)}
-        onConfirm={() => signOut({ callbackUrl: `${window.location.origin}/login` })}
+        onConfirm={() =>
+          signOut({ callbackUrl: `${window.location.origin}/login` })
+        }
       />
 
       <AdminFab
         toastVisible={toastVisible}
         toastMsg={toastMsg}
         role={role}
-        onNewBlog={() => { setTab("blog"); setBlogForm(emptyBlog()); }}
-        onNewProduct={() => { setTab("products"); setProductForm(emptyProduct()); }}
-        onNewVacancy={() => { setJobForm(emptyJob()); setTab("jobs"); }}
-        onNewAdmin={() => { setAdminForm(emptyAdmin()); setEditAdminId(null); setAdminErrors({}); }}
+        onNewBlog={() => {
+          setTab("blog");
+          setBlogForm(emptyBlog());
+        }}
+        onNewProduct={() => {
+          setTab("products");
+          setProductForm(emptyProduct());
+        }}
+        onNewVacancy={() => {
+          setJobForm(emptyJob());
+          setTab("jobs");
+        }}
+        onNewAdmin={() => {
+          setAdminForm(emptyAdmin());
+          setEditAdminId(null);
+          setAdminErrors({});
+        }}
       />
     </div>
   );
