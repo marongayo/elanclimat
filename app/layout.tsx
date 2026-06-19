@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     locale: "en_KE",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Élan Climat & Énergie — Engineering Services Kenya",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
       "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
     description:
       "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators across Kenya and East Africa.",
-    images: ["/images/og-image.jpg"],
+    images: ["/images/og-image.png"],
   },
 
   robots: {
