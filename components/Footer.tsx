@@ -39,8 +39,7 @@ const SCHEMA = {
         longitude: 36.817223,
       },
       areaServed: [
-        //
-        { "@type": "City", name: "Nairobi" }, //
+        { "@type": "City", name: "Nairobi" },
         { "@type": "City", name: "Mombasa" },
         { "@type": "City", name: "Kisumu" },
         { "@type": "City", name: "Eldoret" },
@@ -130,8 +129,8 @@ const SOCIALS = [
     href: "https://www.instagram.com/elanclimat",
     icon: (
       <svg
-        width="14"
-        height="14"
+        width="13"
+        height="13"
         fill="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -145,8 +144,8 @@ const SOCIALS = [
     href: "https://www.linkedin.com/company/%C3%A9lan-climat-%C3%A9nergie/?viewAsMember=true",
     icon: (
       <svg
-        width="14"
-        height="14"
+        width="13"
+        height="13"
         fill="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -160,8 +159,8 @@ const SOCIALS = [
     href: "https://www.facebook.com/profile.php?id=61590493237677",
     icon: (
       <svg
-        width="14"
-        height="14"
+        width="13"
+        height="13"
         fill="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -172,7 +171,6 @@ const SOCIALS = [
   },
 ];
 
-// Services with keyword-rich labels AND descriptive hrefs
 const SERVICES = [
   { label: "HVAC Installation Kenya", href: "/services#hvac-systems" },
   { label: "Solar Panel Installation", href: "/services#solar-installation" },
@@ -186,6 +184,7 @@ const SERVICES = [
   { label: "Plumbing Services", href: "/services#plumbing" },
   { label: "HVAC Maintenance & Repair", href: "/services#maintenance-repair" },
 ];
+
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
@@ -194,6 +193,7 @@ const QUICK_LINKS = [
   { label: "Contact Us", href: "/contact" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
+  { label: "Admin", href: "/admin" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -201,13 +201,10 @@ const QUICK_LINKS = [
 // ---------------------------------------------------------------------------
 export default function Footer() {
   const year = new Date().getFullYear();
+  const yearText = `${year} `;
 
   return (
     <>
-      {/*
-       * JSON-LD injected globally — parsed by Googlebot on every page.
-       * Covers LocalBusiness NAP, areaServed, and service catalogue.
-       */}
       <Script
         id="footer-local-business-schema"
         type="application/ld+json"
@@ -220,31 +217,97 @@ export default function Footer() {
         style={{
           backgroundColor: "#1a1a18",
           fontFamily: "'DM Sans', sans-serif",
-          paddingTop: "40px",
-          marginTop: "60px",
         }}
       >
         <style>{`
-          /* ── Typography ── */
-          .f-label {
+          * { box-sizing: border-box; }
+
+          .f-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 64px;
+          }
+
+          /* ── CTA band (in-flow, no overlap, no shadow) ── */
+          .f-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            padding: 64px 0;
+            border-bottom: 1px solid rgba(249,247,244,0.08);
+          }
+          .f-cta-eyebrow {
             font-family: 'DM Sans', sans-serif;
-            font-size: 0.62rem;
-            font-weight: 700;
+            font-size: 0.6rem;
+            font-weight: 500;
             letter-spacing: 0.18em;
             text-transform: uppercase;
             color: #8fa68e;
             display: block;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
+          }
+          .f-cta-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+            font-weight: 400;
+            color: #f9f7f4;
+            margin: 0;
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            max-width: 560px;
+          }
+          .f-cta-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #1a1a18;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 4px 4px 22px;
+            border-radius: 9999px;
+            background: #f9f7f4;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            height: 48px;
+          }
+          .f-cta-btn:hover { background: #8fa68e; }
+          .f-cta-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #1a1a18;
+            color: #f9f7f4;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+          }
+          .f-cta-btn:hover .f-cta-icon { transform: rotate(45deg); }
+
+          /* ── Typography ── */
+          .f-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #8fa68e;
+            display: block;
+            margin-bottom: 22px;
           }
           .f-link {
             font-family: 'DM Sans', sans-serif;
             font-size: 0.8rem;
-            font-weight: 400;
+            font-weight: 300;
             line-height: 1;
-            color: rgba(249,247,244,0.42);
+            color: rgba(249,247,244,0.45);
             text-decoration: none;
             display: block;
-            margin-bottom: 13px;
+            margin-bottom: 14px;
             transition: color 0.2s ease;
           }
           .f-link:last-child { margin-bottom: 0; }
@@ -252,11 +315,12 @@ export default function Footer() {
 
           .f-blurb {
             font-family: 'DM Sans', sans-serif;
-            font-size: 0.8rem;
-            color: rgba(249,247,244,0.36);
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: rgba(249,247,244,0.4);
             line-height: 1.85;
             margin: 0;
-            max-width: 260px;
+            max-width: 280px;
           }
 
           /* ── Social buttons ── */
@@ -264,8 +328,8 @@ export default function Footer() {
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            border: 1px solid rgba(249,247,244,0.1);
-            color: rgba(249,247,244,0.32);
+            border: 1px solid rgba(249,247,244,0.12);
+            color: rgba(249,247,244,0.45);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -279,120 +343,56 @@ export default function Footer() {
             background: rgba(143,166,142,0.08);
           }
 
-          /* ── CTA card ── */
-          .f-cta-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 32px;
-            padding: 52px 64px 48px;
-            background: #ffffff;
-            border-radius: 24px;
-            border: 1px solid rgba(0,0,0,0.06);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
-            margin: 0 32px;
-            margin-top: -120px;
-            position: relative;
-            z-index: 10;
-          }
-          .f-cta-eyebrow {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.6rem;
-            font-weight: 500;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: rgba(26,26,24,0.4);
-            display: block;
-            margin-bottom: 12px;
-          }
-          /*
-           * SEO: h2 now names the service + geography so it carries
-           * keyword weight rather than generic "Let's design your solution".
-           */
-          .f-cta-heading {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-            font-weight: 400;
-            color: #1a1a18;
-            margin: 0;
-            line-height: 1.15;
-            letter-spacing: -0.015em;
-          }
-          .f-cta-btn {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #1a1a18;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 9px 9px 20px;
-            border-radius: 9999px;
-            border: 1px solid rgba(26,26,24,0.15);
-            background: white;
-            text-decoration: none;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-          }
-          .f-cta-btn:hover { background: rgba(143,166,142,0.08); border-color: #8fa68e; }
-          .f-cta-icon {
-            width: 28px; height: 28px;
-            border-radius: 50%;
-            background: #8fa68e;
-            color: #1a1a18;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.25s ease;
-          }
-          .f-cta-btn:hover .f-cta-icon { transform: rotate(45deg); }
-
           /* ── Main grid ── */
           .f-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 48px 40px;
-            padding: 52px 64px;
-          }
-
-          /* ── Divider ── */
-          .f-hr {
-            border: none;
-            border-top: 1px solid rgba(249,247,244,0.07);
-            margin: 0;
+            grid-template-columns: 1.4fr 1fr 1.2fr 1fr;
+            gap: 0 40px;
+            padding: 64px 0;
+            border-bottom: 1px solid rgba(249,247,244,0.08);
           }
 
           /* ── Contact address block ── */
           .f-contact-item {
             display: flex;
             align-items: center;
-            gap: 9px;
+            gap: 10px;
             font-family: 'DM Sans', sans-serif;
             font-size: 0.8rem;
-            color: rgba(249,247,244,0.42);
+            font-weight: 300;
+            color: rgba(249,247,244,0.45);
             text-decoration: none;
-            margin-bottom: 13px;
+            margin-bottom: 14px;
             transition: color 0.2s;
             word-break: break-word;
           }
           .f-contact-item:last-child { margin-bottom: 0; }
           .f-contact-item:hover { color: #f9f7f4; }
+          .f-contact-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid rgba(249,247,244,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8fa68e;
+            flex-shrink: 0;
+          }
 
           /* ── Location chip ── */
           .f-location-chip {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
             font-family: 'DM Sans', sans-serif;
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             font-weight: 500;
-            letter-spacing: 0.04em;
-            color: rgba(249,247,244,0.3);
-            border: 1px solid rgba(249,247,244,0.08);
+            letter-spacing: 0.05em;
+            color: rgba(249,247,244,0.4);
+            border: 1px solid rgba(249,247,244,0.1);
             border-radius: 9999px;
-            padding: 4px 10px;
-            margin-top: 4px;
+            padding: 6px 14px;
           }
 
           /* ── Bottom bar ── */
@@ -401,191 +401,179 @@ export default function Footer() {
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            padding: 20px 64px;
+            padding: 28px 0;
             align-items: center;
           }
           .f-bottom-text {
             font-family: 'DM Sans', sans-serif;
             font-size: 0.7rem;
-            color: rgba(249,247,244,0.25);
+            font-weight: 300;
+            color: rgba(249,247,244,0.3);
             margin: 0;
           }
 
           /* ── Responsive — tablet ── */
           @media (max-width: 1023px) {
-            .f-cta-card { padding: 40px 40px 36px; margin: 0 24px; margin-top: -100px; }
-            .f-grid { grid-template-columns: 1fr 1fr; gap: 40px 32px; padding: 44px 40px; }
+            .f-inner { padding: 0 32px; }
+            .f-cta { flex-direction: column; align-items: flex-start; gap: 28px; padding: 56px 0; }
+            .f-grid { grid-template-columns: 1fr 1fr; gap: 44px 32px; padding: 56px 0; }
             .f-brand-col { grid-column: 1 / -1; }
-            .f-bottom { padding: 20px 40px; }
           }
 
           /* ── Responsive — mobile ── */
           @media (max-width: 640px) {
-            .f-cta-card {
-              flex-direction: column; align-items: flex-start;
-              padding: 32px 24px 28px; margin: 0 16px; margin-top: -80px;
-              border-radius: 16px; gap: 24px;
-            }
-            .f-grid { grid-template-columns: 1fr 1fr; gap: 36px 24px; padding: 40px 24px; }
+            .f-inner { padding: 0 24px; }
+            .f-cta { padding: 48px 0; }
+            .f-cta-btn { width: 100%; justify-content: space-between; }
+            .f-grid { grid-template-columns: 1fr 1fr; gap: 40px 24px; padding: 48px 0; }
             .f-brand-col { grid-column: 1 / -1; }
             .f-services-col { grid-column: 1 / -1; }
-            .f-bottom { padding: 18px 24px; flex-direction: column; gap: 6px; }
+            .f-bottom { padding: 24px 0; flex-direction: column; align-items: flex-start; gap: 8px; }
             .f-blurb { max-width: 100%; }
           }
 
           /* ── Responsive — very small ── */
           @media (max-width: 380px) {
-            .f-grid { grid-template-columns: 1fr; padding: 36px 20px; }
+            .f-grid { grid-template-columns: 1fr; }
             .f-services-col { grid-column: auto; }
-            .f-bottom { padding: 16px 20px; }
-            .f-cta-card { margin: 0 12px; margin-top: -60px; }
           }
         `}</style>
 
-        {/* ── CTA CARD ── */}
-        <div className="f-cta-card">
-          <div style={{ maxWidth: 520 }}>
-            <span className="f-cta-eyebrow">
-              HVAC · Solar · Refrigeration · Electrical · Lifts
-            </span>
-            {/*
-             * SEO: heading now names the core service + location.
-             * "Let's design your solution" had zero keyword value.
-             */}
-            <h2 className="f-cta-heading">
-              Get a Free Quote for HVAC &amp; Energy Services in Kenya
-            </h2>
+        {/* ── CTA band ── */}
+        <div className="f-inner">
+          <div className="f-cta">
+            <div>
+              <span className="f-cta-eyebrow">
+                HVAC · Solar · Refrigeration · Electrical · Lifts
+              </span>
+              <h2 className="f-cta-heading">
+                Get a Free Quote for HVAC &amp; Energy Services in Kenya
+              </h2>
+            </div>
+            <Link
+              href="/contact"
+              className="f-cta-btn"
+              aria-label="Request a call from Élan Climat Kenya"
+            >
+              Request a Call
+              <span className="f-cta-icon" aria-hidden="true">
+                <ArrowUpRight size={15} strokeWidth={2} />
+              </span>
+            </Link>
           </div>
-          <Link
-            href="/contact"
-            className="f-cta-btn"
-            aria-label="Request a call from Élan Climat Kenya"
-          >
-            Request a Call
-            <span className="f-cta-icon" aria-hidden="true">
-              <ArrowUpRight size={14} strokeWidth={2} />
-            </span>
-          </Link>
         </div>
-
-        <hr className="f-hr" />
 
         {/* ── MAIN GRID ── */}
-        <div className="f-grid">
-          {/* Brand column */}
-          <div
-            className="f-brand-col"
-            style={{ display: "flex", flexDirection: "column", gap: 20 }}
-          >
-            <Link href="/" aria-label="Élan Climat & Énergie — Home">
-              <ElanLogo size={130} />
-            </Link>
+        <div className="f-inner">
+          <div className="f-grid">
+            {/* Brand column */}
+            <div
+              className="f-brand-col"
+              style={{ display: "flex", flexDirection: "column", gap: 22 }}
+            >
+              <Link href="/" aria-label="Élan Climat & Énergie — Home">
+                <ElanLogo size={130} />
+              </Link>
 
-            {/*
-             * SEO: blurb now carries keyword-rich, location-specific copy
-             * instead of the vague "Smart solutions for..." original.
-             */}
-            <p className="f-blurb">
-              Kenya&apos;s leading HVAC, solar, cold room, refrigeration,
-              electrical, and elevator engineering company. Certified engineers
-              serving Nairobi, Mombasa, Kisumu, Eldoret, and across East Africa
-              since 2018.
-            </p>
+              <p className="f-blurb">
+                Kenya&apos;s leading HVAC, solar, cold room, refrigeration,
+                electrical, and elevator engineering company. Certified
+                engineers serving Nairobi, Mombasa, Kisumu, Eldoret, and across
+                East Africa since 2018.
+              </p>
 
-            {/* Location chip — reinforces geo signal */}
-            <div>
-              <span className="f-location-chip">
-                <MapPin size={11} aria-hidden="true" />
-                Nairobi, Kenya · Est. 2018
-              </span>
+              <div>
+                <span className="f-location-chip">
+                  <MapPin size={11} aria-hidden="true" />
+                  Nairobi, Kenya · Est. 2018
+                </span>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    className="f-social"
+                    aria-label={s.label}
+                    rel="noopener noreferrer nofollow"
+                    target="_blank"
+                  >
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
             </div>
 
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  className="f-social"
-                  aria-label={s.label}
-                  rel="noopener noreferrer nofollow"
-                  target="_blank"
-                >
-                  {s.icon}
-                </a>
+            {/* Company links */}
+            <div>
+              <span className="f-label">Company</span>
+              {QUICK_LINKS.map((l) => (
+                <Link key={l.label} href={l.href} className="f-link">
+                  {l.label}
+                </Link>
               ))}
             </div>
+
+            {/* Services */}
+            <div className="f-services-col">
+              <span className="f-label">Services</span>
+              {SERVICES.map((s) => (
+                <Link key={s.href} href={s.href} className="f-link">
+                  {s.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Contact */}
+            <div>
+              <span className="f-label">Contact</span>
+              <address style={{ fontStyle: "normal" }}>
+                <a href="tel:+254796952717" className="f-contact-item">
+                  <span className="f-contact-icon">
+                    <Phone size={11} aria-hidden="true" />
+                  </span>
+                  +254 796 952 717
+                </a>
+                <a
+                  href="mailto:hello@elanclimat.co.ke"
+                  className="f-contact-item"
+                >
+                  <span className="f-contact-icon">
+                    <Mail size={11} aria-hidden="true" />
+                  </span>
+                  hello@elanclimat.co.ke
+                </a>
+                <a
+                  href={process.env.NEXT_PUBLIC_BASE_URL}
+                  className="f-contact-item"
+                >
+                  <span className="f-contact-icon">
+                    <Globe size={11} aria-hidden="true" />
+                  </span>
+                  www.elanclimat.co.ke
+                </a>
+                <span className="f-contact-item" style={{ cursor: "default" }}>
+                  <span className="f-contact-icon">
+                    <MapPin size={11} aria-hidden="true" />
+                  </span>
+                  Nairobi, Kenya
+                </span>
+              </address>
+            </div>
           </div>
 
-          {/* Company links */}
-          <div>
-            <span className="f-label">Company</span>
-            {QUICK_LINKS.map((l) => (
-              <Link key={l.label} href={l.href} className="f-link">
-                {l.label}
-              </Link>
-            ))}
+          {/* ── BOTTOM BAR ── */}
+          <div className="f-bottom">
+            <p className="f-bottom-text">
+              © 2018–{yearText} Élan Climat &amp; Énergie Ltd · Nairobi, Kenya ·
+              All rights reserved.
+            </p>
+            <p className="f-bottom-text">
+              HVAC · Solar · Refrigeration · Electrical · Lifts ·{" "}
+              <span style={{ color: "#8fa68e" }}>East Africa</span>
+            </p>
           </div>
-
-          {/* Services — keyword-rich anchor text + descriptive hrefs */}
-          <div className="f-services-col">
-            <span className="f-label">Services</span>
-            {SERVICES.map((s) => (
-              <Link key={s.href} href={s.href} className="f-link">
-                {s.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Contact — wrapped in <address> for semantic NAP */}
-          <div>
-            <span className="f-label">Contact</span>
-            {/*
-             * <address> tells Google this block contains NAP
-             * (Name, Address, Phone) data — a direct local SEO signal.
-             */}
-            <address style={{ fontStyle: "normal" }}>
-              <a href="tel:+254796952717" className="f-contact-item">
-                <Phone size={13} aria-hidden="true" />
-                +254 796 952 717
-              </a>
-              <a
-                href="mailto:hello@elanclimat.co.ke"
-                className="f-contact-item"
-              >
-                <Mail size={13} aria-hidden="true" />
-                hello@elanclimat.co.ke
-              </a>
-              <a
-                href={process.env.NEXT_PUBLIC_BASE_URL}
-                className="f-contact-item"
-              >
-                <Globe size={13} aria-hidden="true" />
-                www.elanclimat.co.ke
-              </a>
-              <span className="f-contact-item" style={{ cursor: "default" }}>
-                <MapPin size={13} aria-hidden="true" />
-                Nairobi, Kenya
-              </span>
-            </address>
-          </div>
-        </div>
-
-        <hr className="f-hr" />
-
-        {/* ── BOTTOM BAR ── */}
-        <div className="f-bottom">
-          {/*
-           * SEO: copyright line now names the company explicitly,
-           * reinforcing the brand entity signal on every page.
-           */}
-          <p className="f-bottom-text">
-            © 2018–{year} Élan Climat &amp; Énergie Ltd · Nairobi, Kenya · All
-            rights reserved.
-          </p>
-          <p className="f-bottom-text">
-            HVAC · Solar · Refrigeration · Electrical · Lifts ·{" "}
-            <span style={{ color: "#8fa68e" }}>East Africa</span>
-          </p>
         </div>
       </footer>
     </>

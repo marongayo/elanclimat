@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import ShopClient from "@/components/shop-components/ShopClient";
 import { Metadata } from "next";
 import { Product } from "@/lib/types/product";
+import Navbar from "@/components/Navbar";
 
 export const revalidate = 3600;
 
@@ -40,8 +41,10 @@ export async function generateMetadata(): Promise<Metadata> {
   // Build a readable category string e.g. "HVAC, Solar, Batteries & Cold Rooms"
   const categoryString =
     categories.length > 1
-      ? categories.slice(0, -1).join(", ") + " & " + categories[categories.length - 1]
-      : categories[0] ?? "energy and engineering equipment";
+      ? categories.slice(0, -1).join(", ") +
+        " & " +
+        categories[categories.length - 1]
+      : (categories[0] ?? "energy and engineering equipment");
 
   const title = `${categoryString} Equipment in Nairobi, Kenya | Élan Climat & Énergie`;
   const description = `Shop professional ${categoryString} equipment in Nairobi, Kenya. Premium engineering solutions with expert installation across East Africa — available at Élan Climat & Énergie.`;
@@ -95,13 +98,17 @@ function ShopJsonLd({
 }) {
   const categoryString =
     categories.length > 1
-      ? categories.slice(0, -1).join(", ") + " & " + categories[categories.length - 1]
-      : categories[0] ?? "Engineering Equipment";
+      ? categories.slice(0, -1).join(", ") +
+        " & " +
+        categories[categories.length - 1]
+      : (categories[0] ?? "Engineering Equipment");
 
   // Derive price range dynamically from actual product prices
   const prices = products.map((p) => p.price).filter(Boolean);
-  const minPrice = prices.length > 0 ? Math.min(...prices).toLocaleString() : "0";
-  const maxPrice = prices.length > 0 ? Math.max(...prices).toLocaleString() : "0";
+  const minPrice =
+    prices.length > 0 ? Math.min(...prices).toLocaleString() : "0";
+  const maxPrice =
+    prices.length > 0 ? Math.max(...prices).toLocaleString() : "0";
   const priceRange = `KES ${minPrice} – KES ${maxPrice}`;
 
   const jsonLd = {
@@ -158,6 +165,7 @@ export default async function ShopPage() {
 
   return (
     <>
+      <Navbar />
       <ShopJsonLd
         productCount={products.length}
         categories={categories}

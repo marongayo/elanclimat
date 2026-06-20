@@ -150,7 +150,7 @@ export function CsrSection() {
                   marginTop: 8,
                 }}
               >
-                Read More
+                View Our Strategies
               </Link>
             </div>
           </div>

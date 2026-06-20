@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CheckCircle2, ChevronDown, ArrowUpRight } from "lucide-react";
+import { ChevronDown, ArrowUpRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { SERVICES } from "@/lib/services-data";
 import Eyebrow from "@/components/Eyebrow";
+import { ServiceOverview } from "@/components/services-components/ServiceOverview";
 import { C } from "@/lib/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -120,84 +121,20 @@ export default async function ServicePage({
         @media (max-width: 1024px) { .svc-detail-inner { padding: 0 32px; } }
         @media (max-width: 640px)  { .svc-detail-inner { padding: 0 24px; } }
 
-        /* ── Overview (Component 1 layout) ── */
-        .overview-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 64px;
-        }
-        @media (max-width: 1024px) { .overview-inner { padding: 0 32px; } }
-        @media (max-width: 640px)  { .overview-inner { padding: 0 24px; } }
-
-        /* Top row: heading left, image right */
-        .overview-header {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 48px;
-          align-items: center;
-          margin-bottom: 48px;
-        }
-        @media (max-width: 860px) {
-          .overview-header { grid-template-columns: 1fr; }
-          .overview-header-img { display: none; }
+        /* ── Overview article blocks (zig-zag) ── */
+        @media (max-width: 1024px) {
+          .svc-article-block        { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .svc-article-block-image  { order: 1 !important; }
+          .svc-article-block-text   { order: 2 !important; }
         }
 
-        /* Bottom row: two cards side by side */
-        .overview-cards {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 24px;
+        /* ── Use cases grid ── */
+        @media (max-width: 900px) {
+          .use-cases-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 768px) {
-          .overview-cards { grid-template-columns: 1fr; }
+        @media (max-width: 540px) {
+          .use-cases-grid { grid-template-columns: 1fr !important; }
         }
-
-        /* Each card: text-block LEFT, tall portrait image RIGHT */
-        .overview-card {
-          display: flex;
-          flex-direction: row;
-          align-items: stretch;
-          background: #e2e4e6;
-        }
-        @media (max-width: 560px) {
-          .overview-card { flex-direction: column; }
-          .overview-card-img-col { width: 100% !important; height: 220px; }
-        }
-
-        .overview-card-text {
-          flex: 1;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          padding: 40px 28px;
-          order: 1;
-        }
-
-        .overview-card-img-col {
-          width: 210px;
-          flex-shrink: 0;
-          position: relative;
-          overflow: hidden;
-          order: 2;
-        }
-
-        .overview-learn-more {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: #1a1a18;
-          text-decoration: underline;
-          text-underline-offset: 4px;
-          transition: color 0.2s;
-          margin-top: auto;
-          padding-top: 20px;
-        }
-        .overview-learn-more:hover { color: #8fa68e; }
 
         /* ── Why grid ── */
         .why-grid {
@@ -472,249 +409,12 @@ export default async function ServicePage({
         </div>
       </div>
 
-      {/* ── Main content — Component 1 layout ── */}
-      <section
-        aria-label={`${service.title} details`}
-        style={{ backgroundColor: "#e2e4e6", padding: "80px 0" }}
-      >
-        <div className="overview-inner">
-          {/* Top row: h2 + description left | hero image right */}
-          <div className="overview-header">
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <Eyebrow text="Overview" />
-              <h2
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "clamp(1.8rem, 3vw, 2.8rem)",
-                  fontWeight: 400,
-                  color: C.charcoal,
-                  lineHeight: 1.1,
-                  letterSpacing: "-0.02em",
-                  margin: 0,
-                }}
-              >
-                {service.seoTitle}
-              </h2>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.9rem",
-                  color: C.body,
-                  lineHeight: 1.85,
-                  margin: 0,
-                  fontWeight: 300,
-                }}
-              >
-                {service.description}
-              </p>
-            </div>
-
-            <div
-              className="overview-header-img"
-              style={{ position: "relative", height: 340, overflow: "hidden" }}
-            >
-              <Image
-                src={service.heroImg}
-                alt={service.heroAlt}
-                fill
-                sizes="(max-width: 860px) 100vw, 50vw"
-                style={{ objectFit: "cover" }}
-                quality={82}
-              />
-            </div>
-          </div>
-
-          {/* Bottom row: two cards — text left, portrait image right */}
-          <div className="overview-cards">
-            {/* Card 1 — extended description + colA */}
-            <div className="overview-card">
-              <div className="overview-card-text">
-                <div
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: "50%",
-                    background: C.sage,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 20,
-                    flexShrink: 0,
-                  }}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#fff"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                  </svg>
-                </div>
-                <h3
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.35rem",
-                    fontWeight: 500,
-                    color: C.charcoal,
-                    margin: "0 0 12px",
-                    letterSpacing: "-0.01em",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  About this Service
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.82rem",
-                    color: C.body,
-                    lineHeight: 1.8,
-                    margin: 0,
-                    fontWeight: 300,
-                  }}
-                >
-                  {service.extendedDescription.slice(0, 200)}…
-                </p>
-                <Link
-                  href={`/services/${service.slug}`}
-                  className="overview-learn-more"
-                >
-                  Learn More
-                </Link>
-              </div>
-              <div className="overview-card-img-col">
-                <Image
-                  src={service.colA}
-                  alt={service.colAlt[0]}
-                  fill
-                  sizes="210px"
-                  style={{ objectFit: "cover" }}
-                  quality={78}
-                />
-              </div>
-            </div>
-
-            {/* Card 2 — features checklist + colB */}
-            <div className="overview-card">
-              <div className="overview-card-text">
-                <div
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: "50%",
-                    background: C.charcoal,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 20,
-                    flexShrink: 0,
-                  }}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#fff"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="9 11 12 14 22 4" />
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                  </svg>
-                </div>
-                <h3
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.35rem",
-                    fontWeight: 500,
-                    color: C.charcoal,
-                    margin: "0 0 16px",
-                    letterSpacing: "-0.01em",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  What&apos;s Included
-                </h3>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                    width: "100%",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  {service.features.slice(0, 3).map((f) => (
-                    <div
-                      key={f}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 10,
-                      }}
-                    >
-                      <CheckCircle2
-                        size={13}
-                        strokeWidth={1.8}
-                        style={{ color: C.sage, flexShrink: 0, marginTop: 2 }}
-                      />
-                      <span
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: "0.82rem",
-                          color: C.body,
-                          lineHeight: 1.6,
-                          fontWeight: 300,
-                          textAlign: "left",
-                        }}
-                      >
-                        {f}
-                      </span>
-                    </div>
-                  ))}
-                  {service.features.length > 3 && (
-                    <span
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.7rem",
-                        color: C.muted,
-                        marginTop: 2,
-                      }}
-                    >
-                      + {service.features.length - 3} more
-                    </span>
-                  )}
-                </div>
-                <Link href="/contact" className="overview-learn-more">
-                  Request a Quote
-                </Link>
-              </div>
-              <div className="overview-card-img-col">
-                <Image
-                  src={service.colB}
-                  alt={service.colAlt[1]}
-                  fill
-                  sizes="210px"
-                  style={{ objectFit: "cover" }}
-                  quality={78}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── Overview — zig-zag article blocks ── */}
+      <ServiceOverview service={service} />
 
       {/* ── Why Élan Climat ── */}
       <section
-        style={{ backgroundColor: "white", padding: "64px 0" }}
+        style={{ backgroundColor: "#ffffff", padding: "64px 0" }}
         aria-label={`Why choose Élan Climat for ${service.title}`}
       >
         <div className="svc-detail-inner">
@@ -911,7 +611,7 @@ export default async function ServicePage({
                 margin: 0,
               }}
             >
-              Related Services in Kenya
+              Other Services We Offer in Kenya
             </h2>
           </div>
 
