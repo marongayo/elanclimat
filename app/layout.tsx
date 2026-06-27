@@ -24,21 +24,21 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const SITE_URL = process.env.NEXTAUTH_URL!;
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: SITE_URL,
   },
-  // ...
+
   title: {
-    default: "Élan Climat & Énergie",
+    default: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
     template: "%s | Élan Climat & Énergie",
   },
 
   description:
-    "Solar, HVAC, refrigeration, electrical, lithium battery, elevator and generator solutions for homes and businesses across East & Central Africa.",
+    "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
 
   authors: [{ name: "Élan Climat & Énergie" }],
   creator: "Élan Climat & Énergie",
@@ -47,10 +47,9 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "Élan Climat & Énergie",
-    title:
-      "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
+    title: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
     description:
-      "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators across Kenya and East Africa.",
+      "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
     locale: "en_KE",
     images: [
       {
@@ -64,10 +63,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title:
-      "Élan Climat & Énergie | Solar · HVAC · Cold Rooms · Electrical Solutions",
+    title: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
     description:
-      "Experts in solar energy, HVAC, refrigeration, cold rooms, electrical systems, elevators, lithium batteries, and backup generators across Kenya and East Africa.",
+      "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
     images: ["/images/og-image.png"],
   },
 
