@@ -46,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
         categories[categories.length - 1]
       : (categories[0] ?? "energy and engineering equipment");
 
-  const title = `${categoryString} Equipment in Nairobi, Kenya | Élan Climat & Énergie`;
+  const title = `Shop |${categoryString} | Élan Climat & Énergie`;
   const description = `Shop professional ${categoryString} equipment in Nairobi, Kenya. Premium engineering solutions with expert installation across East Africa — available at Élan Climat & Énergie.`;
 
   return {
