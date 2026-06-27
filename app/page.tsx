@@ -10,15 +10,8 @@ import BackToTop from "@/components/BackToTop";
 import Navbar from "@/components/Navbar";
 import { getBlogPosts } from "@/lib/db";
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
-
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-
-  title: {
-    default: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
-    template: "%s | Élan Climat",
-  },
+  title: "Home",
   description:
     "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
 
@@ -27,47 +20,25 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    type: "website",
-    url: SITE_URL,
-    siteName: "Élan Climat",
-    title: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
+    title: "Home",
     description:
-      "Certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering across Kenya and East Africa.",
+      "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
     images: [
       {
-        url: "/images/HVAC.png", //
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Élan Climat | Engineering Services Kenya",
+        alt: "Élan Climat & Énergie — Engineering Services Kenya",
       },
     ],
-    locale: "en_KE",
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "Élan Climat | HVAC, Solar & Engineering Services in Kenya",
+    title: "Home",
     description:
-      "Certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering across Kenya and East Africa.",
-    images: ["/images/HVAC.png"],
+      "Élan Climat delivers certified HVAC, solar, plumbing, cold-room, elevator, and electrical engineering services across Nairobi, Mombasa, Kisumu, Eldoret, and East Africa.",
+    images: ["/images/og-image.png"],
   },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-snippet": -1,
-      "max-image-preview": "large",
-      "max-video-preview": -1,
-    },
-  },
-
-  // verification: {
-  //   google: "YOUR_GOOGLE_SITE_VERIFICATION_TOKEN",
-  //   other: { "msvalidate.01": "YOUR_BING_VERIFICATION_TOKEN" },
-  // },
 };
 
 // No JSON-LD here — Schema.tsx in the root layout handles all structured data.
