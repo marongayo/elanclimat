@@ -10,6 +10,15 @@ import {
   INPUT_ERROR_STYLE,
   LABEL_STYLE,
   ERROR_TEXT,
+  SECTION_HEADING,
+  EYEBROW,
+  BTN_PRIMARY,
+  BTN_GHOST,
+  CHARCOAL,
+  SAGE,
+  SAGE_DARK,
+  MUTED,
+  OFF_WHITE,
 } from "./_adminStyles";
 
 export function AdminAdminsTab({
@@ -18,6 +27,7 @@ export function AdminAdminsTab({
   isTrueSuperadmin,
   deleteAdmin,
   changeAdminPassword,
+  changeAdminUsername,
   onOpenCreateAdmin,
   toast,
 }: {
@@ -35,7 +45,6 @@ export function AdminAdminsTab({
   }) => void;
   toast: (msg: string) => void;
 }) {
-  // Password modal
   const [pwTarget, setPwTarget] = useState<User | null>(null);
   const [pwValue, setPwValue] = useState("");
   const [pwConfirm, setPwConfirm] = useState("");
@@ -76,31 +85,43 @@ export function AdminAdminsTab({
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 32 }}>
-        <h1
+    <div style={{ maxWidth: 820 }}>
+      {/* Page header */}
+      <div style={{ marginBottom: 40 }}>
+        <p style={EYEBROW}>Team</p>
+        <div
           style={{
-            fontFamily: "Cormorant Garamond, serif",
-            fontSize: "clamp(1.6rem, 5vw, 2.2rem)",
-            fontWeight: 600,
-            color: "var(--charcoal)",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 16,
+            marginTop: 8,
           }}
         >
-          Admins
-        </h1>
-        <p
-          style={{
-            fontFamily: "DM Sans",
-            fontSize: "0.85rem",
-            color: "var(--text-muted)",
-            marginTop: 4,
-          }}
-        >
-          {admins.length} {admins.length === 1 ? "user" : "users"} with admin
-          access
-        </p>
+          <div>
+            <h1 style={SECTION_HEADING}>Admin Users</h1>
+            <p
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "0.82rem",
+                color: MUTED,
+                marginTop: 6,
+                fontWeight: 300,
+              }}
+            >
+              {admins.length} {admins.length === 1 ? "user" : "users"} with access
+            </p>
+          </div>
+          {isTrueSuperadmin && (
+            <button onClick={() => onOpenCreateAdmin()} style={BTN_PRIMARY}>
+              + New Admin
+            </button>
+          )}
+        </div>
+        <div style={{ width: 32, height: 1, background: "#c9a96e", marginTop: 16 }} />
       </div>
 
+      {/* Password change modal */}
       {pwTarget && (
         <Modal
           open={!!pwTarget}
@@ -138,46 +159,21 @@ export function AdminAdminsTab({
             </div>
             {pwError && <span style={ERROR_TEXT}>{pwError}</span>}
             <div
-              style={{
-                display: "flex",
-                gap: 10,
-                justifyContent: "flex-end",
-                paddingTop: 4,
-              }}
+              style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 4 }}
             >
-              <button
-                onClick={closePasswordModal}
-                style={{
-                  padding: "10px 20px",
-                  background: "none",
-                  border: "1px solid var(--off-white)",
-                  cursor: "pointer",
-                  fontFamily: "DM Sans",
-                  fontSize: "0.85rem",
-                  color: "var(--text-muted)",
-                }}
-              >
+              <button onClick={closePasswordModal} style={BTN_GHOST}>
                 Cancel
               </button>
               <button
                 onClick={submitPassword}
                 disabled={pwSaving}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 24px",
-                  background: pwSaving
-                    ? "var(--text-muted)"
-                    : "var(--charcoal)",
-                  color: "white",
-                  border: "none",
+                  ...BTN_PRIMARY,
+                  opacity: pwSaving ? 0.6 : 1,
                   cursor: pwSaving ? "not-allowed" : "pointer",
-                  fontFamily: "DM Sans",
-                  fontSize: "0.85rem",
                 }}
               >
-                <KeyRound size={14} />{" "}
+                <KeyRound size={14} />
                 {pwSaving ? "Saving..." : "Update Password"}
               </button>
             </div>
@@ -185,6 +181,7 @@ export function AdminAdminsTab({
         </Modal>
       )}
 
+      {/* Admins list */}
       <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {admins.map((a) => {
           const isSelf = a._id === currentUserId;
@@ -196,48 +193,38 @@ export function AdminAdminsTab({
                 background: "white",
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
-                padding: "14px 16px",
-                borderLeft: isSelf
-                  ? "3px solid var(--sage-dark)"
-                  : "3px solid transparent",
+                gap: 16,
+                padding: "18px 20px",
+                borderLeft: isSelf ? `3px solid ${SAGE}` : "3px solid transparent",
+                transition: "border-color 0.2s",
               }}
             >
+              {/* Avatar */}
               <div
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 42,
+                  height: 42,
                   borderRadius: "50%",
-                  background: isSuperadmin ? "#111" : "var(--off-white)",
+                  background: isSuperadmin ? CHARCOAL : OFF_WHITE,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  color: isSuperadmin ? "white" : "var(--text-muted)",
+                  color: isSuperadmin ? "#c9a96e" : MUTED,
                 }}
               >
-                {isSuperadmin ? (
-                  <ShieldCheck size={18} />
-                ) : (
-                  <Shield size={18} />
-                )}
+                {isSuperadmin ? <ShieldCheck size={17} /> : <Shield size={17} />}
               </div>
 
+              {/* Identity */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    flexWrap: "wrap",
-                  }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <span
                     style={{
-                      fontFamily: "DM Sans",
-                      fontSize: "0.9rem",
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.88rem",
                       fontWeight: 600,
-                      color: "var(--charcoal)",
+                      color: CHARCOAL,
                     }}
                   >
                     {a.name}
@@ -245,15 +232,14 @@ export function AdminAdminsTab({
                   {isSelf && (
                     <span
                       style={{
-                        fontFamily: "DM Sans",
-                        fontSize: "0.6rem",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "0.58rem",
                         fontWeight: 700,
-                        letterSpacing: "0.08em",
+                        letterSpacing: "0.1em",
                         textTransform: "uppercase",
-                        background: "var(--sage-pale)",
-                        color: "var(--sage-dark)",
+                        background: "#f0f5f0",
+                        color: SAGE_DARK,
                         padding: "2px 8px",
-                        borderRadius: 9999,
                       }}
                     >
                       You
@@ -262,9 +248,9 @@ export function AdminAdminsTab({
                 </div>
                 <div
                   style={{
-                    fontFamily: "DM Sans",
-                    fontSize: "0.75rem",
-                    color: "var(--text-muted)",
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.72rem",
+                    color: MUTED,
                     marginTop: 2,
                   }}
                 >
@@ -272,20 +258,20 @@ export function AdminAdminsTab({
                 </div>
               </div>
 
-              <div style={{ width: 96, flexShrink: 0 }}>
+              {/* Role badge */}
+              <div style={{ flexShrink: 0 }}>
                 <span
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    fontFamily: "DM Sans",
-                    fontSize: "0.6rem",
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.58rem",
                     fontWeight: 700,
-                    letterSpacing: "0.08em",
+                    letterSpacing: "0.1em",
                     textTransform: "uppercase",
-                    background: isSuperadmin ? "#111" : "var(--off-white)",
-                    color: isSuperadmin ? "white" : "var(--text-muted)",
-                    padding: "3px 10px",
-                    borderRadius: 9999,
+                    background: isSuperadmin ? CHARCOAL : OFF_WHITE,
+                    color: isSuperadmin ? "#c9a96e" : MUTED,
+                    padding: "3px 12px",
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -293,18 +279,10 @@ export function AdminAdminsTab({
                 </span>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: 6,
-                  flexShrink: 0,
-                  alignItems: "center",
-                  width: 160,
-                  justifyContent: "flex-end",
-                }}
-              >
-                {isTrueSuperadmin && !isSelf && !isSuperadmin ? (
-                  <div
+              {/* Actions */}
+              <div style={{ display: "flex", gap: 6, flexShrink: 0, alignItems: "center" }}>
+                {isTrueSuperadmin && !isSelf && !isSuperadmin && (
+                  <button
                     onClick={() => deleteAdmin(a._id)}
                     style={{
                       display: "flex",
@@ -317,10 +295,25 @@ export function AdminAdminsTab({
                     }}
                   >
                     <Trash2 size={13} />
-                  </div>
-                ) : (
-                  <div style={{ width: 36 }} />
+                  </button>
                 )}
+                <button
+                  onClick={() => openPasswordModal(a)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    padding: "7px 12px",
+                    background: OFF_WHITE,
+                    border: "none",
+                    cursor: "pointer",
+                    color: MUTED,
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.72rem",
+                  }}
+                >
+                  <KeyRound size={12} />
+                </button>
                 <button
                   onClick={() =>
                     onOpenCreateAdmin({
@@ -334,13 +327,13 @@ export function AdminAdminsTab({
                     display: "flex",
                     alignItems: "center",
                     gap: 5,
-                    padding: "7px 10px",
-                    background: "var(--off-white)",
+                    padding: "7px 12px",
+                    background: OFF_WHITE,
                     border: "none",
                     cursor: "pointer",
-                    color: "var(--charcoal)",
-                    fontFamily: "DM Sans",
-                    fontSize: "0.75rem",
+                    color: CHARCOAL,
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.72rem",
                   }}
                 >
                   <UserPen size={13} /> Edit

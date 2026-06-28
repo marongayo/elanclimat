@@ -7,13 +7,7 @@ import Image from "next/image";
 
 import type { BlogPost, BlogForm } from "@/lib/types/blog";
 import type { Product, ProductForm, ProductErrors } from "@/lib/types/product";
-import type {
-  User,
-  Tab,
-  Role,
-  AdminForm,
-  AdminFormErrors,
-} from "@/lib/types/admin";
+import type { User, Tab, Role, AdminForm, AdminFormErrors } from "@/lib/types/admin";
 import type { Message } from "@/lib/types/message";
 import type { Job, JobForm } from "@/lib/types/jobs";
 
@@ -24,16 +18,17 @@ import { AdminFab } from "@/components/admin-components/AdminFab";
 import { AdminLogoutModal } from "@/components/admin-components/AdminLogoutModal";
 import { AdminCreateAdminModal } from "@/components/admin-components/AdminCreateAdminModal";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const emptyBlog = (): BlogForm => ({
+const emptyBlog = (authorName: string): BlogForm => ({
   title: "",
   slug: "",
   excerpt: "",
   content: "",
   category: "HVAC",
   image: "",
-  author: "Élan Editorial",
+  // Auto-fill author from the current session user's display name
+  author: authorName || "Élan Editorial",
   date: new Date().toISOString().split("T")[0],
   readTime: "5 min",
 });
@@ -92,8 +87,6 @@ const validateAdmin = (af: AdminForm, isEdit = false): AdminFormErrors => {
   return errs;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Component
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function AdminClient({
@@ -203,21 +196,45 @@ export default function AdminClient({
     loadJobs();
   }, []);
 
-  // ── Early returns ─────────────────────────────────────────────────────────
+  // ── Loading / auth guards ─────────────────────────────────────────────────
 
   if (status === "loading") {
     return (
       <div
         style={{
           minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          fontFamily: "DM Sans",
-          background: "var(--warm-white)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 24,
+          background: "#1a1a18",
         }}
       >
-        <Image src="/Elanlogo.svg" alt="Logo" width={300} height={300} />
-        Loading admin dashboard...
+        <Image src="/Elanlogo.svg" alt="Élan" width={120} height={120} />
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 16,
+              height: 16,
+              border: "2px solid rgba(201,169,110,0.3)",
+              borderTopColor: "#c9a96e",
+              borderRadius: "50%",
+              animation: "spin 0.8s linear infinite",
+            }}
+          />
+          <span
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.8rem",
+              color: "rgba(255,255,255,0.35)",
+              letterSpacing: "0.1em",
+            }}
+          >
+            Loading dashboard...
+          </span>
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -235,6 +252,10 @@ export default function AdminClient({
     (currentUserEmail.trim().toLowerCase() === "superadmin@elanclinat.co.ke" ||
       (dbRecord?.email ?? "").trim().toLowerCase() ===
         "superadmin@elanclinat.co.ke");
+
+  // The resolved author name — used to pre-fill blog post author field
+  const resolvedAuthorName =
+    displayName || session.user?.name || "Élan Editorial";
 
   // ── Toast ─────────────────────────────────────────────────────────────────
 
@@ -255,6 +276,8 @@ export default function AdminClient({
     try {
       const post = {
         ...blogForm,
+        // Ensure author is always set — fall back to session name
+        author: blogForm.author || resolvedAuthorName,
         slug:
           blogForm.slug ||
           blogForm.title
@@ -274,7 +297,7 @@ export default function AdminClient({
       const updated = await fetch("/api/blog").then((r) => r.json());
       setPosts(Array.isArray(updated) ? updated : []);
       setBlogForm(null);
-      toast("Blog post saved successfully!");
+      toast("Blog post saved!");
     } catch (err: any) {
       console.error("saveBlog error:", err);
       toast(`Failed to save: ${err.message}`);
@@ -282,6 +305,7 @@ export default function AdminClient({
       setSaving(false);
     }
   };
+
   const deleteBlog = async (id: string) => {
     if (!confirm("Delete this blog post?")) return;
     await fetch("/api/blog", {
@@ -307,7 +331,7 @@ export default function AdminClient({
     setJobForm(null);
     setEditJobId(null);
     setSaving(false);
-    toast("Job saved!");
+    toast("Vacancy saved!");
   };
 
   const deleteJob = async (id: string) => {
@@ -398,7 +422,7 @@ export default function AdminClient({
           const d = await res.json();
           throw new Error(d.error || "Failed to update admin");
         }
-        toast(`${adminForm.name}'s details have been updated.`);
+        toast(`${adminForm.name}'s details updated.`);
       } else {
         const res = await fetch("/api/user", {
           method: "POST",
@@ -409,7 +433,7 @@ export default function AdminClient({
           const d = await res.json();
           throw new Error(d.error || "Failed to create admin");
         }
-        toast(`${adminForm.name}'s admin account has been created!`);
+        toast(`${adminForm.name}'s admin account created!`);
       }
       setAdminForm(null);
       setEditAdminId(null);
@@ -537,32 +561,36 @@ export default function AdminClient({
       style={{
         display: "flex",
         minHeight: "100vh",
-        background: "var(--warm-white)",
+        background: "#f9f7f4",
       }}
     >
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        * { box-sizing: border-box; }
+
         @media (min-width: 768px) {
           .admin-sidebar-desktop { display: flex !important; }
           .admin-topbar { display: none !important; }
-          .admin-main { margin-left: 240px !important; }
+          .admin-main { margin-left: 220px !important; }
         }
         @media (max-width: 767px) {
           .admin-sidebar-desktop { display: none !important; }
           .admin-topbar { display: flex !important; }
           .admin-main {
             margin-left: 0 !important;
-            padding: 20px 16px 100px !important;
-            padding-top: 70px !important;
+            padding: 20px 20px 100px !important;
+            padding-top: 72px !important;
           }
           .msg-panel {
             bottom: 80px !important;
             left: 12px !important;
             right: 12px !important;
             width: auto !important;
-            height: min(55vh, 420px) !important;
+            height: min(55vh, 440px) !important;
           }
         }
-        .msg-item:hover { background: #f9fafb !important; }
+        .msg-item:hover { background: #fafaf8 !important; }
       `}</style>
 
       <AdminSidebar
@@ -605,6 +633,7 @@ export default function AdminClient({
         role={role}
         currentUserId={currentUserId}
         isTrueSuperadmin={isTrueSuperadmin}
+        userName={resolvedAuthorName}
         jobs={jobs}
         jobForm={jobForm}
         setJobForm={setJobForm}
@@ -684,7 +713,8 @@ export default function AdminClient({
         role={role}
         onNewBlog={() => {
           setTab("blog");
-          setBlogForm(emptyBlog());
+          // Pass resolved session name so author is auto-filled
+          setBlogForm(emptyBlog(resolvedAuthorName));
         }}
         onNewProduct={() => {
           setTab("products");

@@ -18,6 +18,7 @@ export default function AdminContentTabs({
   role,
   currentUserId,
   isTrueSuperadmin,
+  userName,
   jobs,
   jobForm,
   setJobForm,
@@ -54,6 +55,7 @@ export default function AdminContentTabs({
   role: Role;
   currentUserId: string;
   isTrueSuperadmin: boolean;
+  userName: string;
   jobs: Job[];
   jobForm: JobForm | null;
   setJobForm: (f: JobForm | null) => void;
@@ -67,7 +69,9 @@ export default function AdminContentTabs({
   blogForm: BlogForm | null;
   setBlogForm: (f: BlogForm | null) => void;
   productForm: ProductForm | null;
-  setProductForm: (f: ProductForm | ((prev: ProductForm | null) => ProductForm | null) | null) => void;
+  setProductForm: (
+    f: ProductForm | ((prev: ProductForm | null) => ProductForm | null) | null,
+  ) => void;
   productErrors: ProductErrors;
   setProductErrors: (e: ProductErrors) => void;
   saving: boolean;
@@ -84,7 +88,12 @@ export default function AdminContentTabs({
   changeAdminUsername: (id: string, newName: string) => Promise<void>;
   clearError: (field: keyof ProductErrors) => void;
   toast: (msg: string) => void;
-  onOpenCreateAdmin: (admin?: { _id: string; name: string; email: string; role: string }) => void;
+  onOpenCreateAdmin: (admin?: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  }) => void;
 }) {
   const uploadImage = async (
     file: File,
@@ -112,10 +121,23 @@ export default function AdminContentTabs({
   return (
     <main
       className="admin-main"
-      style={{ marginLeft: 220, flex: 1, padding: "32px 40px", minHeight: "100vh" }}
+      style={{
+        marginLeft: 220,
+        flex: 1,
+        padding: "40px 48px",
+        minHeight: "100vh",
+        background: "#f9f7f4",
+      }}
     >
       {tab === "dashboard" && (
-        <AdminDashboardTab posts={posts} products={products} admins={admins} role={role} />
+        <AdminDashboardTab
+          posts={posts}
+          products={products}
+          admins={admins}
+          jobs={jobs}
+          role={role}
+          userName={userName}
+        />
       )}
 
       {tab === "blog" && (

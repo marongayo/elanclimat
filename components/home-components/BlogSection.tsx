@@ -3,15 +3,70 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { BlogPost } from "@/lib/types/blog";
 import styles from "./BlogSection.module.css";
 
 export default function BlogSection({ posts }: { posts: BlogPost[] }) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
 
   if (!posts || posts.length === 0) return null;
+
+  // ── Track which card is most in view, and whether arrows should be enabled ──
+  const updateScrollState = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    setCanScrollPrev(track.scrollLeft > 8);
+    setCanScrollNext(
+      track.scrollLeft < track.scrollWidth - track.clientWidth - 8,
+    );
+
+    const cards = Array.from(track.children) as HTMLElement[];
+    const trackCenter = track.scrollLeft + track.clientWidth / 2;
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+    cards.forEach((card, i) => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - trackCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = i;
+      }
+    });
+    setActiveIndex(closestIndex);
+  }, []);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    updateScrollState();
+    track.addEventListener("scroll", updateScrollState, { passive: true });
+    window.addEventListener("resize", updateScrollState);
+    return () => {
+      track.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [updateScrollState]);
+
+  const scrollByCard = (direction: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.children[0] as HTMLElement | undefined;
+    const cardWidth = card ? card.offsetWidth + 24 : track.clientWidth * 0.8;
+    track.scrollBy({ left: direction * cardWidth, behavior: "smooth" });
+  };
+
+  const scrollToIndex = (index: number) => {
+    const track = trackRef.current;
+    const card = track?.children[index] as HTMLElement | undefined;
+    if (!track || !card) return;
+    track.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
+  };
 
   return (
     <section
@@ -22,121 +77,134 @@ export default function BlogSection({ posts }: { posts: BlogPost[] }) {
         {/* ── Section header ── */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            {/* Eyebrow */}
             <div className={styles.eyebrow}>
               <span className={styles.eyebrowLine} />
               <span className={styles.eyebrowText}>Latest Insights</span>
             </div>
 
-            {/* h2 */}
             <h2 className={styles.heading}>
-              HVAC, Solar & Energy
+              HVAC, Solar &amp; Energy
               <br />
               <span className={styles.headingThin}>Insights from Kenya</span>
             </h2>
           </div>
 
-          <Link href="/blog" className={styles.allLink}>
-            All Articles
-          </Link>
-        </div>
-
-        {/* ── Main grid ── */}
-        <div className={styles.grid}>
-          {/* LEFT — post list + active content */}
-          <div className={styles.left}>
-            {/* Post tabs — always rendered, Google indexes all titles */}
+          <div className={styles.headerRight}>
             {posts.length > 1 && (
-              <div className={styles.postList}>
-                {posts.map((p, i) => (
-                  <button
-                    key={p.slug}
-                    className={styles.postTab}
-                    onClick={() => setActiveIndex(i)}
-                    aria-pressed={activeIndex === i}
-                    data-active={activeIndex === i}
-                  >
-                    <span className={styles.postTabCategory}>{p.category}</span>
-                    <span className={styles.postTabTitle}>{p.title}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* All post excerpts in DOM — active one shown, rest hidden */}
-            <div className={styles.excerptContainer}>
-              {posts.map((p, i) => (
-                <div
-                  key={p.slug}
-                  aria-hidden={activeIndex !== i}
-                  data-active={activeIndex === i}
-                  className={styles.excerptPanel}
+              <div className={styles.arrowGroup}>
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => scrollByCard(-1)}
+                  disabled={!canScrollPrev}
+                  aria-label="Previous articles"
                 >
-                  {/* Meta */}
-                  <div className={styles.meta}>
-                    <span className={styles.metaDate}>
-                      {new Date(p.date).toLocaleDateString("en-KE", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
-                    <span className={styles.metaDivider} />
-                    <span className={styles.metaReadTime}>{p.readTime}</span>
-                  </div>
-
-                  {/* Title for single-post mode */}
-                  {posts.length === 1 && (
-                    <h3 className={styles.singleTitle}>{p.title}</h3>
-                  )}
-
-                  {/* Excerpt */}
-                  <p className={styles.excerpt}>{p.excerpt}</p>
-
-                  {/* CTAs */}
-                  <div className={styles.ctas}>
-                    <Link href={`/blog/${p.slug}`} className={styles.readLink}>
-                      Read Article
-                    </Link>
-                    <Link href="/blog" className={styles.allLink}>
-                      All Articles
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* RIGHT — image, animates on tab switch */}
-          <div className={styles.imageCol}>
-            <motion.div
-              key={posts[activeIndex]?.slug + "-img"}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className={styles.imageWrapper}
-            >
-              <Image
-                src={posts[activeIndex]?.image}
-                alt={`${posts[activeIndex]?.title} — Élan Climat Kenya`}
-                fill
-                className="object-cover object-center"
-                loading="lazy"
-                sizes="520px"
-                quality={80}
-              />
-            </motion.div>
-
-            {posts.length > 1 && (
-              <div className={styles.imageCounter}>
-                <span className={styles.imageCounterText}>
-                  {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                  {String(posts.length).padStart(2, "0")}
-                </span>
+                  <ChevronLeft size={16} strokeWidth={1.8} />
+                </button>
+                <button
+                  type="button"
+                  className={styles.arrowBtn}
+                  onClick={() => scrollByCard(1)}
+                  disabled={!canScrollNext}
+                  aria-label="Next articles"
+                >
+                  <ChevronRight size={16} strokeWidth={1.8} />
+                </button>
               </div>
             )}
+            <Link href="/blog" className={styles.allLink}>
+              All Articles
+            </Link>
           </div>
         </div>
+
+        {/* ── Carousel track — every post stays in the DOM for SEO ── */}
+        <div
+          ref={trackRef}
+          className={styles.track}
+          role="list"
+          aria-label="Latest blog articles"
+        >
+          {posts.map((p, i) => (
+            <article
+              key={p.slug}
+              role="listitem"
+              className={styles.card}
+              data-active={activeIndex === i}
+            >
+              <Link
+                href={`/blog/${p.slug}`}
+                className={styles.cardImageLink}
+                aria-label={p.title}
+                tabIndex={-1}
+              >
+                <div className={styles.cardImageWrapper}>
+                  <Image
+                    src={p.image}
+                    alt={`${p.title} — Élan Climat Kenya`}
+                    fill
+                    className={styles.cardImage}
+                    loading={i < 3 ? "eager" : "lazy"}
+                    sizes="(max-width: 768px) 85vw, (max-width: 1024px) 45vw, 360px"
+                    quality={80}
+                  />
+                  <span className={styles.cardCategoryBadge}>{p.category}</span>
+                </div>
+              </Link>
+
+              <div className={styles.cardBody}>
+                <div className={styles.cardMeta}>
+                  <time className={styles.cardDate} dateTime={p.date}>
+                    {new Date(p.date).toLocaleDateString("en-KE", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                  <span className={styles.metaDivider} />
+                  <span className={styles.cardReadTime}>{p.readTime}</span>
+                </div>
+
+                <h3 className={styles.cardTitle}>
+                  <Link
+                    href={`/blog/${p.slug}`}
+                    className={styles.cardTitleLink}
+                  >
+                    {p.title}
+                  </Link>
+                </h3>
+
+                <p className={styles.cardExcerpt}>{p.excerpt}</p>
+
+                <Link href={`/blog/${p.slug}`} className={styles.readLink}>
+                  Read Article
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* ── Dot indicators ── */}
+        {posts.length > 1 && (
+          <div
+            className={styles.dots}
+            role="tablist"
+            aria-label="Article navigation"
+          >
+            {posts.map((p, i) => (
+              <button
+                key={p.slug}
+                role="tab"
+                type="button"
+                className={styles.dot}
+                data-active={activeIndex === i}
+                aria-selected={activeIndex === i}
+                aria-label={`Go to ${p.title}`}
+                onClick={() => scrollToIndex(i)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -15,7 +15,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "HVAC, Solar, Cold Room & Electrical Services in Kenya | Élan Climat",
+  title: "HVAC, Solar, Cold Room & Electrical Services in Kenya ",
   description:
     "Professional HVAC installation, solar panel systems, cold rooms, plumbing, elevator installation, and electrical services across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri. Request a quote today.",
   keywords: [

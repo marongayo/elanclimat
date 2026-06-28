@@ -1,5 +1,6 @@
 // components/admin-components/AdminSidebar.tsx
 "use client";
+
 import {
   Bell,
   LayoutDashboard,
@@ -29,12 +30,14 @@ const NavItem = ({
   icon,
   label,
   badge,
+  light = true,
 }: {
   active: boolean;
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
   badge?: number;
+  light?: boolean;
 }) => (
   <button
     onClick={onClick}
@@ -43,27 +46,30 @@ const NavItem = ({
       alignItems: "center",
       gap: 10,
       width: "100%",
-      padding: "8px 12px",
-      background: active ? "#efefef" : "transparent",
+      padding: "9px 12px",
+      background: active ? "rgba(255,255,255,0.1)" : "transparent",
       border: "none",
-      borderRadius: 8,
+      borderLeft: active ? "2px solid #c9a96e" : "2px solid transparent",
       cursor: "pointer",
       fontFamily: "'DM Sans', sans-serif",
-      fontSize: "0.84rem",
-      color: active ? "#111" : "#333",
-      textAlign: "left" as React.CSSProperties["textAlign"],
-      fontWeight: active ? 700 : 500,
-      transition: "background 0.15s, color 0.15s",
-      position: "relative" as React.CSSProperties["position"],
+      fontSize: "0.82rem",
+      color: active ? "#ffffff" : "rgba(255,255,255,0.55)",
+      textAlign: "left" as const,
+      fontWeight: active ? 500 : 400,
+      transition: "background 0.15s, color 0.15s, border-color 0.15s",
+      position: "relative" as const,
+      letterSpacing: "0.01em",
     }}
     onMouseEnter={(e) => {
-      if (!active) e.currentTarget.style.background = "#f5f5f5";
-      e.currentTarget.style.color = "#111";
+      if (!active) {
+        e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+        e.currentTarget.style.color = "rgba(255,255,255,0.85)";
+      }
     }}
     onMouseLeave={(e) => {
       if (!active) {
         e.currentTarget.style.background = "transparent";
-        e.currentTarget.style.color = active ? "#111" : "#333";
+        e.currentTarget.style.color = "rgba(255,255,255,0.55)";
       }
     }}
   >
@@ -71,8 +77,9 @@ const NavItem = ({
       style={{
         display: "flex",
         alignItems: "center",
-        color: active ? "#111" : "#555",
+        color: active ? "#c9a96e" : "rgba(255,255,255,0.35)",
         flexShrink: 0,
+        transition: "color 0.15s",
       }}
     >
       {icon}
@@ -82,15 +89,15 @@ const NavItem = ({
       <span
         style={{
           fontFamily: "'DM Sans', sans-serif",
-          fontSize: "0.65rem",
+          fontSize: "0.6rem",
           fontWeight: 700,
-          background: "#111",
+          background: "#c0392b",
           color: "white",
           borderRadius: 9999,
           padding: "1px 6px",
           lineHeight: 1.7,
           minWidth: 18,
-          textAlign: "center" as React.CSSProperties["textAlign"],
+          textAlign: "center" as const,
         }}
       >
         {badge}
@@ -106,17 +113,17 @@ const NavSection = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <div style={{ marginTop: 20 }}>
+  <div style={{ marginTop: 28 }}>
     <div
       style={{
         fontFamily: "'DM Sans', sans-serif",
-        fontSize: "0.6rem",
-        fontWeight: 800,
-        letterSpacing: "0.14em",
+        fontSize: "0.58rem",
+        fontWeight: 600,
+        letterSpacing: "0.2em",
         textTransform: "uppercase",
-        color: "#666",
-        padding: "0 12px",
-        marginBottom: 4,
+        color: "rgba(255,255,255,0.2)",
+        padding: "0 14px",
+        marginBottom: 6,
       }}
     >
       {label}
@@ -143,7 +150,6 @@ const UserFooter = ({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -166,41 +172,43 @@ const UserFooter = ({
       : "A";
 
   return (
-    <div ref={ref} style={{ margin: "8px", position: "relative" }}>
+    <div ref={ref} style={{ margin: "8px 0 0", position: "relative" }}>
+      {/* Rule above footer */}
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", margin: "0 14px 8px" }} />
+
       {/* Popover */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 6, scale: 0.97 }}
+            initial={{ opacity: 0, y: 8, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 6, scale: 0.97 }}
+            exit={{ opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
             style={{
               position: "absolute",
-              bottom: "calc(100% + 8px)",
-              left: 0,
-              right: 0,
-              background: "white",
-              border: "1px solid #e5e7eb",
-              borderRadius: 10,
-              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+              bottom: "calc(100% + 10px)",
+              left: 12,
+              right: 12,
+              background: "#f9f7f4",
+              border: "1px solid #ede9e2",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
               overflow: "hidden",
               zIndex: 300,
             }}
           >
-            {/* Header */}
             <div
               style={{
-                padding: "12px 14px 10px",
-                borderBottom: "1px solid #f3f4f6",
+                padding: "14px 16px 10px",
+                borderBottom: "1px solid #ede9e2",
               }}
             >
               <div
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.78rem",
-                  fontWeight: 700,
-                  color: "#111",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "1.1rem",
+                  fontWeight: 400,
+                  color: "#1a1a18",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 {userName || "—"}
@@ -209,31 +217,25 @@ const UserFooter = ({
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.68rem",
-                  color: "#888",
-                  marginTop: 1,
+                  color: "#8a8680",
+                  marginTop: 2,
+                  letterSpacing: "0.04em",
                 }}
               >
-                {role === "superadmin" ? "Super Admin" : "Admin"}
+                {role === "superadmin" ? "Super Admin · Full Access" : "Admin · Content Manager"}
               </div>
             </div>
 
-            {/* Actions */}
             {[
               {
                 icon: <UserPen size={13} />,
                 label: "Change Username",
-                action: () => {
-                  setOpen(false);
-                  onChangeUsername();
-                },
+                action: () => { setOpen(false); onChangeUsername(); },
               },
               {
                 icon: <KeyRound size={13} />,
                 label: "Change Password",
-                action: () => {
-                  setOpen(false);
-                  onChangePassword();
-                },
+                action: () => { setOpen(false); onChangePassword(); },
               },
             ].map((item) => (
               <button
@@ -244,58 +246,44 @@ const UserFooter = ({
                   alignItems: "center",
                   gap: 10,
                   width: "100%",
-                  padding: "10px 14px",
+                  padding: "10px 16px",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.8rem",
-                  fontWeight: 500,
-                  color: "#222",
+                  color: "#3d3d3b",
                   textAlign: "left",
-                  transition: "background 0.1s",
+                  transition: "background 0.12s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "#f9fafb")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "none")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#ede9e2")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
               >
-                <span style={{ color: "#666" }}>{item.icon}</span>
+                <span style={{ color: "#8a8680" }}>{item.icon}</span>
                 {item.label}
               </button>
             ))}
 
-            {/* Divider + Logout */}
-            <div style={{ borderTop: "1px solid #f3f4f6" }}>
+            <div style={{ borderTop: "1px solid #ede9e2" }}>
               <button
-                onClick={() => {
-                  setOpen(false);
-                  onLogout();
-                }}
+                onClick={() => { setOpen(false); onLogout(); }}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
                   width: "100%",
-                  padding: "10px 14px",
+                  padding: "10px 16px",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: "0.8rem",
-                  fontWeight: 500,
                   color: "#c0392b",
                   textAlign: "left",
-                  transition: "background 0.1s",
+                  transition: "background 0.12s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = "#fef2f2")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "none")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#fef2f2")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
               >
                 <LogIn size={13} style={{ transform: "rotate(180deg)" }} />
                 Sign Out
@@ -307,30 +295,36 @@ const UserFooter = ({
 
       {/* Footer card */}
       <div
+        onClick={() => setOpen((v) => !v)}
         style={{
+          margin: "0 8px 12px",
           padding: "10px 12px",
-          borderRadius: 10,
-          background: "#f5f5f5",
+          background: open ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)",
           display: "flex",
           alignItems: "center",
           gap: 10,
+          cursor: "pointer",
+          transition: "background 0.15s",
         }}
+        onMouseEnter={(e) => { if (!open) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.08)"; }}
+        onMouseLeave={(e) => { if (!open) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.05)"; }}
       >
         <div
           style={{
             width: 32,
             height: 32,
             borderRadius: "50%",
-            background: role === "superadmin" ? "#111" : "#444",
+            background: role === "superadmin" ? "#c9a96e" : "rgba(255,255,255,0.15)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            color: "white",
-            fontSize: "0.72rem",
-            fontWeight: 800,
+            color: role === "superadmin" ? "#1a1a18" : "rgba(255,255,255,0.8)",
+            fontSize: "0.68rem",
+            fontWeight: 700,
             fontFamily: "'DM Sans', sans-serif",
             letterSpacing: "0.04em",
+            border: role === "superadmin" ? "none" : "1px solid rgba(255,255,255,0.2)",
           }}
         >
           {initials}
@@ -340,8 +334,8 @@ const UserFooter = ({
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: "0.82rem",
-              fontWeight: 700,
-              color: "#111",
+              fontWeight: 500,
+              color: "rgba(255,255,255,0.9)",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -352,9 +346,8 @@ const UserFooter = ({
           <div
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.68rem",
-              color: "#666",
-              fontWeight: 500,
+              fontSize: "0.65rem",
+              color: "rgba(255,255,255,0.35)",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -363,33 +356,15 @@ const UserFooter = ({
             {role === "superadmin" ? "Full Access" : "Content Manager"}
           </div>
         </div>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          title="Account options"
+        <ChevronUp
+          size={14}
           style={{
-            background: open ? "#e5e7eb" : "none",
-            border: "none",
-            cursor: "pointer",
-            color: "#444",
-            display: "flex",
-            alignItems: "center",
-            padding: "4px 5px",
-            borderRadius: 6,
-            transition: "background 0.15s, color 0.15s, transform 0.2s",
+            color: "rgba(255,255,255,0.3)",
+            transition: "transform 0.2s",
+            transform: open ? "rotate(0deg)" : "rotate(180deg)",
             flexShrink: 0,
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#e5e7eb";
-            e.currentTarget.style.color = "#111";
-          }}
-          onMouseLeave={(e) => {
-            if (!open) e.currentTarget.style.background = "none";
-            e.currentTarget.style.color = "#444";
-          }}
-        >
-          <ChevronUp size={15} />
-        </button>
+        />
       </div>
     </div>
   );
@@ -423,54 +398,55 @@ const SidebarContent = ({
       display: "flex",
       flexDirection: "column",
       height: "100%",
-      background: "white",
+      background: "#1a1a18",
     }}
   >
-    {/* Logo */}
-    <div style={{ padding: "20px 16px 12px" }}>
+    {/* Logo / Brand */}
+    <div style={{ padding: "24px 16px 20px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
-          style={{
-            width: 30,
-            height: 30,
-            background: "#111",
-            borderRadius: 8,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M8 1L14 5V11L8 15L2 11V5L8 1Z"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-            <circle cx="8" cy="8" r="2" fill="white" />
-          </svg>
+        {/* Geometric mark matching about page aesthetic */}
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <polygon points="13,1 25,8 25,20 13,25 1,20 1,8" stroke="#c9a96e" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+          <circle cx="13" cy="13" r="3" fill="#c9a96e" />
+        </svg>
+        <div>
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "1.05rem",
+              fontWeight: 400,
+              color: "#ffffff",
+              letterSpacing: "0.01em",
+              lineHeight: 1,
+            }}
+          >
+            Élan Admin
+          </div>
+          <div
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.58rem",
+              color: "rgba(255,255,255,0.3)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              marginTop: 2,
+            }}
+          >
+            Control Panel
+          </div>
         </div>
-        <span
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 800,
-            fontSize: "0.92rem",
-            color: "#111",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          ÉLAN ADMIN
-        </span>
       </div>
     </div>
 
+    {/* Thin gold rule */}
+    <div style={{ height: 1, background: "rgba(201,169,110,0.2)", margin: "0 14px 16px" }} />
+
     {/* Nav */}
-    <div style={{ padding: "0 8px", flex: 1, overflowY: "auto" }}>
+    <div style={{ padding: "0 2px", flex: 1, overflowY: "auto" }}>
       <NavItem
         active={tab === "dashboard"}
         onClick={() => navTo("dashboard")}
-        icon={<LayoutDashboard size={15} />}
+        icon={<LayoutDashboard size={14} />}
         label="Dashboard"
       />
       <NavItem
@@ -480,18 +456,14 @@ const SidebarContent = ({
           <span style={{ position: "relative", display: "flex" }}>
             {unread > 0 ? (
               <motion.div
-                animate={{ rotate: [-10, 10, -10] }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
+                animate={{ rotate: [-8, 8, -8] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 style={{ display: "inline-flex", originX: 0.5, originY: 0 }}
               >
-                <Bell size={15} />
+                <Bell size={14} />
               </motion.div>
             ) : (
-              <Bell size={15} />
+              <Bell size={14} />
             )}
           </span>
         }
@@ -501,7 +473,7 @@ const SidebarContent = ({
       <NavItem
         active={false}
         onClick={() => window.open("/", "_blank")}
-        icon={<Eye size={15} />}
+        icon={<Eye size={14} />}
         label="View Site"
       />
 
@@ -509,20 +481,20 @@ const SidebarContent = ({
         <NavItem
           active={tab === "blog"}
           onClick={() => navTo("blog")}
-          icon={<FileText size={15} />}
+          icon={<FileText size={14} />}
           label="Blog Posts"
         />
         <NavItem
           active={tab === "products"}
           onClick={() => navTo("products")}
-          icon={<Package size={15} />}
+          icon={<Package size={14} />}
           label="Products"
         />
         <NavItem
           active={tab === "jobs"}
           onClick={() => navTo("jobs")}
-          icon={<Briefcase size={15} />}
-          label="Jobs"
+          icon={<Briefcase size={14} />}
+          label="Vacancies"
         />
       </NavSection>
 
@@ -530,32 +502,27 @@ const SidebarContent = ({
         <NavItem
           active={false}
           onClick={onBell}
-          icon={<Mail size={15} />}
+          icon={<Mail size={14} />}
           label="Messages"
           badge={unread}
         />
-
-        {/* My Account — visible to all roles */}
         <NavItem
           active={tab === "myaccount"}
           onClick={() => navTo("myaccount")}
-          icon={<UserCircle size={15} />}
+          icon={<UserCircle size={14} />}
           label="My Account"
         />
-
-        {/* Admins tab — superadmin only */}
         {role === "superadmin" && (
           <NavItem
             active={tab === "admins"}
             onClick={() => navTo("admins")}
-            icon={<Users size={15} />}
+            icon={<Users size={14} />}
             label="Admins"
           />
         )}
       </NavSection>
     </div>
 
-    {/* User footer with popover */}
     <UserFooter
       userName={userName}
       role={role}
@@ -599,15 +566,13 @@ export default function AdminSidebar({
       <aside
         className="admin-sidebar-desktop"
         style={{
-          width: 240,
-          background: "white",
-          borderRight: "1px solid #e5e7eb",
+          width: 220,
+          background: "#1a1a18",
           flexDirection: "column",
           position: "fixed",
           top: 0,
           bottom: 0,
           zIndex: 50,
-          boxShadow: "1px 0 0 #f3f4f6",
         }}
       >
         <SidebarContent
@@ -633,24 +598,24 @@ export default function AdminSidebar({
           left: 0,
           right: 0,
           zIndex: 100,
-          background: "white",
-          borderBottom: "1px solid var(--off-white)",
-          padding: "14px 16px",
+          background: "#1a1a18",
+          padding: "14px 20px",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
         <div
           style={{
-            fontFamily: "Cormorant Garamond, serif",
-            fontSize: "1.1rem",
-            fontWeight: 600,
-            color: "var(--charcoal)",
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "1.15rem",
+            fontWeight: 400,
+            color: "#ffffff",
+            letterSpacing: "-0.01em",
           }}
         >
           Élan Admin
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <button
             onClick={onBell}
             style={{
@@ -660,10 +625,10 @@ export default function AdminSidebar({
               position: "relative",
               display: "flex",
               alignItems: "center",
-              color: "var(--charcoal)",
+              color: "rgba(255,255,255,0.6)",
             }}
           >
-            <Bell size={unread > 0 ? 24 : 20} />
+            <Bell size={19} />
             {unread > 0 && (
               <span
                 style={{
@@ -672,7 +637,7 @@ export default function AdminSidebar({
                   right: -4,
                   background: "#c0392b",
                   color: "white",
-                  fontSize: "0.6rem",
+                  fontSize: "0.58rem",
                   fontWeight: 700,
                   padding: "1px 4px",
                   borderRadius: 9999,
@@ -690,10 +655,10 @@ export default function AdminSidebar({
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              color: "var(--charcoal)",
+              color: "rgba(255,255,255,0.6)",
             }}
           >
-            <Menu size={22} />
+            <Menu size={20} />
           </button>
         </div>
       </div>
@@ -710,14 +675,14 @@ export default function AdminSidebar({
               style={{
                 position: "fixed",
                 inset: 0,
-                background: "rgba(0,0,0,0.4)",
+                background: "rgba(0,0,0,0.6)",
                 zIndex: 150,
               }}
             />
             <motion.aside
-              initial={{ x: -260 }}
+              initial={{ x: -240 }}
               animate={{ x: 0 }}
-              exit={{ x: -260 }}
+              exit={{ x: -240 }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
               style={{
                 position: "fixed",
@@ -725,7 +690,7 @@ export default function AdminSidebar({
                 left: 0,
                 bottom: 0,
                 width: 240,
-                background: "white",
+                background: "#1a1a18",
                 zIndex: 200,
                 display: "flex",
                 flexDirection: "column",
@@ -735,7 +700,7 @@ export default function AdminSidebar({
                 style={{
                   display: "flex",
                   justifyContent: "flex-end",
-                  padding: "12px 12px 0",
+                  padding: "14px 14px 0",
                 }}
               >
                 <button
@@ -744,34 +709,22 @@ export default function AdminSidebar({
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "var(--text-muted)",
+                    color: "rgba(255,255,255,0.4)",
                   }}
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
               <SidebarContent
                 tab={tab}
                 unread={unread}
                 userName={userName}
-                navTo={(t) => {
-                  setSidebarOpen(false);
-                  navTo(t);
-                }}
-                onBell={() => {
-                  setSidebarOpen(false);
-                  onBell();
-                }}
+                navTo={(t) => { setSidebarOpen(false); navTo(t); }}
+                onBell={() => { setSidebarOpen(false); onBell(); }}
                 role={role}
                 onLogout={onLogout}
-                onChangePassword={() => {
-                  setSidebarOpen(false);
-                  onChangePassword();
-                }}
-                onChangeUsername={() => {
-                  setSidebarOpen(false);
-                  onChangeUsername();
-                }}
+                onChangePassword={() => { setSidebarOpen(false); onChangePassword(); }}
+                onChangeUsername={() => { setSidebarOpen(false); onChangeUsername(); }}
               />
             </motion.aside>
           </>

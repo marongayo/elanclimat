@@ -12,7 +12,7 @@ import BackToTop from "@/components/BackToTop";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const metadata: Metadata = {
-  title: "HVAC, Solar & Energy Blog — Engineering Insights from Kenya",
+  title: "HVAC, Solar & Energy Blog | Engineering Insights",
   description:
     "Expert articles on HVAC installation, solar energy systems, cold rooms, electrical engineering, and sustainable building solutions from Élan Climat's engineers in Kenya.",
   keywords: [

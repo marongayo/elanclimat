@@ -14,6 +14,7 @@ import { CsrSection } from "@/components/about-components/CsrSection";
 import { CtaSection } from "@/components/about-components/CtaSection";
 import Navbar from "@/components/Navbar";
 import { C } from "@/lib/constants";
+import { MissionSection } from "@/components/about-components/MissionSection";
 
 export default function AboutPage() {
   const [showTop, setShowTop] = useState(false);
@@ -58,6 +59,7 @@ export default function AboutPage() {
       <HeroSection />
       <StatsBar />
       <StorySection />
+      <MissionSection />
       <ValuesSection />
       <ServicesSection />
       <TeamSection />
