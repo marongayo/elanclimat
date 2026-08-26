@@ -48,10 +48,11 @@ export default function Hero() {
             </h1>
 
             <p className={styles.subheading}>
-              Professional HVAC, solar, and refrigeration installation services
-              across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri. Our
-              services are engineered for homes, offices, hotels, and cold
-              storage facilities in Kenya and across Uganda, Tanzania and Rwanda.
+              Professional Heating, Ventilation & Air Conditioning (HVAC),
+              solar, and refrigeration installation services across Nairobi,
+              Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri. Our services are
+              engineered for homes, offices, hotels, and cold storage facilities
+              in Kenya and across Uganda, Tanzania and Rwanda.
             </p>
 
             <Link href="/contact" className={styles.cta}>

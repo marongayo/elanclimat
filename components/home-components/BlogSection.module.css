@@ -1,8 +1,9 @@
 /* ── BlogSection ── */
 .section {
-  background-color: #f9f7f4;
+  background: linear-gradient(180deg, var(--warm-white) 0%, #f1e9dc 100%);
   padding: 96px 0;
   font-family: "DM Sans", sans-serif;
+  border-top: 1px solid rgba(26, 26, 24, 0.06);
 }
 
 .inner {
@@ -71,7 +72,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #8fa68e;
+  color: var(--sage);
   font-weight: 500;
 }
 
@@ -79,7 +80,7 @@
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(1.8rem, 3vw, 2.6rem);
   font-weight: 400;
-  color: #1a1a18;
+  color: var(--charcoal);
   line-height: 1.1;
   letter-spacing: -0.015em;
   margin: 0;
@@ -95,9 +96,9 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(26, 26, 24, 0.5);
+  color: rgba(26, 26, 24, 0.6);
   text-decoration: none;
-  border-bottom: 1px solid rgba(26, 26, 24, 0.15);
+  border-bottom: 1px solid rgba(26, 26, 24, 0.16);
   padding-bottom: 2px;
   transition:
     color 0.2s,
@@ -106,7 +107,7 @@
 }
 
 .allLink:hover {
-  color: #1a1a18;
+  color: var(--charcoal);
   border-color: rgba(26, 26, 24, 0.4);
 }
 
@@ -123,7 +124,7 @@
   border-radius: 50%;
   border: 1px solid rgba(26, 26, 24, 0.15);
   background: transparent;
-  color: #1a1a18;
+  color: var(--charcoal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,9 +138,9 @@
 }
 
 .arrowBtn:hover:not(:disabled) {
-  border-color: #8fa68e;
+  border-color: var(--sage);
   background: rgba(143, 166, 142, 0.08);
-  color: #8fa68e;
+  color: var(--sage-dark);
 }
 
 .arrowBtn:disabled {
@@ -193,6 +194,11 @@
   display: flex;
   flex-direction: column;
   scroll-snap-align: start;
+  background: #ffffff;
+  border: 1px solid rgba(26, 26, 24, 0.06);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 14px 34px rgba(26, 26, 24, 0.05);
 }
 
 @media (max-width: 1024px) {
@@ -223,6 +229,7 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #efece6;
+  border-radius: 16px;
 }
 
 .cardImage {
@@ -255,7 +262,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 20px;
+  padding-top: 16px;
 }
 
 .cardMeta {
@@ -269,7 +276,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8fa68e;
+  color: var(--sage);
   font-weight: 500;
 }
 
@@ -294,7 +301,7 @@
   font-family: "Cormorant Garamond", serif;
   font-size: 1.25rem;
   font-weight: 500;
-  color: #1a1a18;
+  color: var(--charcoal);
   line-height: 1.28;
   letter-spacing: -0.01em;
   text-decoration: none;
@@ -302,13 +309,13 @@
 }
 
 .cardTitleLink:hover {
-  color: #5d705c;
+  color: var(--sage-dark);
 }
 
 .cardExcerpt {
   font-family: "DM Sans", sans-serif;
   font-size: 0.82rem;
-  color: #6b6b68;
+  color: #5f5c57;
   line-height: 1.75;
   margin: 0;
   font-weight: 300;
@@ -324,7 +331,7 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #1a1a18;
+  color: var(--charcoal);
   text-decoration: none;
   border-bottom: 1px solid rgba(26, 26, 24, 0.2);
   padding-bottom: 2px;
@@ -336,8 +343,8 @@
 }
 
 .readLink:hover {
-  color: #8fa68e;
-  border-color: #8fa68e;
+  color: var(--sage-dark);
+  border-color: var(--sage-dark);
 }
 
 /* ── Dot indicators ── */
@@ -362,7 +369,7 @@
 }
 
 .dot[data-active="true"] {
-  background: #8fa68e;
+  background: var(--sage);
   width: 20px;
   border-radius: 9999px;
 }

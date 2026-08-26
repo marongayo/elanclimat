@@ -1,8 +1,9 @@
 /* ── AboutSection ── */
 .section {
-  background-color: #f9f7f4;
+  background: linear-gradient(180deg, var(--warm-white) 0%, #efe6d8 100%);
   padding: 96px 0;
   font-family: "DM Sans", sans-serif;
+  border-top: 1px solid rgba(26, 26, 24, 0.06);
 }
 
 .grid {
@@ -42,21 +43,22 @@
   height: 560px;
 }
 
-.collageMain {
-  grid-column: 1 / -1;
-  position: relative;
-  overflow: hidden;
-}
-
+.collageMain,
 .collageBottomLeft,
 .collageBottomRight {
   position: relative;
   overflow: hidden;
+  border-radius: 22px;
+  box-shadow: 0 20px 46px rgba(26, 26, 24, 0.12);
+}
+
+.collageMain {
+  grid-column: 1 / -1;
 }
 
 /* ── Tab controls ── */
 .tabControls {
-  margin-bottom: 40px;
+  margin-bottom: 32px;
   align-self: flex-start;
 }
 
@@ -65,9 +67,10 @@
   align-items: center;
   gap: 2px;
   padding: 3px;
-  background: #ffffff;
-  border: 1px solid #8fa68e;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(26, 26, 24, 0.08);
   border-radius: 9999px;
+  backdrop-filter: blur(10px);
 }
 
 .tabButton {
@@ -79,15 +82,19 @@
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, font-weight 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    font-weight 0.2s;
   background: transparent;
-  color: #888580;
+  color: var(--text-muted);
 }
 
 .tabButton[data-active="true"] {
   font-weight: 500;
-  background: #1a1a18;
+  background: var(--charcoal);
   color: #ffffff;
+  box-shadow: 0 8px 22px rgba(26, 26, 24, 0.14);
 }
 
 /* ── Panel container ── */
@@ -99,7 +106,7 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   position: absolute;
   top: 0;
   left: 0;
@@ -133,7 +140,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #8fa68e;
+  color: var(--sage);
   font-weight: 700;
 }
 
@@ -141,7 +148,7 @@
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(2rem, 3.5vw, 2.8rem);
   font-weight: 400;
-  color: #1a1a18;
+  color: var(--charcoal);
   line-height: 1.12;
   letter-spacing: -0.015em;
   margin: 0;
@@ -156,7 +163,7 @@
 .panelDescription {
   font-family: "DM Sans", sans-serif;
   font-size: 0.88rem;
-  color: #6b6b68;
+  color: #5f5c57;
   line-height: 1.8;
   margin: 0;
   font-weight: 300;
@@ -167,23 +174,25 @@
   font-family: "DM Sans", sans-serif;
   font-size: 0.72rem;
   font-weight: 500;
-  color: #1a1a18;
+  color: var(--charcoal);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-bottom: 1px solid #1a1a18;
+  border-bottom: 1px solid var(--charcoal);
   padding-bottom: 2px;
   align-self: flex-start;
   margin-top: 8px;
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .ctaLink:hover {
-  color: #888580;
-  border-color: #888580;
+  color: var(--sage-dark);
+  border-color: var(--sage-dark);
 }
 
 /* ── Right column wrapper ── */

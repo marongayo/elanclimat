@@ -4,18 +4,25 @@
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
+  background: var(--charcoal);
 }
 
 .overlay {
   position: absolute;
   inset: 0;
   z-index: 10;
-  background: linear-gradient(
-    to right,
-    rgba(26, 26, 24, 0.72) 0%,
-    rgba(26, 26, 24, 0.28) 60%,
-    rgba(26, 26, 24, 0.08) 100%
-  );
+  background:
+    linear-gradient(
+      90deg,
+      rgba(26, 26, 24, 0.82) 0%,
+      rgba(26, 26, 24, 0.48) 54%,
+      rgba(26, 26, 24, 0.18) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(26, 26, 24, 0.16) 0%,
+      rgba(26, 26, 24, 0.38) 100%
+    );
 }
 
 .content {
@@ -32,6 +39,11 @@
   flex-direction: column;
   gap: 2.5rem;
   padding: 0 2rem 3.5rem;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(26, 26, 24, 0.12) 100%
+  );
 }
 
 @media (min-width: 768px) {
@@ -64,7 +76,7 @@
 .eyebrowLine {
   width: 24px;
   height: 1px;
-  background: #8fa68e;
+  background: var(--sage);
 }
 
 .eyebrowText {
@@ -72,7 +84,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #8fa68e;
+  color: var(--sage);
 }
 
 .heading {
@@ -92,7 +104,7 @@
 .subheading {
   font-family: "DM Sans", sans-serif;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.75;
   max-width: 380px;
   margin: 0 0 2.25rem;
@@ -104,8 +116,8 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: #1a1a18;
-  border: 1.5px solid #1a1a18;
+  background: var(--charcoal);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
   padding: 10px 10px 10px 22px;
   border-radius: 9999px;
   font-family: "DM Sans", sans-serif;
@@ -115,31 +127,40 @@
   text-transform: uppercase;
   text-decoration: none;
   color: white;
-  transition: background 0.3s, color 0.3s, border-color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    border-color 0.3s,
+    box-shadow 0.3s;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
 }
 
 .cta:hover {
   background: transparent;
   color: white;
-  border-color: white;
+  border-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
 }
 
 .cta:hover .ctaIcon {
   background: white;
-  color: #1a1a18;
+  color: var(--charcoal);
   transform: rotate(45deg);
 }
 
 .ctaIcon {
   background: white;
-  color: black;
+  color: var(--charcoal);
   width: 34px;
   height: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s, color 0.3s, transform 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    transform 0.3s;
   flex-shrink: 0;
 }
 
@@ -172,23 +193,28 @@
   font-weight: 400;
   letter-spacing: 0.02em;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .tag:hover {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
 }
 
 .tagDot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #8fa68e;
+  background: var(--sage);
   flex-shrink: 0;
   display: inline-block;
 }

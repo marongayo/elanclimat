@@ -9,15 +9,16 @@ export const SERVICES = [
     slug: "hvac",
     num: "01",
     eyebrow: "Climate Control",
-    seoTitle: "HVAC Installation and Maintenance Services in Kenya",
+    seoTitle:
+      "Heating, Ventilation, and Air Conditioning (HVAC) Installation and Maintenance Services in Kenya",
     headline: "Precision Climate, Every Season",
-    title: "HVAC Services",
+    title: "Heating, Ventilation & Air Conditioning (HVAC)",
     metaTitle:
-      "HVAC Installation and Maintenance in Nairobi, Kenya | Élan Climat",
+      "Heating, Ventilation & Air Conditioning (HVAC) Installation in Nairobi, Kenya | Élan Climat",
     metaDescription:
-      "Expert HVAC installation, repair and maintenance across Nairobi, Mombasa, Kisumu, Eldoret & Nakuru. VRF systems, ducted AC, and preventive contracts. Request a quote.",
+      "Expert Heating, Ventilation, and Air Conditioning (HVAC) installation, repair and maintenance across Nairobi, Mombasa, Kisumu, Eldoret & Nakuru. VRF systems, ducted AC, and preventive contracts. Request a quote.",
     description:
-      "From split units to full VRF systems, we design, install, and service HVAC solutions for homes, offices, hotels, hospitals, and industrial facilities across Nairobi, Mombasa, Kisumu, Eldoret, and Nakuru. Every system is sized and commissioned for peak energy efficiency in Kenya's climate.",
+      "From split units to full VRF systems, Élan Climat & Énergie designs, installs, and services Heating, Ventilation, and Air Conditioning (HVAC) solutions for homes, offices, hotels, hospitals, and industrial facilities across Nairobi, Mombasa, Kisumu, Eldoret, and Nakuru. Every HVAC system is sized and commissioned for peak energy efficiency in Kenya's climate, and backed by a Nairobi-based engineering team that also delivers solar PV, cold room refrigeration, electrical, plumbing, and elevator works under one contractor.",
     features: [
       "Full system design & load calculations",
       "VRF / VRV multi-split systems",
@@ -29,21 +30,21 @@ export const SERVICES = [
       {
         heading: "Design & Engineering",
         body: [
-          "Every HVAC project at Élan Climat begins on paper, not on site. Before any equipment is specified, our engineers carry out a detailed cooling and heating load calculation using actual building data — orientation, glazing ratios, occupancy density, internal heat gains from equipment and lighting, and Kenya-specific weather profiles for the project's location. This is the single step most under-engineered installations skip, and it's the root cause of the two most common HVAC complaints we inherit from other contractors: systems that are too large and short-cycle constantly, or too small and never quite hold setpoint on a hot afternoon.",
-          "For multi-zone commercial buildings, we model airflow and ductwork routing in CAD before fabrication begins, checking for clashes with structural beams, electrical containment, and ceiling void depth. This reduces on-site rework to a fraction of what's typical in the Kenyan market and means the installation programme we quote is the installation programme we deliver.",
+          "Every Heating, Ventilation, and Air Conditioning (HVAC) project at Élan Climat begins on paper, not on site. Before any equipment is specified, our engineers carry out a detailed cooling and heating load calculation using actual building data — orientation, glazing ratios, occupancy density, internal heat gains from equipment and lighting, and Kenya-specific weather profiles for the project's location. This is the single step most under-engineered installations skip, and it's the root cause of the two most common HVAC complaints we inherit from other contractors: systems that are too large and short-cycle constantly, or too small and never quite hold setpoint on a hot afternoon.",
+          "For multi-zone commercial buildings, we model airflow and ductwork routing in CAD before fabrication begins, checking for clashes with structural beams, electrical containment, and ceiling void depth. This reduces on-site rework to a fraction of what's typical in the Kenyan market and means the HVAC installation programme we quote is the installation programme we deliver, whether the project is a single-storey retail fit-out in Nairobi or a multi-floor hotel tower on the coast.",
         ],
       },
       {
         heading: "Equipment & System Types",
         body: [
           "We design and install the full range of HVAC technologies suited to Kenya's building stock: wall-mounted and floor-ceiling split units for individual rooms; VRF/VRV multi-split systems that allow dozens of indoor units to run off a shared outdoor condenser with independent zone control; ducted central air systems for open-plan commercial floors and hospitality projects; and precision cooling units for server rooms and data centres where temperature and humidity tolerances are far tighter than in standard occupied space.",
-          "Equipment is sourced exclusively through authorised distributors of brands including Daikin, Mitsubishi Electric, LG, Samsung, Carrier, and Trane — never grey-market imports — which protects warranty validity and ensures genuine spare parts remain available for the system's full service life.",
+          "Equipment is sourced exclusively through authorised distributors of brands including Daikin, Mitsubishi Electric, LG, Samsung, Carrier, and Trane — never grey-market imports — which protects warranty validity and ensures genuine spare parts remain available for the HVAC system's full service life.",
         ],
       },
       {
         heading: "Installation Process",
         body: [
-          "Once a design is approved, installation follows a fixed sequence: structural mounting and vibration isolation for outdoor condensers, refrigerant pipe routing with correct fall and insulation thickness to prevent condensation damage, condensate drainage tied into the building's plumbing with appropriate trap and fall, and electrical connection through dedicated circuits sized to the equipment's actual draw — not a generic allowance. Refrigerant lines are pressure-tested and evacuated to remove moisture and air before charging, and every system is commissioned against manufacturer specification before handover, with readings logged and provided to the client.",
+          "Once a design is approved, installation follows a fixed sequence: structural mounting and vibration isolation for outdoor condensers, refrigerant pipe routing with correct fall and insulation thickness to prevent condensation damage, condensate drainage tied into the building's plumbing with appropriate trap and fall, and electrical connection through dedicated circuits sized to the equipment's actual draw — not a generic allowance. Refrigerant lines are pressure-tested and evacuated to remove moisture and air before charging, and every HVAC system is commissioned against manufacturer specification before handover, with readings logged and provided to the client.",
         ],
       },
       {
@@ -55,7 +56,13 @@ export const SERVICES = [
       {
         heading: "Maintenance & Aftercare",
         body: [
-          "An HVAC system's efficiency degrades steadily from the day it's commissioned unless it's maintained on a schedule. Our preventive maintenance contracts cover filter cleaning or replacement, condenser and evaporator coil cleaning, refrigerant pressure and superheat checks, electrical connection tightening, and condensate drain clearing — the items that, left unaddressed, quietly push running costs up by 15–30% within two years. Contract clients also receive priority emergency response and discounted call-out rates outside the maintenance schedule.",
+          "A Heating, Ventilation, and Air Conditioning (HVAC) system's efficiency degrades steadily from the day it's commissioned unless it's maintained on a schedule. Our preventive maintenance contracts cover filter cleaning or replacement, condenser and evaporator coil cleaning, refrigerant pressure and superheat checks, electrical connection tightening, and condensate drain clearing — the items that, left unaddressed, quietly push running costs up by 15–30% within two years. Contract clients also receive priority emergency response and discounted call-out rates outside the maintenance schedule.",
+        ],
+      },
+      {
+        heading: "Working With a Multi-Disciplinary Contractor",
+        body: [
+          "Because Élan Climat & Énergie also delivers solar PV and battery storage, electrical works, plumbing, cold room refrigeration, and elevator installation, our HVAC clients frequently combine projects — a hotel replacing its chiller plant while also adding solar offset, or a hospital pairing a new ducted system with a standby generator upgrade. Running these scopes through one engineering team, rather than coordinating separate specialist contractors, removes the interface risk that typically shows up at handover as blame-shifting between trades.",
         ],
       },
     ],
@@ -63,12 +70,12 @@ export const SERVICES = [
       {
         sector: "Hospitality",
         description:
-          "Guest comfort is non-negotiable for hotels and lodges. We design quiet, zoned systems that let each room or suite control its own setpoint without disturbing the building's overall energy profile, with particular attention to noise levels in sleeping areas.",
+          "Guest comfort is non-negotiable for hotels and lodges. We design quiet, zoned HVAC systems that let each room or suite control its own setpoint without disturbing the building's overall energy profile, with particular attention to noise levels in sleeping areas.",
       },
       {
         sector: "Healthcare",
         description:
-          "Hospitals and clinics require precise temperature and humidity control, particularly in theatres, wards, and pharmacy storage. We design systems with appropriate filtration and positive/negative pressure relationships where infection control requires it.",
+          "Hospitals and clinics require precise temperature and humidity control, particularly in theatres, wards, and pharmacy storage. We design HVAC systems with appropriate filtration and positive/negative pressure relationships where infection control requires it.",
       },
       {
         sector: "Data Centres & Server Rooms",
@@ -84,7 +91,7 @@ export const SERVICES = [
     faq: [
       {
         q: "How long does HVAC installation take for a commercial building in Nairobi?",
-        a: "For a typical commercial fit-out in Nairobi, HVAC installation takes 2–6 weeks depending on system complexity. A simple split-unit installation for a small office can be completed in 1–2 days, while a full VRF system for a multi-floor building typically requires 3–5 weeks including ductwork, controls wiring, and commissioning.",
+        a: "For a typical commercial fit-out in Nairobi, Heating, Ventilation, and Air Conditioning (HVAC) installation takes 2–6 weeks depending on system complexity. A simple split-unit installation for a small office can be completed in 1–2 days, while a full VRF system for a multi-floor building typically requires 3–5 weeks including ductwork, controls wiring, and commissioning.",
       },
       {
         q: "What HVAC systems work best in Nairobi's climate?",
@@ -114,6 +121,10 @@ export const SERVICES = [
         q: "Can you integrate HVAC controls with a building management system (BMS)?",
         a: "Yes. For commercial and hospitality projects, we integrate HVAC controllers with BMS platforms via BACnet or Modbus protocols, enabling centralised scheduling, demand-based control, and energy reporting across the entire building.",
       },
+      {
+        q: "Does Élan Climat only handle HVAC, or do you cover other building services too?",
+        a: "HVAC is one of seven disciplines we deliver in-house. Élan Climat & Énergie is a multi-disciplinary engineering contractor also covering solar PV and battery storage, cold room refrigeration, electrical works, plumbing, elevator installation and maintenance, and standby generator supply — so a client can run an HVAC upgrade alongside a solar or electrical scope with a single point of accountability.",
+      },
     ],
     whyPoints: [
       {
@@ -134,7 +145,8 @@ export const SERVICES = [
       },
     ],
     heroImg: "/everett.jpg",
-    heroAlt: "HVAC installation project in Nairobi Kenya",
+    heroAlt:
+      "Heating, Ventilation, and Air Conditioning (HVAC) installation project in Nairobi Kenya",
     colA: "/sticky.png",
     colB: "/images/HVAC.jpg",
     colAlt: [
@@ -149,15 +161,16 @@ export const SERVICES = [
     slug: "plumbing",
     num: "02",
     eyebrow: "Water Systems",
-    seoTitle: "Commercial and Residential Plumbing Services in Kenya",
+    seoTitle:
+      "Commercial and Residential Plumbing Installation, Repair and Maintenance Services in Kenya",
     headline: "Flows Built to Last",
     title: "Plumbing Services",
     metaTitle:
-      "Commercial & Residential Plumbing Services in Kenya | Élan Climat",
+      "Commercial & Residential Plumbing Contractor in Nairobi, Kenya | Élan Climat & Énergie",
     metaDescription:
-      "Full plumbing installations for commercial buildings, apartments & hotels across Nairobi, Mombasa & Nyeri. Supply lines, riser systems, drainage & emergency repairs.",
+      "Full plumbing installations, repairs and emergency call-outs for commercial buildings, apartments, hospitals & hotels across Nairobi, Mombasa & Nyeri. Supply lines, riser systems, drainage, leak detection & 24/7 emergency repairs from a licensed Kenyan plumbing contractor.",
     description:
-      "Complete plumbing solutions from underground supply lines to high-rise riser systems and sanitary installations across Nairobi, Mombasa, and Nyeri. We handle new builds, renovations, and emergency repairs for commercial buildings, apartments, hotels, and hospitals throughout Kenya.",
+      "Élan Climat & Énergie delivers complete plumbing contracting services from underground supply lines to high-rise riser systems, sanitary installations, and hot-water design across Nairobi, Mombasa, and Nyeri. As a licensed Kenyan plumbing contractor, we handle new builds, tenant-improvement renovations, and emergency repairs for commercial buildings, apartments, hotels, hospitals, schools, and industrial facilities throughout Kenya, with every installation engineered rather than guessed at.",
     features: [
       "Domestic & commercial supply lines",
       "High-rise riser & stack systems",
@@ -169,15 +182,15 @@ export const SERVICES = [
       {
         heading: "Design & Engineering",
         body: [
-          "Plumbing failures in Kenyan commercial buildings are rarely caused by bad workmanship alone — far more often, they trace back to a design stage that was skipped entirely. Élan Climat's plumbing team works from approved architectural and structural drawings to size every pipe run correctly, calculate adequate water storage capacity for peak demand, and set drainage gradients that actually self-clear rather than relying on regular rodding to keep them flowing.",
-          "For high-rise developments, this means modelling pressure zones across the building height, specifying booster pumps and pressure-reducing valves where needed, and coordinating riser shaft positions with the structural and architectural teams before concrete is poured — because retrofitting a riser into a finished shaft is one of the most expensive mistakes a project can make.",
+          "Plumbing failures in Kenyan commercial buildings are rarely caused by bad workmanship alone — far more often, they trace back to a design stage that was skipped entirely. Élan Climat's plumbing engineers work from approved architectural and structural drawings to size every pipe run correctly, calculate adequate water storage capacity for peak demand, and set drainage gradients that actually self-clear rather than relying on regular rodding to keep them flowing.",
+          "For high-rise developments, this means modelling pressure zones across the building height, specifying booster pumps and pressure-reducing valves where needed, and coordinating riser shaft positions with the structural and architectural teams before concrete is poured — because retrofitting a riser into a finished shaft is one of the most expensive mistakes a project can make. We apply the same design discipline to smaller residential and commercial plumbing jobs, sizing cold and hot water branches to fixture unit demand rather than a flat assumption per bathroom.",
         ],
       },
       {
         heading: "Materials & System Types",
         body: [
           "We specify CPVC, PPR, or stainless steel for hot and cold water supply depending on pressure class and budget, and UPVC conforming to Kenya Bureau of Standards specifications for drainage and soil systems. For high-rise risers, we use stainless or heavy-duty PPR with proper expansion allowance, since thermal movement in tall buildings is a common cause of leaks at poorly detailed pipe penetrations.",
-          "Hot water systems are designed around the building's actual usage profile — instantaneous, storage, or solar-thermal pre-heat feeding into a backup system — rather than a single default specification applied regardless of building type.",
+          "Hot water systems are designed around the building's actual usage profile — instantaneous, storage, or solar-thermal pre-heat feeding into a backup system — rather than a single default specification applied regardless of building type. Because our plumbing team works alongside our in-house solar division, we can also design solar water heating as the primary heat source, with electric or gas backup sized only for shortfall, which meaningfully cuts a hotel or apartment block's energy bill.",
         ],
       },
       {
@@ -189,19 +202,25 @@ export const SERVICES = [
       {
         heading: "Compliance & Standards",
         body: [
-          "All installations conform to the Kenya Plumbing Code and KEBS material standards, with backflow prevention fitted wherever a system could otherwise contaminate the public supply — a requirement frequently missed on smaller commercial fit-outs but one we treat as non-negotiable.",
+          "All installations conform to the Kenya Plumbing Code and KEBS material standards, with backflow prevention fitted wherever a system could otherwise contaminate the public supply — a requirement frequently missed on smaller commercial fit-outs but one we treat as non-negotiable. Where a project also involves electrical, HVAC, or elevator works, our plumbing scope is coordinated on the same drawing set to avoid the clashes that occur when trades are contracted separately and design in isolation.",
         ],
       },
       {
         heading: "Leak Detection & Remediation",
         body: [
-          "Where a leak is suspected but its location isn't obvious, we use acoustic leak detection and thermal imaging to pinpoint the source within walls, slabs, or underground lines before any demolition begins. This typically saves clients from the unnecessary breaking-out that comes with guesswork-based leak chasing, and lets us repair precisely rather than broadly.",
+          "Where a leak is suspected but its location isn't obvious, we use acoustic leak detection and thermal imaging to pinpoint the source within walls, slabs, or underground lines before any demolition begins. This typically saves clients from the unnecessary breaking-out that comes with guesswork-based leak chasing, and lets us repair precisely rather than broadly. For older buildings in Nairobi's established neighbourhoods, this approach is often the difference between a contained repair and weeks of disruptive, speculative excavation.",
         ],
       },
       {
         heading: "Maintenance & Emergency Response",
         body: [
           "Plumbing problems rarely wait for business hours. We provide same-day emergency response across Nairobi for burst pipes, severe leaks, and blocked drains, with maintenance contract holders receiving priority response within two hours. Scheduled maintenance covers drain jetting, water tank cleaning, valve servicing, and pump inspection for buildings with booster systems.",
+        ],
+      },
+      {
+        heading: "Water Storage, Booster Pumps & Pressure Management",
+        body: [
+          "Consistent water pressure from the ground floor to the top of a building is rarely automatic in Nairobi and Mombasa, where municipal supply pressure and reliability vary significantly by neighbourhood. We design storage tank capacity, booster pump duty-standby configurations, and pressure-reducing valve stations specifically for each site's supply conditions, rather than applying a generic sizing formula that leaves upper floors under-pressured or lower floors over-pressured and prone to fitting failure.",
         ],
       },
     ],
@@ -225,6 +244,11 @@ export const SERVICES = [
         sector: "Commercial & Office Buildings",
         description:
           "Sanitary core design and drainage systems engineered for high daytime occupancy turnover, minimising the blockages and odour issues common in poorly ventilated stacks.",
+      },
+      {
+        sector: "Industrial Facilities",
+        description:
+          "Process and utility water plumbing for manufacturing and food-processing sites, including trade-waste drainage designed to local discharge requirements.",
       },
     ],
     faq: [
@@ -260,6 +284,14 @@ export const SERVICES = [
         q: "Do you install backflow prevention devices in Kenya?",
         a: "Yes. Backflow prevention is fitted on any system with a cross-connection risk to the public water supply, including irrigation systems, boiler feeds, and certain commercial equipment connections, in line with the Kenya Plumbing Code.",
       },
+      {
+        q: "Can you combine a plumbing upgrade with solar water heating?",
+        a: "Yes. Because plumbing and solar are both delivered in-house at Élan Climat, we regularly design solar water heating as the primary hot water source for hotels and apartment blocks, with electric or gas backup sized only to cover shortfall on low-sun days, reducing water heating costs significantly.",
+      },
+      {
+        q: "Do you offer plumbing maintenance contracts, not just one-off repairs?",
+        a: "Yes. Alongside emergency call-outs, we offer scheduled maintenance contracts covering drain jetting, water tank cleaning, pump servicing, and valve inspection, which reduces the frequency of emergency failures and extends the working life of the system.",
+      },
     ],
     whyPoints: [
       {
@@ -293,15 +325,16 @@ export const SERVICES = [
     slug: "solar",
     num: "03",
     eyebrow: "Renewable Energy",
-    seoTitle: "Grid-Tied & Off-Grid Systems Solar Panel Installation in Kenya",
+    seoTitle:
+      "Grid-Tied, Off-Grid & Hybrid Solar Panel Installation and Battery Storage in Kenya",
     headline: "Harness Kenya's Sunshine",
     title: "Solar Installation",
     metaTitle:
-      "Solar Panel Installation in Kenya — Grid-Tied, Off-Grid & Hybrid | Élan Climat",
+      "Solar Panel Installation & Battery Storage in Kenya — Grid-Tied, Off-Grid & Hybrid | Élan Climat",
     metaDescription:
-      "Professional solar PV installation across Nairobi, Mombasa, Kisumu & rural Kenya. Grid-tied, off-grid, and hybrid systems with battery storage. KPLC net-metering liaison.",
+      "Professional solar PV installation across Nairobi, Mombasa, Kisumu & rural Kenya. Grid-tied, off-grid, and hybrid systems with lithium battery storage. KPLC net-metering liaison from a licensed solar contractor.",
     description:
-      "Grid-tied, off-grid, and hybrid solar PV systems engineered for maximum yield across Kenya. We handle site surveys, structural mounting, inverter sizing, lithium battery storage, and KPLC grid interconnection for homes, businesses, and farms in Nairobi, Mombasa, Kisumu, Nakuru, and rural Kenya.",
+      "Élan Climat & Énergie designs and installs grid-tied, off-grid, and hybrid solar PV systems engineered for maximum yield across Kenya. Our solar division handles site surveys, structural mounting, inverter sizing, lithium battery storage, and KPLC grid interconnection for homes, businesses, and farms in Nairobi, Mombasa, Kisumu, Nakuru, and rural Kenya, and frequently co-engineers solar systems alongside our HVAC, cold room, and electrical scopes on the same project.",
     features: [
       "Rooftop & ground-mount PV systems",
       "Battery energy storage (BESS)",
@@ -314,7 +347,7 @@ export const SERVICES = [
         heading: "Design & Energy Audit",
         body: [
           "Kenya receives some of the highest solar irradiance in the world — averaging 4 to 6 peak sun hours daily across most of the country — but turning that natural advantage into real, bankable savings depends entirely on accurate system sizing. Every Élan Climat solar project starts with an energy audit of the client's actual consumption pattern, pulled from utility bills and, where useful, temporary load logging, rather than a generic per-square-metre estimate.",
-          "We then carry out a shading analysis and structural assessment of the proposed mounting location, whether that's a rooftop, a ground-mount array, or a carport structure, to confirm the site can support the system without compromising the building's structural integrity or the array's expected output.",
+          "We then carry out a shading analysis and structural assessment of the proposed mounting location, whether that's a rooftop, a ground-mount array, or a carport structure, to confirm the site can support the system without compromising the building's structural integrity or the array's expected output. For commercial and industrial clients, the energy audit also identifies which loads are best offset by solar directly versus which loads would benefit more from a battery-backed hybrid configuration.",
         ],
       },
       {
@@ -341,6 +374,18 @@ export const SERVICES = [
           "Every system is commissioned with remote performance monitoring, giving the client visibility into daily generation, consumption offset, and any underperformance alerts without needing to climb onto the roof to check. This also gives our operations and maintenance team early warning of degrading panel strings or inverter faults, often before the client notices any change in their bill.",
         ],
       },
+      {
+        heading: "Costs, Payback Period & Financing Considerations",
+        body: [
+          "Solar payback periods in Kenya typically range from 3 to 6 years for commercial and industrial installations, depending on the client's existing tariff band and daytime consumption profile, and somewhat longer for residential systems where usage is more evening-weighted. During the proposal stage we model expected generation against the client's actual load profile to give a realistic payback estimate rather than an optimistic headline figure, and we advise on structuring projects to qualify for available financing or leasing arrangements where relevant.",
+        ],
+      },
+      {
+        heading: "Operations & Maintenance",
+        body: [
+          "Panel soiling from dust is a genuine yield loss factor in Kenya's dry seasons, particularly for sites near unpaved roads or agricultural land. Our operations and maintenance (O&M) contracts include scheduled panel cleaning, torque-checking of mounting hardware, inverter firmware updates, string-level performance verification against expected output, and battery health checks for hybrid and off-grid systems — the routine work that keeps a system performing at its commissioned yield for the full 25-year design life rather than degrading unnoticed.",
+        ],
+      },
     ],
     useCases: [
       {
@@ -362,6 +407,11 @@ export const SERVICES = [
         sector: "Integrated Solar-HVAC",
         description:
           "Solar systems co-engineered with HVAC loads, often combining a hybrid inverter with DC-inverter air conditioning for maximum efficiency and the strongest possible return on investment.",
+      },
+      {
+        sector: "Schools & Institutions",
+        description:
+          "Grid-tied and hybrid solar for schools, colleges, and NGO facilities, frequently delivered as part of donor-funded or UNDP-linked energy access programmes.",
       },
     ],
     faq: [
@@ -397,6 +447,14 @@ export const SERVICES = [
         q: "What happens to my solar system during a power outage?",
         a: "For grid-tied systems without battery storage, the inverter shuts down during a grid outage as a safety requirement. Hybrid systems with battery storage can continue powering selected critical loads automatically during an outage, switching back to normal operation once grid power returns.",
       },
+      {
+        q: "What is the typical payback period for a commercial solar installation in Kenya?",
+        a: "Most commercial and industrial solar installations in Kenya achieve payback within 3 to 6 years, depending on daytime consumption and existing tariff band. We model expected generation against your actual load profile during the proposal stage to give a realistic, site-specific payback estimate rather than a generic industry figure.",
+      },
+      {
+        q: "Do you provide ongoing operations and maintenance (O&M) for solar systems?",
+        a: "Yes. Our O&M contracts cover panel cleaning, mounting hardware inspection, inverter firmware updates, string-level performance checks, and battery health monitoring, keeping the system performing at its commissioned yield across its full design life.",
+      },
     ],
     whyPoints: [
       {
@@ -404,7 +462,7 @@ export const SERVICES = [
         body: "We specify panels and inverters from bankable tier-1 manufacturers with proven performance in East African conditions.",
       },
       {
-        title: "KPLC-Registered Installer",
+        title: "EPRA-Registered Installer",
         body: "Fully registered for KPLC grid-interconnection work, handling all paperwork and approvals on your behalf.",
       },
       {
@@ -430,15 +488,16 @@ export const SERVICES = [
     slug: "cold-room",
     num: "04",
     eyebrow: "Refrigeration",
-    seoTitle: "Cold Room Installation and Refrigeration Services in Kenya",
+    seoTitle:
+      "Cold Room Installation, Walk-In Freezers and Refrigeration Services in Kenya",
     headline: "Cold Chain, Zero Compromise",
     title: "Cold Room Installation",
     metaTitle:
-      "Cold Room Installation & Refrigeration Services in Kenya | Élan Climat",
+      "Cold Room & Refrigeration Contractor in Kenya | Élan Climat & Énergie",
     metaDescription:
-      "Purpose-built cold rooms, walk-in freezers & blast chillers for food, pharma & floriculture across Nairobi, Mombasa, Eldoret & Nakuru. IoT monitoring & compressor servicing.",
+      "Purpose-built cold rooms, walk-in freezers & blast chillers for food, pharma & floriculture across Nairobi, Mombasa, Eldoret & Nakuru. IoT monitoring, compressor servicing & WHO PIC/S-aligned pharmaceutical cold storage.",
     description:
-      "Purpose-built cold rooms, walk-in freezers, and blast chillers for food processing, hospitality, pharmaceuticals, and floriculture across Nairobi, Mombasa, Eldoret, and Nakuru. We engineer tight temperature tolerances, redundant compressors, and IoT-based remote monitoring for Kenya's cold chain industry.",
+      "Élan Climat & Énergie engineers purpose-built cold rooms, walk-in freezers, and blast chillers for food processing, hospitality, pharmaceuticals, and floriculture across Nairobi, Mombasa, Eldoret, and Nakuru. Our refrigeration division designs tight temperature tolerances, redundant compressors, and IoT-based remote monitoring for Kenya's cold chain industry, and can integrate a cold room's refrigeration load directly with an on-site solar or standby generator system where continuous uptime matters.",
     features: [
       "Walk-in cold rooms & blast freezers",
       "Modular panel system design",
@@ -478,6 +537,18 @@ export const SERVICES = [
           "We service refrigeration systems regardless of who originally installed them. Common service work includes compressor overhaul, refrigerant recharge using EPA-compliant recovery equipment, door seal replacement — a frequently overlooked source of energy loss and frost buildup — controller calibration, and panel leak repair, which we locate using the same diagnostic rigour we apply to a new build.",
         ],
       },
+      {
+        heading: "Power Resilience for Cold Chain Facilities",
+        body: [
+          "A cold room is only as reliable as the power feeding it, and grid interruptions in parts of Kenya remain a real operational risk for food processors, pharmaceutical stores, and flower export sites. Because our electrical and solar divisions sit under the same roof as refrigeration, we design integrated backup solutions — automatic transfer to a standby generator, or a solar-plus-battery configuration sized specifically to keep compressors, controllers, and monitoring systems running through an outage without any manual intervention.",
+        ],
+      },
+      {
+        heading: "Site Types & Chamber Configurations",
+        body: [
+          "Beyond single-chamber walk-in units, we design multi-temperature facilities that combine chill, freezer, and blast-freezing zones behind a shared loading dock, staged pre-cooling rooms for horticultural exporters where product must shed field heat before entering long-term storage, and compact under-counter or reach-in refrigeration for smaller retail and hospitality kitchens where floor space is limited.",
+        ],
+      },
     ],
     useCases: [
       {
@@ -499,6 +570,11 @@ export const SERVICES = [
         sector: "Hospitality",
         description:
           "Quiet-running walk-in chillers and freezers for hotel and restaurant kitchens, sized to peak kitchen demand without oversized running costs during quieter periods.",
+      },
+      {
+        sector: "Logistics & Export",
+        description:
+          "Loading-dock cold storage and dispatch chambers for exporters and distributors, designed around truck-loading schedules to minimise temperature recovery time after each door cycle.",
       },
     ],
     faq: [
@@ -533,6 +609,14 @@ export const SERVICES = [
       {
         q: "Can you upgrade an old cold room to reduce energy costs?",
         a: "Yes. Common upgrades include replacing AC fan motors with EC motors, improving door seals, upgrading controllers for better defrost cycle management, and in some cases re-skinning panels where insulation has degraded — all of which can meaningfully reduce running costs without a full rebuild.",
+      },
+      {
+        q: "Can a cold room keep running during a power outage?",
+        a: "Yes, if it's designed with backup power in mind. We integrate cold rooms with automatic-transfer standby generators or solar-plus-battery systems so compressors, controllers, and alarm monitoring continue operating through a grid outage without manual switching, protecting product from spoilage.",
+      },
+      {
+        q: "Do you design multi-chamber cold storage facilities with different temperature zones?",
+        a: "Yes. For facilities handling multiple product types — such as a distributor storing both chilled dairy and frozen goods — we design independent refrigeration plant for each chamber so that door traffic or load changes in one zone don't affect temperature stability in another.",
       },
     ],
     whyPoints: [
@@ -570,14 +654,15 @@ export const SERVICES = [
     num: "05",
     eyebrow: "Vertical Transport",
     seoTitle:
-      "Residential and Commercial Elevator and Lift Installation in Kenya ",
+      "Residential, Commercial and Hospital Elevator and Lift Installation in Kenya",
     headline: "Moving People with Elegance",
     title: "Elevator Installation",
-    metaTitle: "Elevator & Lift Installation in Nairobi, Kenya | Élan Climat",
+    metaTitle:
+      "Elevator & Lift Installation Contractor in Nairobi, Kenya | Élan Climat & Énergie",
     metaDescription:
-      "Passenger, goods & hospital elevator installation across Kenya. MRL traction & hydraulic lifts, KEBS-compliant inspections, 24/7 entrapment response. Request a quote.",
+      "Passenger, goods & hospital elevator installation across Kenya. MRL traction & hydraulic lifts, KEBS-compliant inspections, 24/7 entrapment response. Modernisation and maintenance contracts from a licensed Kenyan lift contractor.",
     description:
-      "Passenger, service, and goods lifts for residential apartments, commercial towers, and hospitals across Nairobi and Kenya. From machine-room-less (MRL) traction lifts to hydraulic systems — fully compliant with KEBS standards and Kenya's building codes. We also provide 24/7 maintenance and entrapment response.",
+      "Élan Climat & Énergie installs passenger, service, and goods lifts for residential apartments, commercial towers, and hospitals across Nairobi and Kenya. From machine-room-less (MRL) traction lifts to hydraulic systems, our elevator division delivers fully KEBS-compliant installations aligned with Kenya's building codes, backed by 24/7 maintenance and entrapment response, and coordinated with our electrical team where lift power supply and backup generation need to be engineered together.",
     features: [
       "MRL traction & hydraulic lifts",
       "Passenger, goods & hospital elevators",
@@ -617,6 +702,18 @@ export const SERVICES = [
           "We offer monthly, quarterly, and annual maintenance contracts covering all mechanical, electrical, and safety components, including brake adjustment, rope and sheave inspection, door operator servicing, and safety circuit testing. Maintenance contract clients receive priority 24/7 emergency response for entrapment and fault call-outs anywhere in Nairobi — a service that matters considerably more in the moment than it does on a sales sheet.",
         ],
       },
+      {
+        heading: "Modernisation of Existing Lifts",
+        body: [
+          "Many buildings across Nairobi operate lifts installed a decade or more ago, where the mechanical shaft, rails, and car are still structurally sound but the controller, door operator, or safety devices no longer meet current standards or spare-parts availability. We assess these installations and, where feasible, modernise the electrical and control systems while retaining the existing shaft infrastructure, achieving current EN 81 compliance at a materially lower cost and shorter downtime than a full replacement.",
+        ],
+      },
+      {
+        heading: "Power Supply & Backup Integration for Elevators",
+        body: [
+          "A lift is only as dependable as the power feeding it. Working alongside our electrical division, we specify dedicated lift power supply circuits, automatic rescue devices (ARDs) that bring the car to the nearest floor and open the doors during a power failure, and integration with a building's standby generator or UPS system where continuous lift availability is operationally critical, such as in hospitals or high-occupancy residential towers.",
+        ],
+      },
     ],
     useCases: [
       {
@@ -638,6 +735,11 @@ export const SERVICES = [
         sector: "Residential Villas",
         description:
           "Compact home lifts for multi-storey private residences, designed to integrate discreetly into the home's existing layout and finishes.",
+      },
+      {
+        sector: "Retail & Mixed-Use Developments",
+        description:
+          "Goods lifts and passenger lifts specified together for shopping centres and mixed-use buildings, sequenced to handle both stock deliveries and customer traffic without conflict.",
       },
     ],
     faq: [
@@ -672,6 +774,14 @@ export const SERVICES = [
       {
         q: "Can you modernise an old elevator instead of replacing it fully?",
         a: "In many cases, yes. Modernisation can include replacing the controller, door operator, and safety devices while retaining the existing shaft, rails, and car — often at a significantly lower cost than full replacement, while still achieving current safety standard compliance.",
+      },
+      {
+        q: "Do you install goods and service lifts, or only passenger elevators?",
+        a: "We install the full range: passenger lifts, dedicated goods and service lifts for retail, hospitality, and industrial back-of-house use, and hospital stretcher lifts. Goods lift capacity and door configuration are specified around the client's actual load and pallet or trolley dimensions.",
+      },
+      {
+        q: "Can Élan Climat handle both the lift and the electrical supply to it?",
+        a: "Yes. Because elevator installation and electrical works are both delivered in-house, we design the dedicated power supply, backup generator or UPS integration, and automatic rescue device wiring as part of the same project, avoiding the coordination gaps that occur when a lift contractor and an independent electrician design their scopes separately.",
       },
     ],
     whyPoints: [
@@ -709,15 +819,16 @@ export const SERVICES = [
     slug: "electrical",
     num: "06",
     eyebrow: "Power Systems",
-    seoTitle: "Electrical Installation and  Engineering Services in Kenya",
+    seoTitle:
+      "Electrical Installation, Standby Generators and Engineering Services in Kenya",
     headline: "Power Engineered for Reliability",
     title: "Electrical",
     metaTitle:
-      "Electrical Installation & Engineering Services in Kenya | Élan Climat",
+      "Electrical Contractor & Standby Generator Installation in Kenya | Élan Climat & Énergie",
     metaDescription:
-      "LV distribution, standby generators, earthing systems & building automation across Nairobi, Mombasa & Kenya. EPRA-compliant electrical engineering. Request a quote.",
+      "LV distribution, standby generators, earthing systems & building automation across Nairobi, Mombasa & Kenya. EPRA-compliant electrical engineering from a licensed Kenyan electrical contractor. Request a quote.",
     description:
-      "Low-voltage distribution, standby generators, earthing systems, and smart building automation across Nairobi, Mombasa, and Kenya. We design and install electrical infrastructure that meets EPRA standards, protecting critical loads for hospitals, office parks, industrial facilities, and residential developments.",
+      "Élan Climat & Énergie designs and installs low-voltage distribution, standby generators, earthing systems, and smart building automation across Nairobi, Mombasa, and Kenya. Our electrical division meets EPRA standards, protecting critical loads for hospitals, office parks, industrial facilities, and residential developments, and is fully integrated with our HVAC, solar, cold room, and elevator teams for projects that need more than one engineering discipline under a single contract.",
     features: [
       "LV panel boards & distribution",
       "Standby generator & ATS systems",
@@ -763,6 +874,18 @@ export const SERVICES = [
           "We offer infrared thermographic surveys that scan electrical panels, busbars, and connections for hot spots caused by loose connections, overloaded circuits, or failing components — the most cost-effective way we know of to prevent electrical fires and unplanned outages before they happen. All design and installation work is carried out by EPRA-registered engineers, in compliance with EPRA requirements and Kenya's adoption of IEC 60364.",
         ],
       },
+      {
+        heading: "Power Factor Correction & Industrial Loads",
+        body: [
+          "Industrial and manufacturing clients running significant motor and inductive loads often face utility power-factor penalty charges that go unaddressed for years simply because nobody has reviewed the site's electrical bill line by line. We assess power factor at the incoming supply and specify correction capacitor banks sized to bring the site back within KPLC's penalty-free band, which typically pays for itself well inside two years through reduced utility charges alone.",
+        ],
+      },
+      {
+        heading: "Coordinated Electrical Scope Across Disciplines",
+        body: [
+          "A significant share of our electrical projects are delivered alongside another Élan Climat discipline on the same site — power supply and controls for a new HVAC chiller plant, dedicated circuits and earthing for a cold room's refrigeration compressors, backup generator integration for an elevator installation, or the AC-side wiring and switchgear for a solar hybrid system. Running these scopes through one electrical engineering team removes the handoff gaps that occur when separate contractors each assume the other has covered a given interface.",
+        ],
+      },
     ],
     useCases: [
       {
@@ -784,6 +907,11 @@ export const SERVICES = [
         sector: "Residential Developments",
         description:
           "Standby generator and ATS systems sized to cover essential apartment loads during outages, integrated cleanly with each building's existing distribution.",
+      },
+      {
+        sector: "Hospitality",
+        description:
+          "Full LV distribution, standby generation, and building automation for hotels and lodges, coordinated with HVAC and solar scopes to reduce total energy spend.",
       },
     ],
     faq: [
@@ -818,6 +946,14 @@ export const SERVICES = [
       {
         q: "Can you upgrade an existing building's electrical system to support higher loads?",
         a: "Yes. We assess existing distribution capacity, cabling, and earthing against the new intended load — common with HVAC retrofits, EV charging additions, or solar installations — and design the necessary upgrades, which can range from a new sub-board to a full distribution overhaul depending on the gap.",
+      },
+      {
+        q: "What is power factor correction and does my facility need it?",
+        a: "Power factor correction uses capacitor banks to offset the reactive power drawn by motors and inductive equipment, bringing a site's power factor back within KPLC's penalty-free threshold. Industrial and manufacturing facilities with significant motor load are the most common candidates, and correction typically pays for itself within two years through reduced utility charges.",
+      },
+      {
+        q: "Can you design the electrical scope for a project that also includes HVAC, solar, or elevator works?",
+        a: "Yes. Because electrical, HVAC, solar, cold room refrigeration, plumbing, and elevator installation are all delivered in-house at Élan Climat, we routinely design the electrical interfaces for these scopes as one coordinated package, rather than leaving a client to reconcile drawings from separate specialist contractors.",
       },
     ],
     whyPoints: [

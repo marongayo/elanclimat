@@ -12,7 +12,7 @@ import Eyebrow from "@/components/Eyebrow";
 import { ServiceOverview } from "@/components/services-components/ServiceOverview";
 import { C } from "@/lib/constants";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://elanclimat.co.ke";
 
 // ─── Static params ────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -109,6 +109,96 @@ export default async function ServicePage({
       />
 
       <Navbar />
+
+      <section
+        style={{
+          background: C.warmWhite,
+          paddingTop: 112,
+          paddingBottom: 28,
+          borderBottom: `1px solid ${C.rule}`,
+        }}
+      >
+        <div className="svc-detail-inner">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              flexWrap: "wrap",
+              marginBottom: 16,
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.72rem",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: C.muted,
+            }}
+          >
+            <Link href="/services" style={{ color: C.charcoal, textDecoration: "none" }}>
+              All Services
+            </Link>
+            <span>•</span>
+            <span>{service.title}</span>
+          </div>
+
+          <h1
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(2rem, 3.6vw, 3rem)",
+              fontWeight: 500,
+              color: C.charcoal,
+              lineHeight: 1.08,
+              letterSpacing: "-0.015em",
+              margin: "0 0 14px",
+              maxWidth: 780,
+            }}
+          >
+            {service.seoTitle}
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.95rem",
+              lineHeight: 1.8,
+              color: C.body,
+              margin: 0,
+              maxWidth: 760,
+              fontWeight: 300,
+            }}
+          >
+            {service.description}
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 10,
+              marginTop: 22,
+            }}
+          >
+            {SERVICES.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/services/${item.slug}`}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  color: item.slug === service.slug ? C.charcoal : C.muted,
+                  border: `1px solid ${item.slug === service.slug ? C.charcoal : C.ruleLight}`,
+                  borderRadius: 999,
+                  padding: "8px 12px",
+                }}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <style>{`
         * { box-sizing: border-box; }

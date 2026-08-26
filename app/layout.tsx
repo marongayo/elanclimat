@@ -5,6 +5,7 @@ import "./globals.css";
 import Providers from "./providers";
 import Schema from "./seo/Schema";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 import { DM_Sans, Cormorant_Garamond } from "next/font/google";
 
 const dmSans = DM_Sans({
@@ -24,7 +25,7 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
+const SITE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://elanclimat.co.ke";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -91,6 +92,19 @@ export default function RootLayout({
     <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
       <head>
         <Schema />
+        <Script
+          id="microsoft-clarity"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "x6z04k6kpn");
+            `,
+          }}
+        />
       </head>
       <body>
         <Providers>{children}</Providers>

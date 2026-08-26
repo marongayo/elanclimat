@@ -11,7 +11,7 @@ import { SERVICES } from "@/lib/services-data";
 import Eyebrow from "@/components/Eyebrow";
 import { C } from "@/lib/constants";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://elanclimat.co.ke";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     "Professional HVAC installation, solar panel systems, cold rooms, plumbing, elevator installation, and electrical services across Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, and Nyeri. Request a quote today.",
   keywords: [
     "HVAC installation Kenya",
+    "air conditioning installation Nairobi",
+    "heating, ventilation, and air conditioning Kenya",
     "solar panel installation Nairobi",
     "cold room installation Kenya",
     "elevator installation Nairobi",
