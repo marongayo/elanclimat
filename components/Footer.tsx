@@ -24,7 +24,7 @@ const SCHEMA = {
       description:
         "Kenya's trusted HVAC, solar, refrigeration, electrical, and elevator engineering company. Serving Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, Nyeri, and across East Africa since 2018.",
       foundingDate: "2018",
-      telephone: "+254796952717",
+      telephone: "+254747822398",
       email: "hello@elanclimat.co.ke",
       address: {
         "@type": "PostalAddress",
@@ -529,11 +529,11 @@ export default function Footer() {
             <div>
               <span className="f-label">Contact</span>
               <address style={{ fontStyle: "normal" }}>
-                <a href="tel:+254796952717" className="f-contact-item">
+                <a href="tel:+254747822398" className="f-contact-item">
                   <span className="f-contact-icon">
                     <Phone size={11} aria-hidden="true" />
                   </span>
-                  +254 796 952 717
+                  +254 747 822 398
                 </a>
                 <a
                   href="mailto:hello@elanclimat.co.ke"

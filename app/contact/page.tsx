@@ -39,7 +39,7 @@ const CONTACT_DETAILS = [
   {
     icon: Phone,
     label: "Call Us",
-    lines: ["+254 796 952 717", "+254 782 726 118"],
+    lines: ["+254 747 822 398"],
   },
   {
     icon: Mail,

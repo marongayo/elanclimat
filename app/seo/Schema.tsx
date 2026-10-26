@@ -93,12 +93,12 @@ export default async function Schema() {
         description:
           "Kenya's leading HVAC, solar energy, refrigeration, cold room, electrical, elevator, and generator engineering company. Certified engineers serving Nairobi, Mombasa, Kisumu, Eldoret, Nakuru, Nyeri, and across East and Central Africa since 2018.",
 
-        telephone: "+254796952717",
+        telephone: "+254747822398",
         email: "hello@elanclimat.co.ke",
 
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: "+254796952717",
+          telephone: "+254747822398",
           email: "hello@elanclimat.co.ke",
           contactType: "customer service",
           areaServed: "KE",
